@@ -24,12 +24,13 @@ import { Check, Copy, ChevronRight, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { RouteStep } from '@/types';
 
-function SortableStep({ step, index, activeStep, onSelect, onComplete }: {
+function SortableStep({ step, index, activeStep, onSelect, onComplete, onUncomplete }: {
   step: RouteStep;
   index: number;
   activeStep: number;
   onSelect: (i: number) => void;
   onComplete: (i: number) => void;
+  onUncomplete: (i: number) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: step.orderNo });
   const style = { transform: CSS.Transform.toString(transform), transition };
@@ -87,6 +88,16 @@ function SortableStep({ step, index, activeStep, onSelect, onComplete }: {
           完了
         </Button>
       )}
+      {step.isCompleted && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={e => { e.stopPropagation(); onUncomplete(index); }}
+          className="shrink-0 h-6 px-2 text-xs text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+        >
+          取消
+        </Button>
+      )}
     </div>
   );
 }
@@ -96,6 +107,7 @@ export function RouteProgressTab() {
   const activeStep = useAppStore(s => s.activeStep);
   const setActiveStep = useAppStore(s => s.setActiveStep);
   const completeStep = useAppStore(s => s.completeStep);
+  const uncompleteStep = useAppStore(s => s.uncompleteStep);
   const setRoute = useAppStore(s => s.setRoute);
 
   const sensors = useSensors(
@@ -108,8 +120,7 @@ export function RouteProgressTab() {
     if (!over || active.id === over.id) return;
     const oldIdx = route.findIndex(s => s.orderNo === active.id);
     const newIdx = route.findIndex(s => s.orderNo === over.id);
-    const reordered = arrayMove(route, oldIdx, newIdx).map((s, i) => ({ ...s, orderNo: i + 1 }));
-    setRoute(reordered);
+    setRoute(arrayMove(route, oldIdx, newIdx));
   };
 
   const oneLineMacro = generateOneLineMacro(route);
@@ -167,6 +178,7 @@ export function RouteProgressTab() {
                 activeStep={activeStep}
                 onSelect={setActiveStep}
                 onComplete={completeStep}
+                onUncomplete={uncompleteStep}
               />
             ))}
           </div>
