@@ -175,7 +175,12 @@ export function RouteProgressTab() {
 
       {/* 行順 */}
       <div className="space-y-1">
-        <label className="text-xs text-slate-400">行順</label>
+        <div className="flex items-center justify-between">
+          <label className="text-xs text-slate-400">行順</label>
+          <button onClick={() => copyToClipboard(lineOrder, '行順')} className="text-slate-500 hover:text-slate-300 transition-colors">
+            <Copy className="size-3.5" />
+          </button>
+        </div>
         <div
           className="text-xs text-slate-300 bg-slate-900 rounded-md p-2 border border-slate-700 leading-relaxed cursor-pointer hover:bg-slate-800 transition-colors"
           onClick={() => copyToClipboard(lineOrder, '行順')}
@@ -196,7 +201,7 @@ export function RouteProgressTab() {
           readOnly
           value={oneLineMacro}
           onClick={() => copyToClipboard(oneLineMacro, '1行マクロ')}
-          className="h-12 font-mono text-xs bg-slate-900 border-slate-700 text-slate-200 cursor-copy resize-none"
+          className="h-12 text-xs bg-slate-900 border-slate-700 text-slate-300 leading-relaxed cursor-pointer hover:bg-slate-800 transition-colors resize-none"
         />
       </div>
 
@@ -212,7 +217,7 @@ export function RouteProgressTab() {
           readOnly
           value={multiLineMacro}
           onClick={() => copyToClipboard(multiLineMacro, '複数行マクロ')}
-          className="min-h-[120px] font-mono text-xs bg-slate-900 border-slate-700 text-slate-200 cursor-copy resize-y"
+          className="min-h-[120px] text-xs bg-slate-900 border-slate-700 text-slate-300 leading-relaxed cursor-pointer hover:bg-slate-800 transition-colors resize-y"
         />
       </div>
     </div>
