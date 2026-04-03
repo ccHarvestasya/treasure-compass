@@ -41,7 +41,7 @@ export function PositionModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-5xl w-full bg-slate-900 border-slate-700 text-slate-100 p-0 overflow-hidden max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-3xl sm:max-w-3xl w-full bg-slate-900 border-slate-700 text-slate-100 p-0 overflow-hidden max-h-[90vh] flex flex-col">
         <DialogHeader className="px-4 pt-4 pb-2 shrink-0">
           <DialogTitle className="text-sky-300 text-sm">
             座標を選択 — スロット {modalMemberNo !== null ? modalMemberNo + 1 : ''}
