@@ -56,10 +56,10 @@ export const GRADE_IMAGE_PREFIX: Record<number, string> = Object.fromEntries(
 export const DEFAULT_MEMBER_NAME = '光の戦士';
 
 export const POINT_COLORS = {
-  treasure: '#38bdf8',
+  treasure: '#18181b',
   teleport: '#fb923c',
   active: '#facc15',
   completed: '#4ade80',
-  route: 'rgba(56,189,248,0.7)',
+  route: 'rgba(30,30,30,0.8)',
   text: '#f0f9ff',
 } as const;
