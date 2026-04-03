@@ -26,12 +26,12 @@ function AppContent() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
         <div className="max-w-screen-xl mx-auto px-4 h-14 flex items-center gap-4">
-          <div className="flex items-center gap-2 mr-4">
+          <div className="flex items-center gap-2 mr-4 shrink-0">
             <span className="text-sky-400 font-bold text-lg tracking-tight">Treasure Compass</span>
             <span className="text-slate-600 text-sm hidden sm:block">FFXIV トレジャーハント</span>
           </div>
           <GradeSelector />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 shrink-0">
             <span className="text-slate-500 text-xs hidden md:block">{GRADE_LABELS[grade]}</span>
             <ContactDialog />
             <SupportDialog />
