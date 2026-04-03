@@ -1,49 +1,67 @@
-# React + TypeScript + Vite
+# Treasure Compass
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+FFXIV トレジャーハント支援ツールです。パーティメンバーのマップ情報を登録し、最短巡回ルートを自動計算・可視化します。
 
-Currently, two official plugins are available:
+## 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **グレード対応**: G8・G10・G12・G14/G15・G17/G18 に対応
+- **メンバー登録**: 手動入力またはパーティチャットからの一括貼り付けに対応
+- **ルート最適化**: テレポコストを考慮した最短巡回順を自動計算
+- **マップ表示**: 各マップ画像上にポイント・ルートをオーバーレイ表示
+- **進捗管理**: 討伐済みポイントのチェックオフ
+- **データ永続化**: グレードとメンバー情報を localStorage に自動保存
 
-## React Compiler
+## 技術スタック
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| 分類 | 使用技術 |
+|------|----------|
+| フレームワーク | React 19 + TypeScript |
+| ビルド | Vite |
+| スタイリング | Tailwind CSS v4 |
+| UIコンポーネント | shadcn/ui, Base UI |
+| 状態管理 | Zustand |
+| ドラッグ&ドロップ | dnd-kit |
 
-## Expanding the ESLint configuration
+## セットアップ
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+ビルド:
+
+```bash
+pnpm run build
+```
+
+## ディレクトリ構成
+
+```
+src/
+├── components/
+│   ├── GradeSelector/   # グレード切り替えUI
+│   ├── MapCanvas/       # マップ描画・ルート表示
+│   ├── PositionModal/   # ポイント手動選択モーダル
+│   ├── SideBar/         # メンバー登録・ルート進捗パネル
+│   └── ui/              # 共通UIコンポーネント (shadcn/ui)
+├── constants/           # グレード設定テーブル・定数
+├── hooks/               # useMapData (マップJSONフェッチ)
+├── store/               # Zustand ストア
+├── types/               # 型定義
+└── utils/               # 一括解析・距離計算・マクロ生成
+public/
+├── json/                # グレード別ポイントデータ (g8.json など)
+└── img/                 # グレード別マップ画像
+```
+
+## 新グレードの追加
+
+`src/constants/index.ts` の `GRADE_CONFIG` に1行追加し、対応する JSON ファイルと画像を `public/` に配置するだけです。
+
+```ts
+{ grade: 20, label: 'G20', jsonFile: '/json/g20.json', imagePrefix: '/img/map_g20_' },
+```
 
 ```js
 // eslint.config.js
