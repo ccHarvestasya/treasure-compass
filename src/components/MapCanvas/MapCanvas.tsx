@@ -61,14 +61,14 @@ function drawRoute(
     // 外側のグロー（アクティブ時）
     if (isActive) {
       ctx.beginPath();
-      ctx.arc(x, y, 14, 0, Math.PI * 2);
+      ctx.arc(x, y, 16, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(250,204,21,0.25)';
       ctx.fill();
     }
 
     // マーカー
     ctx.beginPath();
-    ctx.arc(x, y, isActive ? 10 : 8, 0, Math.PI * 2);
+    ctx.arc(x, y, isActive ? 12 : 10, 0, Math.PI * 2);
     ctx.fillStyle = isCompleted
       ? POINT_COLORS.completed
       : isActive
@@ -80,8 +80,8 @@ function drawRoute(
     ctx.shadowBlur = 0;
 
     // 番号テキスト
-    ctx.fillStyle = '#0f172a';
-    ctx.font = `bold ${isActive ? 11 : 9}px sans-serif`;
+    ctx.fillStyle = (isCompleted || isActive) ? '#0f172a' : '#ffffff';
+    ctx.font = `bold ${isActive ? 13 : 11}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(String(i + 1), x, y);
