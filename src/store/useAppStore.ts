@@ -40,6 +40,7 @@ interface AppState {
 
   // ステップ完了マーク
   completeStep: (index: number) => void;
+  uncompleteStep: (index: number) => void;
 
   // モーダル: 座標入力中のメンバー番号 (null=閉じている)
   modalMemberNo: number | null;
@@ -98,6 +99,13 @@ export const useAppStore = create<AppState>()(
         );
         const nextActive = route.findIndex((s, i) => i > index && !s.isCompleted);
         set({ route, activeStep: nextActive >= 0 ? nextActive : index });
+      },
+
+      uncompleteStep: (index) => {
+        const route = get().route.map((s, i) =>
+          i === index ? { ...s, isCompleted: false } : s,
+        );
+        set({ route, activeStep: index });
       },
 
       modalMemberNo: null,
