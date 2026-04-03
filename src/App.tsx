@@ -11,6 +11,8 @@ import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { GRADE_LABELS } from '@/constants';
+import { ContactDialog } from '@/components/ContactDialog/ContactDialog';
+import { SupportDialog } from '@/components/SupportDialog/SupportDialog';
 
 function AppContent() {
   useMapData();
@@ -31,6 +33,8 @@ function AppContent() {
           <GradeSelector />
           <div className="ml-auto flex items-center gap-2">
             <span className="text-slate-500 text-xs hidden md:block">{GRADE_LABELS[grade]}</span>
+            <ContactDialog />
+            <SupportDialog />
             <Button
               variant="ghost"
               size="sm"
