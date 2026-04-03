@@ -63,6 +63,10 @@ public/
 { grade: 20, label: 'G20', jsonFile: '/json/g20.json', imagePrefix: '/img/map_g20_' },
 ```
 
+## ライセンス
+
+[Apache License 2.0](LICENSE)
+
 ```js
 // eslint.config.js
 import reactX from 'eslint-plugin-react-x'
