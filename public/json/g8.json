@@ -1,0 +1,80 @@
+{
+    "mapSize": 431,
+    "mapData": [
+        {
+            "region": "クルザス",
+            "mapNo": 1,
+            "mapName": "クルザス西部高地",
+            "mapNameShort": "クル西部",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX":  66, "posY": 118, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 216, "posY": 121, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 120, "posY": 245, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 201, "posY": 309, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 348, "posY":  75, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 290, "posY": 153, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 369, "posY": 267, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "T", "block": "A", "posX": 320, "posY": 367, "posZ":  15, "posT":   0, "time":   0, "pointName": "ファルコンネスト"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX":  60, "posY":  97, "posZ":  10, "posT":   0, "time":   0, "pointName": "テイルフェザー→西部高地"}
+            ]
+        },
+        {
+            "region": "ドラヴァニア",
+            "mapNo": 2,
+            "mapName": "高地ドラヴァニア",
+            "mapNameShort": "高地ドラ",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 106, "posY": 301, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 232, "posY": 256, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 290, "posY": 240, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 120, "posY": 349, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 135, "posY": 347, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 150, "posY": 344, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 187, "posY": 342, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 235, "posY": 317, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 276, "posY": 307, "posZ":   0, "posT":   0, "time":   0, "pointName": "I"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 332, "posY": 231, "posZ":  10, "posT":   0, "time":   0, "pointName": "テイルフェザー"},
+                {"pointNo": 11, "division": "T", "block": "A", "posX": 164, "posY": 231, "posZ":  13, "posT":   0, "time":   0, "pointName": "不浄の三塔"}
+            ]
+        },
+        {
+            "region": "ドラヴァニア",
+            "mapNo": 3,
+            "mapName": "ドラヴァニア雲海",
+            "mapNameShort": "ドラ雲海",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 102, "posY":  97, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 128, "posY": 132, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX":  78, "posY": 174, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 103, "posY": 201, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 236, "posY": 191, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 324, "posY": 257, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 174, "posY": 336, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 216, "posY": 378, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 294, "posY": 374, "posZ":   0, "posT":   0, "time":   0, "pointName": "I"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 277, "posY": 344, "posZ":   3, "posT":   0, "time":   0, "pointName": "モグモグホーム"},
+                {"pointNo": 11, "division": "T", "block": "A", "posX": 108, "posY": 288, "posZ":  12, "posT":   0, "time":   0, "pointName": "白亜の宮殿"}
+            ]
+        },
+        {
+            "region": "アバラシア",
+            "mapNo": 4,
+            "mapName": "アバラシア雲海",
+            "mapNameShort": "アバ雲海",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX":  65, "posY":  72, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 206, "posY":  52, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 229, "posY": 106, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 172, "posY": 167, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 317, "posY": 188, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 103, "posY": 391, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 145, "posY": 267, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 189, "posY": 348, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 214, "posY": 320, "posZ":   0, "posT":   0, "time":   0, "pointName": "I"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX": 291, "posY": 240, "posZ":   0, "posT":   0, "time":   0, "pointName": "J"},
+                {"pointNo": 11, "division": "T", "block": "A", "posX": 102, "posY": 334, "posZ":  11, "posT":   0, "time":   0, "pointName": "キャンプ･クラウドトップ"},
+                {"pointNo": 12, "division": "T", "block": "A", "posX": 103, "posY": 142, "posZ":  18, "posT":   0, "time":   0, "pointName": "オク･ズンド"}
+            ]
+        }
+    ]
+}

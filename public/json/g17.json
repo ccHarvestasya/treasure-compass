@@ -1,0 +1,118 @@
+{
+    "mapSize": 409,
+    "mapData": [
+        {
+            "region": "",
+            "mapNo": 1,
+            "mapName": "オルコ・パチャ",
+            "mapNameShort": "オルコ・パチャ",
+            "point": [
+                {"pointNo":  1, "division": "T", "block": "A", "posX": 307, "posY": 341, "posZ":  33, "posT":   0, "time":   0, "pointName": "ウォーラーの残響"},
+                {"pointNo":  2, "division": "T", "block": "A", "posX": 281, "posY": 131, "posZ":   6, "posT":   0, "time":   0, "pointName": "ワチュン・ペロ"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 136, "posY": 141, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 342, "posY": 290, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 342, "posY": 326, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 289, "posY": 240, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 216, "posY": 238, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 217, "posY": 260, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 169, "posY": 234, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX": 157, "posY": 306, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"}
+            ]
+        },
+        {
+            "region": "",
+            "mapNo": 2,
+            "mapName": "コザマル・カ",
+            "mapNameShort": "コザマル・カ",
+            "point": [
+                {"pointNo":  1, "division": "T", "block": "A", "posX": 180, "posY": 118, "posZ":   0, "posT":   0, "time":   0, "pointName": "オック・ハヌ"},
+                {"pointNo":  2, "division": "T", "block": "A", "posX": 119, "posY": 277, "posZ":  12, "posT":   0, "time":   0, "pointName": "アースンシャイア"},
+                {"pointNo":  3, "division": "T", "block": "A", "posX": 323, "posY": 255, "posZ":  11, "posT":   0, "time":   0, "pointName": "朋友の灯火"},
+                {"pointNo":  4, "division": "T", "block": "A", "posX": 372, "posY": 168, "posZ":   1, "posT":   0, "time":   0, "pointName": "ポガ停船所"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 369, "posY":  62, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 199, "posY":  69, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 314, "posY": 149, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 379, "posY": 217, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 189, "posY": 225, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX":  69, "posY": 194, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo": 11, "division": "P", "block": "A", "posX": 322, "posY": 361, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo": 12, "division": "P", "block": "A", "posX":  90, "posY": 338, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"}
+            ]
+        },
+        {
+            "region": "",
+            "mapNo": 3,
+            "mapName": "ヤクテル樹海",
+            "mapNameShort": "ヤクテル樹海",
+            "point": [
+                {"pointNo":  1, "division": "T", "block": "A", "posX": 135, "posY": 128, "posZ":   0, "posT":   0, "time":   0, "pointName": "イクブラーシャ"},
+                {"pointNo":  2, "division": "T", "block": "A", "posX": 359, "posY": 320, "posZ":  16, "posT":   0, "time":   0, "pointName": "マムーク"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 226, "posY":  58, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 366, "posY": 125, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 311, "posY": 219, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 247, "posY": 209, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX":  56, "posY": 196, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 227, "posY": 358, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 154, "posY": 268, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX": 112, "posY": 332, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"}
+            ]
+        },
+        {
+            "region": "",
+            "mapNo": 4,
+            "mapName": "シャーローニ荒野",
+            "mapNameShort": "シャーローニ",
+            "point": [
+                {"pointNo":  1, "division": "T", "block": "A", "posX": 292, "posY": 308, "posZ":   7, "posT":   0, "time":   0, "pointName": "フーサタイ宿場町"},
+                {"pointNo":  2, "division": "T", "block": "A", "posX": 156, "posY": 191, "posZ":   9, "posT":   0, "time":   0, "pointName": "シェシェネ青燐泉"},
+                {"pointNo":  3, "division": "T", "block": "A", "posX": 277, "posY": 101, "posZ":   6, "posT":   0, "time":   0, "pointName": "メワヘイゾーン"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 293, "posY":  84, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 185, "posY": 116, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 125, "posY": 144, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 355, "posY": 169, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 256, "posY": 197, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 182, "posY": 210, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX": 319, "posY": 329, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo": 11, "division": "P", "block": "A", "posX": 197, "posY": 345, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"}
+            ]
+        },
+        {
+            "region": "",
+            "mapNo": 5,
+            "mapName": "ヘリテージファウンド",
+            "mapNameShort": "ヘリテージ",
+            "point": [
+                {"pointNo":  1, "division": "T", "block": "A", "posX": 317, "posY": 256, "posZ":  16, "posT":   0, "time":   0, "pointName": "ヤースラニ駅"},
+                {"pointNo":  2, "division": "T", "block": "A", "posX": 170, "posY":  97, "posZ":   4, "posT":   0, "time":   0, "pointName": "アウトスカーツ"},
+                {"pointNo":  3, "division": "T", "block": "A", "posX": 170, "posY": 238, "posZ":   4, "posT":   0, "time":   0, "pointName": "エレクトロープ採石場"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 311, "posY":  84, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 166, "posY": 130, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 221, "posY": 191, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 172, "posY": 222, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX":  90, "posY": 212, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX": 358, "posY": 255, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX": 262, "posY": 308, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo": 11, "division": "P", "block": "A", "posX": 168, "posY": 358, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"}
+            ]
+        },
+        {
+            "region": "",
+            "mapNo": 6,
+            "mapName": "リビング・メモリー",
+            "mapNameShort": "リビング",
+            "point": [
+                {"pointNo":  1, "division": "T", "block": "A", "posX": 214, "posY": 374, "posZ":   7, "posT":   0, "time":   0, "pointName": "レイノード・メモリス"},
+                {"pointNo":  2, "division": "T", "block": "A", "posX": 346, "posY": 157, "posZ":   4, "posT":   0, "time":   0, "pointName": "レイノード・ファイア"},
+                {"pointNo":  3, "division": "T", "block": "A", "posX": 163, "posY": 135, "posZ":   7, "posT":   0, "time":   0, "pointName": "レイノード・ウィンド"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 310, "posY": 181, "posZ":   0, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 385, "posY": 281, "posZ":   0, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 202, "posY": 230, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 350, "posY": 353, "posZ":   0, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 250, "posY":  69, "posZ":   0, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  9, "division": "P", "block": "A", "posX":  93, "posY": 107, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo": 10, "division": "P", "block": "A", "posX": 185, "posY": 158, "posZ":   0, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo": 11, "division": "P", "block": "A", "posX": 104, "posY": 360, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"}
+            ]
+        }
+    ]
+}

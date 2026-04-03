@@ -1,0 +1,118 @@
+{
+    "mapSize": 409,
+    "mapData": [
+        {
+            "region": "シャーレアン",
+            "mapNo": 1,
+            "mapName": "ラヴィリンソス",
+            "mapNameShort": "ラヴィリンソス",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 242, "posY": 109, "posZ":  30, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 318, "posY": 144, "posZ":  38, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 186, "posY": 181, "posZ":  20, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 249, "posY": 218, "posZ":  20, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 247, "posY": 296, "posZ":  20, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 218, "posY": 375, "posZ":  21, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX":  84, "posY": 304, "posZ":  19, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX":  68, "posY": 209, "posZ":  22, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX": 303, "posY": 119, "posZ":  39, "posT":   0, "time":  15, "pointName": "アルケイオン保管院"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 216, "posY": 205, "posZ":  19, "posT":   0, "time":  15, "pointName": "リトルシャーレアン"},
+                {"pointNo": 11, "division": "T", "block": "Z", "posX":  68, "posY": 275, "posZ":  19, "posT":   0, "time":  15, "pointName": "アポリア本部"}
+            ]
+        },
+        {
+            "region": "イルサバード",
+            "mapNo": 2,
+            "mapName": "サベネア島",
+            "mapNameShort": "サベネア島",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 147, "posY":  79, "posZ":   5, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 195, "posY": 142, "posZ":   3, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 271, "posY":  89, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 322, "posY": 144, "posZ":   1, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 219, "posY": 210, "posZ":   2, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 148, "posY": 266, "posZ":   0, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 210, "posY": 272, "posZ":   5, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 268, "posY": 289, "posZ":   0, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX": 253, "posY": 340, "posZ":   0, "posT":   0, "time":  15, "pointName": "イェドリマン"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 109, "posY": 222, "posZ":   0, "posT":   0, "time":  15, "pointName": "デミールの遺烈郷"},
+                {"pointNo": 11, "division": "T", "block": "A", "posX": 295, "posY": 165, "posZ":   0, "posT":   0, "time":  15, "pointName": "パーラカの里"},
+                {"pointNo": 12, "division": "T", "block": "A", "posX": 318, "posY":  89, "posZ":   5, "posT":   0, "time":  20, "pointName": "トラーナ関門"}
+            ]
+        },
+        {
+            "region": "イルサバード",
+            "mapNo": 3,
+            "mapName": "ガレマルド",
+            "mapNameShort": "ガレマルド",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 118, "posY": 257, "posZ":   6, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 281, "posY": 264, "posZ":   1, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 293, "posY": 354, "posZ":   0, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 166, "posY": 119, "posZ":   3, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 161, "posY": 178, "posZ":   3, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 253, "posY": 124, "posZ":   4, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 342, "posY":  99, "posZ":   3, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 344, "posY": 173, "posZ":   3, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX": 133, "posY": 310, "posZ":   4, "posT":   0, "time":  15, "pointName": "キャンプ・ブロークングラス"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 318, "posY": 179, "posZ":  -2, "posT":   0, "time":  20, "pointName": "テルティウム駅"}
+            ]
+        },
+        {
+            "region": "星外宙域",
+            "mapNo": 4,
+            "mapName": "嘆きの海",
+            "mapNameShort": "嘆きの海",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 171, "posY": 194, "posZ":  12, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 122, "posY": 266, "posZ":  12, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 187, "posY": 257, "posZ":   6, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 305, "posY": 249, "posZ":  10, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 159, "posY": 344, "posZ":  11, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 228, "posY": 363, "posZ":  11, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 256, "posY": 333, "posZ":   8, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 348, "posY": 299, "posZ":  14, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX": 101, "posY": 344, "posZ":  13, "posT":   0, "time":  15, "pointName": "涙の入江"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 214, "posY": 112, "posZ": -14, "posT":   0, "time":  20, "pointName": "ベストウェイ・バロー"}
+            ]
+        },
+        {
+            "region": "星外宙域",
+            "mapNo": 5,
+            "mapName": "ウルティマ・トゥーレ",
+            "mapNameShort": "ウルティマ",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 296, "posY":  94, "posZ":  24, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 257, "posY": 172, "posZ":  19, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 127, "posY": 134, "posZ":  22, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX":  61, "posY": 190, "posZ":   2, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX":  81, "posY": 307, "posZ":   3, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 179, "posY": 270, "posZ":   2, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 267, "posY": 355, "posZ":  34, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 214, "posY": 363, "posZ":   1, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX": 105, "posY": 268, "posZ":   2, "posT":   0, "time":  15, "pointName": "リア・ターラ"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 226, "posY":  83, "posZ":  22, "posT":   0, "time":  15, "pointName": "イーアの里"},
+                {"pointNo": 11, "division": "T", "block": "A", "posX": 312, "posY": 281, "posZ":  39, "posT":   0, "time":  15, "pointName": "オミクロンベース"}
+            ]
+        },
+        {
+            "region": "古代",
+            "mapNo": 6,
+            "mapName": "エルピス",
+            "mapNameShort": "エルピス",
+            "point": [
+                {"pointNo":  1, "division": "P", "block": "A", "posX": 130, "posY":  87, "posZ":  47, "posT":   0, "time":   0, "pointName": "A"},
+                {"pointNo":  2, "division": "P", "block": "A", "posX": 299, "posY":  95, "posZ":  31, "posT":   0, "time":   0, "pointName": "B"},
+                {"pointNo":  3, "division": "P", "block": "A", "posX": 290, "posY": 175, "posZ":  30, "posT":   0, "time":   0, "pointName": "C"},
+                {"pointNo":  4, "division": "P", "block": "A", "posX": 371, "posY": 185, "posZ":  31, "posT":   0, "time":   0, "pointName": "D"},
+                {"pointNo":  5, "division": "P", "block": "A", "posX": 225, "posY": 246, "posZ":  16, "posT":   0, "time":   0, "pointName": "E"},
+                {"pointNo":  6, "division": "P", "block": "A", "posX": 272, "posY": 243, "posZ":  16, "posT":   0, "time":   0, "pointName": "F"},
+                {"pointNo":  7, "division": "P", "block": "A", "posX": 118, "posY": 331, "posZ":  12, "posT":   0, "time":   0, "pointName": "G"},
+                {"pointNo":  8, "division": "P", "block": "A", "posX": 168, "posY": 310, "posZ":  11, "posT":   0, "time":   0, "pointName": "H"},
+                {"pointNo":  9, "division": "T", "block": "A", "posX":  88, "posY": 323, "posZ":   0, "posT":   0, "time":  15, "pointName": "十二節の園"},
+                {"pointNo": 10, "division": "T", "block": "A", "posX": 246, "posY": 240, "posZ":   0, "posT":   0, "time":  15, "pointName": "アナグノリシス天測園"},
+                {"pointNo": 11, "division": "T", "block": "A", "posX": 110, "posY": 177, "posZ":   0, "posT":   0, "time":  15, "pointName": "ポイエテーン・オイコス"}
+            ]
+        }
+    ]
+}

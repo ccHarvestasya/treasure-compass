@@ -1,121 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useMapData } from '@/hooks/useMapData';
+import { useAppStore } from '@/store/useAppStore';
+import { GradeSelector } from '@/components/GradeSelector/GradeSelector';
+import { MapCanvas } from '@/components/MapCanvas/MapCanvas';
+import { SideBar } from '@/components/SideBar/SideBar';
+import { PositionModal } from '@/components/PositionModal/PositionModal';
+import { LoadingScreen } from '@/components/LoadingScreen/LoadingScreen';
+import { Toaster } from 'sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { GRADE_LABELS } from '@/constants';
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppContent() {
+  useMapData();
+  const isLoading = useAppStore(s => s.isLoading);
+  const grade = useAppStore(s => s.grade);
+  const clearMembers = useAppStore(s => s.clearMembers);
+
+  if (isLoading) return <LoadingScreen />;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div className="max-w-screen-xl mx-auto px-4 h-14 flex items-center gap-4">
+          <div className="flex items-center gap-2 mr-4">
+            <span className="text-sky-400 font-bold text-lg tracking-tight">Treasure Compass</span>
+            <span className="text-slate-600 text-sm hidden sm:block">FFXIV トレジャーハント</span>
+          </div>
+          <GradeSelector />
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-slate-500 text-xs hidden md:block">{GRADE_LABELS[grade]}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { clearMembers(); toast.success('データをクリアしました'); }}
+              className="text-slate-400 hover:text-red-400 hover:bg-red-950/30 h-8 px-2"
+            >
+              <Trash2 className="size-3.5 mr-1" />
+              <span className="text-xs">クリア</span>
+            </Button>
+          </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="flex-1 flex flex-col lg:flex-row max-w-screen-xl mx-auto w-full p-4 gap-4">
+        <aside className="w-full lg:w-[420px] xl:w-[460px] shrink-0 flex flex-col bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
+          <SideBar />
+        </aside>
+        <section className="flex-1 flex flex-col gap-3 min-w-0">
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-3 flex-1 flex flex-col">
+            <MapCanvas />
+          </div>
+        </section>
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <PositionModal />
+    </div>
+  );
 }
 
-export default App
+export function App() {
+  return (
+    <TooltipProvider>
+      <AppContent />
+      <Toaster
+        position="bottom-right"
+        theme="dark"
+        toastOptions={{
+          classNames: {
+            toast: 'bg-slate-800 border-slate-700 text-slate-100',
+          },
+        }}
+      />
+    </TooltipProvider>
+  );
+}
