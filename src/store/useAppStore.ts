@@ -42,6 +42,10 @@ interface AppState {
   completeStep: (index: number) => void;
   uncompleteStep: (index: number) => void;
 
+  // 一括入力テキスト
+  bulkText: string;
+  setBulkText: (text: string) => void;
+
   // モーダル: 座標入力中のメンバー番号 (null=閉じている)
   modalMemberNo: number | null;
   openModal: (memberNo: number) => void;
@@ -107,6 +111,9 @@ export const useAppStore = create<AppState>()(
         );
         set({ route, activeStep: index });
       },
+
+      bulkText: '',
+      setBulkText: (text) => set({ bulkText: text }),
 
       modalMemberNo: null,
       openModal: (memberNo) => set({ modalMemberNo: memberNo }),

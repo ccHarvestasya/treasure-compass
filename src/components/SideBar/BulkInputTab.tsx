@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,7 +7,8 @@ import { BULK_INPUT_DELAY_MS, DEFAULT_MEMBER_NAME } from '@/constants';
 import { toast } from 'sonner';
 
 export function BulkInputTab() {
-  const [text, setText] = useState('');
+  const text = useAppStore(s => s.bulkText);
+  const setBulkText = useAppStore(s => s.setBulkText);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapData = useAppStore(s => s.mapData);
   const setMember = useAppStore(s => s.setMember);
@@ -59,7 +60,7 @@ export function BulkInputTab() {
   };
 
   const handleChange = (value: string) => {
-    setText(value);
+    setBulkText(value);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       if (value.trim()) handleRegister(value);
@@ -80,12 +81,12 @@ export function BulkInputTab() {
         style={{ fontSize: '11px', whiteSpace: 'nowrap', overflowX: 'auto' }}
       />
       <div className="flex gap-2">
-        <Button onClick={handleRegister} className="flex-1 bg-sky-600 hover:bg-sky-500 text-white">
+        <Button onClick={() => handleRegister()} className="flex-1 bg-sky-600 hover:bg-sky-500 text-white">
           登録
         </Button>
         <Button
           variant="outline"
-          onClick={() => { setText(''); clearMembers(); }}
+          onClick={() => { setBulkText(''); clearMembers(); }}
           className="border-slate-600 text-slate-300 hover:bg-slate-700"
         >
           クリア
