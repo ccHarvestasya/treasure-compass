@@ -15,8 +15,8 @@ export interface ParsedMember {
 }
 
 // FFXIVチャット座標の形式に対応
-// 例: (★ミモザ・サミ)  クルザス西部高地 (12.3, 45.6)
-const CHAT_REGEX = /[（(][★☆●▲◆♥♠♣◇♦♣♧♤♡○□△▽]?\s?(.+?)[)）][^\d]*(.+?)\s[（(](\d+(?:\.\d+)?)[,，]\s?(\d+(?:\.\d+)?)[)）]/;
+// 例: [21:57] (Mimosa Sami) リビング・メモリー ( 20.5  , 23.0 )
+const CHAT_REGEX = /[（(][★☆●▲◆♥♠♣◇♦♣♧♤♡○□△▽]?\s?(.+?)[)）]\s+(.+?)\s+[（(]\s*(\d+(?:\.\d+)?)\s*[,，]\s*(\d+(?:\.\d+)?)\s*[)）]/;
 
 export function parseBulkInput(
   text: string,

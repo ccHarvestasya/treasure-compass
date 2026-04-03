@@ -13,13 +13,14 @@ export function BulkInputTab() {
   const setMember = useAppStore(s => s.setMember);
   const clearMembers = useAppStore(s => s.clearMembers);
 
-  const handleRegister = () => {
+  const handleRegister = (inputText?: string) => {
+    const textToUse = inputText ?? text;
     if (!mapData) {
       toast.error('マップデータが読み込まれていません');
       return;
     }
 
-    const parsed = parseBulkInput(text, mapData.mapData);
+    const parsed = parseBulkInput(textToUse, mapData.mapData);
     if (parsed.length === 0) {
       toast.warning('解析できるデータが見つかりませんでした');
       return;
@@ -61,7 +62,7 @@ export function BulkInputTab() {
     setText(value);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      if (value.trim()) handleRegister();
+      if (value.trim()) handleRegister(value);
     }, BULK_INPUT_DELAY_MS);
   };
 
