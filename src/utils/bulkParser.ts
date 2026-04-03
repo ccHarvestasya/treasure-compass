@@ -15,8 +15,9 @@ export interface ParsedMember {
 }
 
 // FFXIVチャット座標の形式に対応
-// 例: [21:57] (Mimosa Sami) リビング・メモリー ( 20.5  , 23.0 )
-const CHAT_REGEX = /[（(][★☆●▲◆♥♠♣◇♦♣♧♤♡○□△▽]?\s?(.+?)[)）]\s+(.+?)\s+[（(]\s*(\d+(?:\.\d+)?)\s*[,，]\s*(\d+(?:\.\d+)?)\s*[)）]/;
+// 元の形式: /.*\((.★|.●|.▲|.◆|.♥|.♠|.♣|.)(.*)\.{2}(.*)\s\(\s(\d+\.\d+)\s{1,2},\s(\d+\.\d+)\s\)/
+// グループ1=プレフィックス(+任意アイコン)、グループ2=名前、グループ3=マップ、グループ4,5=座標
+const CHAT_REGEX = /.*[（(](.[★☆●▲◆♥♠♣◇♦♡○□△▽]?)(.*?)[)）]\s+(.+?)\s+[（(]\s*(\d+(?:\.\d+)?)\s*[,，]\s*(\d+(?:\.\d+)?)\s*[)）]/;
 
 export function parseBulkInput(
   text: string,
@@ -29,10 +30,10 @@ export function parseBulkInput(
     const match = CHAT_REGEX.exec(line);
     if (!match) continue;
 
-    const memberName = match[1].trim() || DEFAULT_MEMBER_NAME;
-    const mapName = match[2].trim();
-    const coordX = parseFloat(match[3]);
-    const coordY = parseFloat(match[4]);
+    const memberName = match[2].trim() || DEFAULT_MEMBER_NAME;
+    const mapName = match[3].trim();
+    const coordX = parseFloat(match[4]);
+    const coordY = parseFloat(match[5]);
 
     results.push({ memberName, mapName, coordX, coordY });
   }

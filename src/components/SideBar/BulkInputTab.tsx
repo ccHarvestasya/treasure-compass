@@ -76,7 +76,8 @@ export function BulkInputTab() {
         value={text}
         onChange={e => handleChange(e.target.value)}
         placeholder={'(★プレイヤー名)  マップ名 (12.3, 45.6)\n...'}
-        className="min-h-[160px] font-mono text-xs bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-600 resize-y"
+        className="h-[320px] font-mono bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-600 resize-none"
+        style={{ fontSize: '11px', whiteSpace: 'nowrap', overflowX: 'auto' }}
       />
       <div className="flex gap-2">
         <Button onClick={handleRegister} className="flex-1 bg-sky-600 hover:bg-sky-500 text-white">
