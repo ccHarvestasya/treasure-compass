@@ -103,6 +103,8 @@ export const useAppStore = create<AppState>()(
         set({
           members: Array<UserItem | null>(FULL_PARTY).fill(null),
           route: [],
+          isManualSort: false,
+          activeStep: 0,
         });
       },
       clearAllData: () => {
@@ -148,34 +150,13 @@ export const useAppStore = create<AppState>()(
       closeModal: () => set({ modalMemberNo: null }),
 
       recalcRoute: () => {
-        const { members, mapData, isManualSort, route } = get();
+        const { members, mapData } = get();
         if (!mapData) return;
 
         const activeMembers = members.filter((m): m is UserItem => m !== null);
         if (activeMembers.length === 0) {
-          set({ route: [] });
+          set({ route: [], isManualSort: false, activeStep: 0 });
           return;
-        }
-
-        // 手動ソート済みの場合はメンバー変更時のみ名前/座標を更新し順序は保持
-        if (isManualSort && route.length > 0) {
-          const updated = route
-            .map((step) => {
-              const m = activeMembers.find(
-                (m) =>
-                  m.memberNo ===
-                  activeMembers.find((am) => am.memberName === step.memberName)
-                    ?.memberNo,
-              );
-              return m
-                ? { ...step, memberName: m.memberName, point: m.mapPoint }
-                : null;
-            })
-            .filter((s): s is RouteStep => s !== null);
-          if (updated.length === activeMembers.length) {
-            set({ route: updated });
-            return;
-          }
         }
 
         const result = calcShortestRoute(
