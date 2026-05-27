@@ -1,5 +1,6 @@
 import { useMapData } from '@/hooks/useMapData';
 import { useAppStore } from '@/store/useAppStore';
+import { useState } from 'react';
 import { GradeSelector } from '@/components/GradeSelector/GradeSelector';
 import { MapCanvas } from '@/components/MapCanvas/MapCanvas';
 import { SideBar } from '@/components/SideBar/SideBar';
@@ -13,12 +14,21 @@ import { toast } from 'sonner';
 import { GRADE_LABELS } from '@/constants';
 import { ContactDialog } from '@/components/ContactDialog/ContactDialog';
 import { SupportDialog } from '@/components/SupportDialog/SupportDialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 function AppContent() {
   useMapData();
   const isLoading = useAppStore(s => s.isLoading);
   const grade = useAppStore(s => s.grade);
-  const clearMembers = useAppStore(s => s.clearMembers);
+  const clearAllData = useAppStore(s => s.clearAllData);
+  const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -38,7 +48,7 @@ function AppContent() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { clearMembers(); toast.success('データをクリアしました'); }}
+              onClick={() => setIsClearConfirmOpen(true)}
               className="text-slate-400 hover:text-red-400 hover:bg-red-950/30 h-8 px-2"
             >
               <Trash2 className="size-3.5 mr-1" />
@@ -60,6 +70,36 @@ function AppContent() {
       </main>
 
       <PositionModal />
+
+      <Dialog open={isClearConfirmOpen} onOpenChange={setIsClearConfirmOpen}>
+        <DialogContent className="max-w-sm bg-slate-900 border-slate-700 text-slate-100">
+          <DialogHeader>
+            <DialogTitle className="text-red-300 text-sm">データをクリアしますか？</DialogTitle>
+            <DialogDescription className="text-slate-300 text-xs leading-relaxed">
+              メンバー一覧・巡回経路・一括入力テキストを初期化します。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="bg-slate-900/50 border-slate-700">
+            <Button
+              variant="outline"
+              onClick={() => setIsClearConfirmOpen(false)}
+              className="border-slate-600 text-slate-300 hover:bg-slate-800"
+            >
+              キャンセル
+            </Button>
+            <Button
+              onClick={() => {
+                clearAllData();
+                setIsClearConfirmOpen(false);
+                toast.success('データをクリアしました');
+              }}
+              className="bg-red-600 hover:bg-red-500 text-white"
+            >
+              クリアする
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

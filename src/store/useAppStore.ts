@@ -1,18 +1,19 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Grade, UserItem, RouteStep, MapData } from '@/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { Grade, UserItem, RouteStep, MapData } from "@/types";
 import {
   DEFAULT_GRADE,
   FULL_PARTY,
   STORAGE_KEY_GRADE,
   STORAGE_KEY_MEMBERS,
-} from '@/constants';
-import { calcShortestRoute, toRouteSteps } from '@/utils/distance';
+} from "@/constants";
+import { calcShortestRoute, toRouteSteps } from "@/utils/distance";
 
 interface AppState {
   // グレード
   grade: Grade;
   setGrade: (grade: Grade) => void;
+  setGradeWithReset: (grade: Grade) => void;
 
   // マップデータ（ロード済み）
   mapData: MapData | null;
@@ -27,6 +28,7 @@ interface AppState {
   setMember: (memberNo: number, item: UserItem) => void;
   removeMember: (memberNo: number) => void;
   clearMembers: () => void;
+  clearAllData: () => void;
 
   // 経路
   route: RouteStep[];
@@ -62,6 +64,18 @@ export const useAppStore = create<AppState>()(
       setGrade: (grade) => {
         set({ grade, mapData: null, isLoading: true });
       },
+      setGradeWithReset: (grade) => {
+        set({
+          grade,
+          mapData: null,
+          isLoading: true,
+          members: Array<UserItem | null>(FULL_PARTY).fill(null),
+          route: [],
+          bulkText: "",
+          isManualSort: false,
+          activeStep: 0,
+        });
+      },
 
       mapData: null,
       setMapData: (data) => {
@@ -86,7 +100,21 @@ export const useAppStore = create<AppState>()(
         get().recalcRoute();
       },
       clearMembers: () => {
-        set({ members: Array<UserItem | null>(FULL_PARTY).fill(null), route: [] });
+        set({
+          members: Array<UserItem | null>(FULL_PARTY).fill(null),
+          route: [],
+          isManualSort: false,
+          activeStep: 0,
+        });
+      },
+      clearAllData: () => {
+        set({
+          members: Array<UserItem | null>(FULL_PARTY).fill(null),
+          route: [],
+          bulkText: "",
+          isManualSort: false,
+          activeStep: 0,
+        });
       },
 
       route: [],
@@ -101,7 +129,9 @@ export const useAppStore = create<AppState>()(
         const route = get().route.map((s, i) =>
           i === index ? { ...s, isCompleted: true } : s,
         );
-        const nextActive = route.findIndex((s, i) => i > index && !s.isCompleted);
+        const nextActive = route.findIndex(
+          (s, i) => i > index && !s.isCompleted,
+        );
         set({ route, activeStep: nextActive >= 0 ? nextActive : index });
       },
 
@@ -112,7 +142,7 @@ export const useAppStore = create<AppState>()(
         set({ route, activeStep: index });
       },
 
-      bulkText: '',
+      bulkText: "",
       setBulkText: (text) => set({ bulkText: text }),
 
       modalMemberNo: null,
@@ -120,33 +150,17 @@ export const useAppStore = create<AppState>()(
       closeModal: () => set({ modalMemberNo: null }),
 
       recalcRoute: () => {
-        const { members, mapData, isManualSort, route } = get();
+        const { members, mapData } = get();
         if (!mapData) return;
 
         const activeMembers = members.filter((m): m is UserItem => m !== null);
         if (activeMembers.length === 0) {
-          set({ route: [] });
+          set({ route: [], isManualSort: false, activeStep: 0 });
           return;
         }
 
-        // 手動ソート済みの場合はメンバー変更時のみ名前/座標を更新し順序は保持
-        if (isManualSort && route.length > 0) {
-          const updated = route
-            .map(step => {
-              const m = activeMembers.find(
-                m => m.memberNo === activeMembers.find(am => am.memberName === step.memberName)?.memberNo,
-              );
-              return m ? { ...step, memberName: m.memberName, point: m.mapPoint } : null;
-            })
-            .filter((s): s is RouteStep => s !== null);
-          if (updated.length === activeMembers.length) {
-            set({ route: updated });
-            return;
-          }
-        }
-
         const result = calcShortestRoute(
-          activeMembers.map(m => ({
+          activeMembers.map((m) => ({
             memberName: m.memberName,
             mapNo: m.mapNo,
             mapName: m.mapName,
@@ -163,7 +177,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'treasure-compass-store',
+      name: "treasure-compass-store",
       partialize: (state) => ({
         grade: state.grade,
         members: state.members,
@@ -172,9 +186,11 @@ export const useAppStore = create<AppState>()(
         getItem: (key) => {
           const gradeRaw = localStorage.getItem(STORAGE_KEY_GRADE);
           const membersRaw = localStorage.getItem(STORAGE_KEY_MEMBERS);
-          if (key === 'treasure-compass-store') {
+          if (key === "treasure-compass-store") {
             try {
-              const grade = gradeRaw ? (JSON.parse(gradeRaw) as Grade) : DEFAULT_GRADE;
+              const grade = gradeRaw
+                ? (JSON.parse(gradeRaw) as Grade)
+                : DEFAULT_GRADE;
               const members = membersRaw
                 ? (JSON.parse(membersRaw) as (UserItem | null)[])
                 : Array<UserItem | null>(FULL_PARTY).fill(null);
@@ -186,9 +202,17 @@ export const useAppStore = create<AppState>()(
           return null;
         },
         setItem: (_, value) => {
-          const v = value as { state: { grade: Grade; members: (UserItem | null)[] } };
-          localStorage.setItem(STORAGE_KEY_GRADE, JSON.stringify(v.state.grade));
-          localStorage.setItem(STORAGE_KEY_MEMBERS, JSON.stringify(v.state.members));
+          const v = value as {
+            state: { grade: Grade; members: (UserItem | null)[] };
+          };
+          localStorage.setItem(
+            STORAGE_KEY_GRADE,
+            JSON.stringify(v.state.grade),
+          );
+          localStorage.setItem(
+            STORAGE_KEY_MEMBERS,
+            JSON.stringify(v.state.members),
+          );
         },
         removeItem: () => {
           localStorage.removeItem(STORAGE_KEY_GRADE);
