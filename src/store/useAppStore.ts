@@ -27,6 +27,9 @@ interface AppState {
   members: (UserItem | null)[];
   setMember: (memberNo: number, item: UserItem) => void;
   removeMember: (memberNo: number) => void;
+  draftMemberNames: string[];
+  setDraftMemberName: (memberNo: number, name: string) => void;
+  clearDraftMemberName: (memberNo: number) => void;
   clearMembers: () => void;
   clearAllData: () => void;
 
@@ -70,6 +73,7 @@ export const useAppStore = create<AppState>()(
           mapData: null,
           isLoading: true,
           members: Array<UserItem | null>(FULL_PARTY).fill(null),
+          draftMemberNames: Array<string>(FULL_PARTY).fill(""),
           route: [],
           bulkText: "",
           isManualSort: false,
@@ -89,19 +93,35 @@ export const useAppStore = create<AppState>()(
       members: Array<UserItem | null>(FULL_PARTY).fill(null),
       setMember: (memberNo, item) => {
         const members = [...get().members];
+        const draftMemberNames = [...get().draftMemberNames];
         members[memberNo] = item;
-        set({ members });
+        draftMemberNames[memberNo] = "";
+        set({ members, draftMemberNames });
         get().recalcRoute();
       },
       removeMember: (memberNo) => {
         const members = [...get().members];
+        const draftMemberNames = [...get().draftMemberNames];
         members[memberNo] = null;
-        set({ members });
+        draftMemberNames[memberNo] = "";
+        set({ members, draftMemberNames });
         get().recalcRoute();
+      },
+      draftMemberNames: Array<string>(FULL_PARTY).fill(""),
+      setDraftMemberName: (memberNo, name) => {
+        const draftMemberNames = [...get().draftMemberNames];
+        draftMemberNames[memberNo] = name;
+        set({ draftMemberNames });
+      },
+      clearDraftMemberName: (memberNo) => {
+        const draftMemberNames = [...get().draftMemberNames];
+        draftMemberNames[memberNo] = "";
+        set({ draftMemberNames });
       },
       clearMembers: () => {
         set({
           members: Array<UserItem | null>(FULL_PARTY).fill(null),
+          draftMemberNames: Array<string>(FULL_PARTY).fill(""),
           route: [],
           isManualSort: false,
           activeStep: 0,
@@ -110,6 +130,7 @@ export const useAppStore = create<AppState>()(
       clearAllData: () => {
         set({
           members: Array<UserItem | null>(FULL_PARTY).fill(null),
+          draftMemberNames: Array<string>(FULL_PARTY).fill(""),
           route: [],
           bulkText: "",
           isManualSort: false,

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { Point, RouteStep } from "@/types";
+import type { Point, RouteStep } from "../../src/types";
 import {
   generateLineOrder,
   generateMultiLineMacro,
   generateOneLineMacro,
-} from "@/utils/macro";
+} from "../../src/utils/macro";
 
 function makePoint(pointNo: number, posX: number, posY: number): Point {
   return {

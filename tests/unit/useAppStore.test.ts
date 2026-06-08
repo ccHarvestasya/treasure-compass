@@ -1,6 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { MapData, Point, UserItem, Grade } from "@/types";
-import { DEFAULT_GRADE, FULL_PARTY } from "@/constants";
+import type { MapData, Point, UserItem, Grade } from "../../src/types";
+import { DEFAULT_GRADE, FULL_PARTY } from "../../src/constants";
 
 vi.mock("@/utils/distance", () => ({
   calcShortestRoute: (
@@ -63,13 +63,13 @@ class LocalStorageMock {
   }
 }
 
-type StoreModule = typeof import("@/store/useAppStore");
+type StoreModule = typeof import("../../src/store/useAppStore");
 
 let useAppStore: StoreModule["useAppStore"];
 
 beforeAll(async () => {
   vi.stubGlobal("localStorage", new LocalStorageMock());
-  const mod = await import("@/store/useAppStore");
+  const mod = await import("../../src/store/useAppStore");
   useAppStore = mod.useAppStore;
 });
 
@@ -250,5 +250,47 @@ describe("useAppStore", () => {
     expect(next.isManualSort).toBe(false);
     expect(next.activeStep).toBe(0);
     expect(next.members.every((m) => m === null)).toBe(true);
+  });
+
+  it("setDraftMemberName stores temporary names without mutating members", () => {
+    const s = useAppStore.getState();
+
+    s.setDraftMemberName(0, "Alice");
+
+    const next = useAppStore.getState();
+    expect(next.members[0]).toBeNull();
+    expect(next.draftMemberNames[0]).toBe("Alice");
+  });
+
+  it("setMember commits name and clears draft for the same slot", () => {
+    const s = useAppStore.getState();
+    s.setMapData(mapData);
+    s.setDraftMemberName(0, "DraftName");
+
+    s.setMember(
+      0,
+      makeMember(0, "Alice", 1, "Living Memory", "Memory", 1, 100, 100),
+    );
+
+    const next = useAppStore.getState();
+    expect(next.members[0]?.memberName).toBe("Alice");
+    expect(next.draftMemberNames[0]).toBe("");
+  });
+
+  it("removeMember clears draft for the same slot", () => {
+    const s = useAppStore.getState();
+    s.setMapData(mapData);
+    s.setDraftMemberName(1, "Temp");
+    s.setMember(
+      1,
+      makeMember(1, "Bob", 1, "Living Memory", "Memory", 1, 100, 100),
+    );
+    s.setDraftMemberName(1, "AnotherTemp");
+
+    s.removeMember(1);
+
+    const next = useAppStore.getState();
+    expect(next.members[1]).toBeNull();
+    expect(next.draftMemberNames[1]).toBe("");
   });
 });

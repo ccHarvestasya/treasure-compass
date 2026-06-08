@@ -1,5 +1,9 @@
-import type { MapDataItem, Point } from '@/types';
-import { COORD_SEARCH_RADIUS_1, COORD_SEARCH_RADIUS_2, DEFAULT_MEMBER_NAME } from '@/constants';
+import type { MapDataItem, Point } from "@/types";
+import {
+  COORD_SEARCH_RADIUS_1,
+  COORD_SEARCH_RADIUS_2,
+  DEFAULT_MEMBER_NAME,
+} from "@/constants";
 
 /**
  * FFXIVパーティチャットからメンバー情報を一括解析する
@@ -17,13 +21,11 @@ export interface ParsedMember {
 // FFXIVチャット座標の形式に対応
 // 元の形式: /.*\((.★|.●|.▲|.◆|.♥|.♠|.♣|.)(.*)\.{2}(.*)\s\(\s(\d+\.\d+)\s{1,2},\s(\d+\.\d+)\s\)/
 // グループ1=プレフィックス(+任意アイコン)、グループ2=名前、グループ3=マップ、グループ4,5=座標
-const CHAT_REGEX = /.*[（(](.[★☆●▲◆♥♠♣◇♦♡○□△▽]?)(.*?)[)）]\s+(.+?)\s+[（(]\s*(\d+(?:\.\d+)?)\s*[,，]\s*(\d+(?:\.\d+)?)\s*[)）]/;
+const CHAT_REGEX =
+  /.*[（(](.[★☆●▲◆♥♠♣◇♦♡○□△▽]?)(.*?)[)）]\s+(.+?)\s+[（(]\s*(\d+(?:\.\d+)?)\s*[,，]\s*(\d+(?:\.\d+)?)\s*[)）]/;
 
-export function parseBulkInput(
-  text: string,
-  _allMapData: MapDataItem[],
-): ParsedMember[] {
-  const lines = text.split('\n').filter(l => l.trim().length > 0);
+export function parseBulkInput(text: string): ParsedMember[] {
+  const lines = text.split("\n").filter((l) => l.trim().length > 0);
   const results: ParsedMember[] = [];
 
   for (const line of lines) {
@@ -41,7 +43,7 @@ export function parseBulkInput(
   return results;
 }
 
-/** 
+/**
  * FFXIV表示座標(例: 12.3, 45.6)からJSONポイントを探す
  * FFXIV座標 = (posX / 10) に相当（スケール10倍）
  */
@@ -50,10 +52,15 @@ export function findPointByCoord(
   coordY: number,
   mapData: MapDataItem,
 ): Point | null {
-  const treasurePoints = mapData.point.filter(p => p.division === 'P');
+  const treasurePoints = mapData.point.filter((p) => p.division === "P");
 
   // ±1.0 で検索
-  const found = searchNearest(coordX, coordY, treasurePoints, COORD_SEARCH_RADIUS_1);
+  const found = searchNearest(
+    coordX,
+    coordY,
+    treasurePoints,
+    COORD_SEARCH_RADIUS_1,
+  );
   if (found) return found;
 
   // ±2.0 に拡張
@@ -93,14 +100,19 @@ export function findMapByName(
   allMapData: MapDataItem[],
 ): MapDataItem | null {
   // 完全一致優先
-  const exact = allMapData.find(m => m.mapName === mapName || m.mapNameShort === mapName);
+  const exact = allMapData.find(
+    (m) => m.mapName === mapName || m.mapNameShort === mapName,
+  );
   if (exact) return exact;
 
   // 部分一致
-  return allMapData.find(m =>
-    m.mapName.includes(mapName) ||
-    mapName.includes(m.mapName) ||
-    m.mapNameShort.includes(mapName) ||
-    mapName.includes(m.mapNameShort)
-  ) ?? null;
+  return (
+    allMapData.find(
+      (m) =>
+        m.mapName.includes(mapName) ||
+        mapName.includes(m.mapName) ||
+        m.mapNameShort.includes(mapName) ||
+        mapName.includes(m.mapNameShort),
+    ) ?? null
+  );
 }
