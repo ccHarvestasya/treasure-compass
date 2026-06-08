@@ -6,7 +6,9 @@ import { X, MapPin } from 'lucide-react';
 
 export function ManualEntryTab() {
   const members = useAppStore(s => s.members);
+  const draftMemberNames = useAppStore(s => s.draftMemberNames);
   const setMember = useAppStore(s => s.setMember);
+  const setDraftMemberName = useAppStore(s => s.setDraftMemberName);
   const removeMember = useAppStore(s => s.removeMember);
   const openModal = useAppStore(s => s.openModal);
 
@@ -14,7 +16,10 @@ export function ManualEntryTab() {
     const current = members[memberNo];
     if (current) {
       setMember(memberNo, { ...current, memberName: name });
+      return;
     }
+
+    setDraftMemberName(memberNo, name);
   };
 
   return (
@@ -40,7 +45,7 @@ export function ManualEntryTab() {
                   <td className="py-1.5 px-1 text-slate-500">{i + 1}</td>
                   <td className="py-1.5 px-1">
                     <Input
-                      value={m?.memberName ?? ''}
+                      value={m?.memberName ?? draftMemberNames[i] ?? ''}
                       onChange={e => handleNameChange(i, e.target.value)}
                       placeholder={DEFAULT_MEMBER_NAME}
                       className="h-7 text-xs bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-600 w-full"

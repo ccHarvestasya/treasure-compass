@@ -21,7 +21,7 @@ export function BulkInputTab() {
       return;
     }
 
-    const parsed = parseBulkInput(textToUse, mapData.mapData);
+    const parsed = parseBulkInput(textToUse);
     if (parsed.length === 0) {
       toast.warning('解析できるデータが見つかりませんでした');
       return;

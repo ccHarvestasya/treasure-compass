@@ -12,6 +12,7 @@ export function PositionModal() {
   const closeModal = useAppStore(s => s.closeModal);
   const mapData = useAppStore(s => s.mapData);
   const members = useAppStore(s => s.members);
+  const draftMemberNames = useAppStore(s => s.draftMemberNames);
   const setMember = useAppStore(s => s.setMember);
 
   const [selectedMapNo, setSelectedMapNo] = useState(1);
@@ -23,7 +24,8 @@ export function PositionModal() {
   const handlePointSelect = (point: Point) => {
     if (modalMemberNo === null || !currentMapItem) return;
 
-    const memberName = members[modalMemberNo]?.memberName || DEFAULT_MEMBER_NAME;
+    const draftName = draftMemberNames[modalMemberNo]?.trim() ?? '';
+    const memberName = draftName || members[modalMemberNo]?.memberName || DEFAULT_MEMBER_NAME;
     setMember(modalMemberNo, {
       memberNo: modalMemberNo,
       memberName,
