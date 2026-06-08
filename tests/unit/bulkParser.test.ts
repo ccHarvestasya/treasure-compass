@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { MapDataItem, Point } from "@/types";
+import type { MapDataItem, Point } from "../../src/types";
 import {
   findMapByName,
   findPointByCoord,
   parseBulkInput,
-} from "@/utils/bulkParser";
+} from "../../src/utils/bulkParser";
 
 function makePoint(
   pointNo: number,
@@ -33,7 +33,7 @@ describe("parseBulkInput", () => {
       "[22:00] (?Diving Gloth) Living Memory ( 34.9  , 35.1 )です",
     ].join("\n");
 
-    const parsed = parseBulkInput(text, []);
+    const parsed = parseBulkInput(text);
 
     expect(parsed).toHaveLength(2);
     expect(parsed[0]).toEqual({
@@ -57,7 +57,7 @@ describe("parseBulkInput", () => {
       "[21:57] (?Nicola Verde) Living Memory ( 20.5  , 23.0 )",
     ].join("\n");
 
-    const parsed = parseBulkInput(text, []);
+    const parsed = parseBulkInput(text);
 
     expect(parsed).toHaveLength(1);
     expect(parsed[0].memberName).toBe("Nicola Verde");
@@ -66,7 +66,7 @@ describe("parseBulkInput", () => {
   it("supports full-width parentheses and comma", () => {
     const text = "[10:00] (?Magnai Oronir) Ruby Sea （ 7.5 ， 29.6 ）";
 
-    const parsed = parseBulkInput(text, []);
+    const parsed = parseBulkInput(text);
 
     expect(parsed).toHaveLength(1);
     expect(parsed[0]).toEqual({
