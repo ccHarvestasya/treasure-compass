@@ -1,18 +1,27 @@
 # Review Gates
 
-各 Gate は合否を明示し、Gate を不合格にする finding は `Critical` の正式指摘へ対応付ける。`Critical` が1件以上存在する場合は `REVISE REQUIREMENTS`、`Critical` がなく `Major` / `Minor` のみの場合は `READY` とする。
+各 Gate は合否と根拠を明示し、Gate を不合格にする Finding は `Critical` の正式指摘へ対応付ける。`Critical >= 1` の場合は `REVISE REQUIREMENTS`、`Critical == 0` で `Major` / `Minor` のみの場合は `READY` とする。Major / Minor のみを理由に Gate failure にしない。
 
-Security checklist は既存 Gate を確認するための観点であり、独立した Gate や自動的な Requirement 追加規則ではない。保護対象データ が定義されていない、秘密情報の責任主体が決まっていない、誰が 入力処理 authority を利用できるか不明、秘密情報を外部へ公開してよい範囲が不明など、下流設計の安全性を成立させられない欠落は、既存の Gate 基準と実際の影響に照らして `Critical` になり得る。重大度は影響と根拠で判断し、`Major` を自動的に Gate failure へ変更しない。
+Security Checklist は既存 Gate を確認する探索補助であり、独立した Gate や自動的な Requirement 追加規則ではない。
 
-1. 目的と課題: 解決する課題、目的、必要性を説明できる。
-2. 利用者と責任: 利用者、関係者、利用場面、外部責任を説明できる。
-3. 対象範囲: 対象と対象外、対象チェーン、実行環境、データ、環境を矛盾なく区別できる。
-4. 要件と制約: 機能、品質、セキュリティ、制約、前提、未決定事項を識別できる。
-5. 受け入れ条件: 主要要求の合否を外部から観測できる。
-6. 内部整合性: 用語、目的、範囲、要求、例、資料間に仕様設計を妨げる矛盾がない。
-7. 不可欠な前提: 現在の範囲に必要な外部連携、運用、法務、ライセンス、安全性の前提が未確認のまま残っていない。
-8. コンセプト整合性: 上流コンセプトと前段レビューのブロック判定・未解決 Critical が、要件書へ矛盾なく引き継がれている。
+1. **上流整合性**: Concept の目的、対象ユーザー、v1、対象外、責任境界と矛盾していない。Concept の問題は原則として上流へのフィードバックとし、Requirements を安全に評価できない場合だけ Gate に反映する。
+2. **要求完全性**: v1 の成立に必要な外部 Requirement が不足していない。
+3. **外部観測可能性**: 各 Requirement が何を満たす必要があるか判断できる。
+4. **責任・境界**: 利用者、外部主体、製品・サービスの責任が必要な範囲で明確である。
+5. **品質・安全性**: 上流から必要とされる品質・安全性特性が Requirement として十分に定義されている。
+6. **Acceptance**: 主要 Requirement を満たしたか外部から判断できる。
+7. **工程境界**: Specification、Design、Implementation / Test の詳細へ踏み込んでいない。
+8. **未決定事項**: Requirements で決める事項と、Specification 以降へ送る事項が適切に分離されている。
 
-Security の欠落を判定する際は、上記の「要件と制約」「不可欠な前提」および該当する責任・範囲の Gate へ対応付ける。チェックリストの項目だけを理由に Gate を不合格にしない。
+## Critical の範囲
 
-前段資料がないことだけでは Gate 不合格にせず、未確認として記録する。Gate 不合格に対応する Critical がない場合、Major / Minor のみを理由に差し戻さない。
+Critical は単に重要そうな問題ではなく、次に限る。
+
+- Requirement を一意に定義できない重大な欠落
+- Requirement 同士の根本矛盾
+- Concept で確定した v1 を Requirements が満たせない
+- 必要な責任主体が決まらず、下流が異なる外部契約を選択できる
+- 必要な品質・安全性特性が欠落し、下流で安全に補完できない
+- Acceptance の意味が定まらず、Requirement の成立判定ができない
+
+Specification / Design / Implementation の未決定だけを理由に Critical にしない。前段資料がないことだけでは Gate 不合格にせず、未確認として記録する。
