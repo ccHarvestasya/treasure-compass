@@ -27,7 +27,7 @@ Concept の継承事項と上流矛盾の扱いは `SKILL.md` の定めに従う
 
 ## Specification へ送るもの
 
-要求自体は明確だが、正確な契約や詳細挙動が未決定なら、Requirements で決めず `未決定事項 / Specification への引継ぎ` に置く。
+要求自体は明確だが、正確な契約や詳細挙動が未決定なら、Requirements で決めず `未決定事項 / Specification への引継ぎ` に置く。入力・出力の種類、能力、制約そのものが外部要求である場合は Requirements に置き、ここでは正確な形式や解釈を扱う。
 
 - 正確な入力形式、出力形式、データ形式
 - 詳細な状態遷移、境界値、同順位や競合時の厳密な振る舞い
@@ -44,8 +44,10 @@ Concept の継承事項と上流矛盾の扱いは `SKILL.md` の定めに従う
 
 外部から見える契約として API が必要であることは Requirement になり得る。ただし、API の schema や endpoint 詳細は Specification へ送り、内部構造は Design へ送る。
 
+必要な性能閾値、保持期間、上限値、可用性などの要求値は Requirements の責務である。根拠が不足する場合は Requirements の未決定事項に残し、Specification は解釈・観測条件、Design は実現方式を定める。
+
 ## Implementation / Test へ送るもの
 
 コード、設定、静的成果物、具体的なテストデータ、操作手順、DOM やテストコードの確認方法は Implementation / Test の責務である。Requirements では、外部から満たしたと判断できる受け入れ条件までを定め、テストケースへ展開しない。
 
-派生要件の根拠、数値要件の扱い、受け入れ条件とテストケースの境界、質問の分類は `SKILL.md` の規則を適用する。
+派生要件の根拠、受け入れ条件とテストケースの境界、質問の分類は `SKILL.md` の規則を適用する。
