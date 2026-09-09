@@ -1,119 +1,148 @@
 ---
 name: author-review-orchestrator
-description: Treasure Compass の作成・レビュー作業を、sol low の管理エージェントと luna xhigh の作業者・レビュアーへ分担し、段階的に実行・再レビューする半自動ワークフローを管理する。
+description: 対になる作成SkillとレビューSkillを別エージェントへ割り当て、作成、検証、独立レビュー、修正、再レビューを段階的に管理する。明示的に依頼された場合は、対象変更と最終レビュー資料を別々にコミットする。
 ---
 
 # Author / Review Orchestrator
 
-Treasure Compass の Concept、Requirements、Design、Specification、Implementation、README、Release Readiness の作成・レビューを半自動化する。管理エージェントは作業を分解・委譲・判定し、詳細な作成とレビューは別の luna xhigh エージェントへ委譲する。
+文書、仕様、設計、実装などの作成と独立レビューを、管理者、作成者、レビュアーに分離して進行する。管理者は対象、権限、状態、Gate、コミット境界を管理し、成果物の作成とレビューはそれぞれ別エージェントへ委譲する。
 
-この Skill は、現在の環境で利用できるエージェント起動・委譲機構がある場合に使用する。委譲機構や指定モデルが利用できない場合、別モデルへ黙って切り替えず、実行不能として理由を報告する。
+この Skill は、利用可能なエージェント委譲機構があり、ユーザーが作成・レビューの分担または一連の半自動実行を求めた場合に使う。委譲機構がなければ、黙って単一エージェント運用へ変更せず制約を報告する。
 
-## 固定モデル割り当て
+## 役割
 
-| 役割 | モデル | 担当 |
-| --- | --- | --- |
-| Manager | sol low | 依頼分類、対象確定、作業分解、進行管理、Gate 判定、最終報告 |
-| Author | luna xhigh | 選択された author Skill による文書・コード・テストの作成または修正 |
-| Reviewer | luna xhigh | 選択された review Skill による独立レビュー、指摘、再確認 |
+| 役割 | 責任 |
+| --- | --- |
+| Manager | 依頼分類、対象・権限・完了条件の確定、Skill選択、委譲、状態管理、Gate、コミット、最終報告 |
+| Author | 選択された作成Skillに従う成果物の作成・修正と、必要な検証 |
+| Reviewer | 対になるレビューSkillに従う独立レビュー、Finding、Gate、再確認、レビュー資料の作成 |
 
-委譲時はモデル指定を sol low または luna xhigh として明示する。モデル名を変換したり、理由なく代替したりしない。Manager は詳細な本文、コード、レビュー指摘を自分で代行せず、対象整理・委譲・状態管理・結果統合を担当する。
+Author と Reviewer は別エージェントにする。モデルはユーザーまたは実行環境の明示的な指定を優先し、指定がなければ利用可能な適切なモデルを使う。指定モデルを利用できない場合は、無断で代替せず報告する。
 
-## 参照とルーティング
+Manager は対象整理、委譲、権限を伴う操作、結果統合に集中する。Author の成果物や Reviewer の独立判断を先回りして代行しない。
 
-作業開始時に次の順で読む。
+## Skill の選択
 
-1. AGENTS.md
-2. この Skill
-3. 対象フェーズの author / review Skill
-4. author-common または review-common
-5. ユーザー指定の資料と対象
+- ユーザー指定の作成SkillとレビューSkillがあれば、その組を使う。
+- 指定がなければ、対象フェーズまたは成果物に対応する `*-author` と `*-review` の組を利用可能なSkillから選ぶ。
+- 対になるSkillが見つからない、候補が複数あり結果が変わる、または対象が特定できない場合は推測で進めない。
+- 複数フェーズの依頼は上流から順に分ける。異なる抽象度の成果物を一人の Author に混在させない。
+- レビュー専用フェーズでは Author を起動せず、Reviewer に対象の修正を許可しない。
 
-| 対象 | Author | Reviewer |
-| --- | --- | --- |
-| Concept | concept-author | concept-review |
-| Requirements | requirements-author | requirements-review |
-| Design | design-author | design-review |
-| Specification | spec-author | spec-review |
-| Implementation | implement-author | implement-review |
-| README | readme-author | readme-review |
-| Release Readiness | なし | release-readiness-review |
-
-複数フェーズにまたがる依頼は上流から順に分割する。要件・設計・仕様・実装を一つの worker に混ぜない。Release Readiness はレビュー中に修正しない。
+対象Skill、そのSkillが要求する資料、ユーザーが指定した資料だけを必要な範囲で確認する。プロジェクト固有の指針、検証規則、成果物形式、コミット規則があれば優先する。
 
 ## 実行モード
 
-- CREATE: Author のみを起動する。
-- REVIEW: Reviewer のみを起動する。
-- CREATE_AND_REVIEW: Author の完了後、独立した Reviewer を起動する。
+- **CREATE**: Author が成果物を作成または修正する。
+- **REVIEW**: Reviewer が既存成果物を独立レビューする。
+- **CREATE_AND_REVIEW**: Author の完了後、Reviewer が独立レビューし、必要なら修正と再レビューを行う。
+- **CREATE_COMMIT_REVIEW**: 明示的なコミット許可がある場合に、対象変更をコミットしてから独立レビューし、レビュー完了後にレビュー資料を別コミットにする。
 
-「作成してレビュー」「実装して確認」などの依頼は CREATE_AND_REVIEW とする。単なる相談・説明・レビュー結果の要約では worker を起動しない。
+「作成してレビュー」「実装して確認」などは `CREATE_AND_REVIEW` とする。コミットは「コミットしてレビュー」「レビュー資料もコミット」など、ユーザーが明示した場合だけ `CREATE_COMMIT_REVIEW` へ追加する。push、tag、publish、リリース、外部メッセージ送信は別の明示的な許可が必要であり、コミット許可から推定しない。
 
-## CREATE_AND_REVIEW
+## Manager brief
 
-### 1. Manager brief
+各 worker へ、必要なものだけを含む brief を渡す。
 
-Manager は task_id、目的、完了条件、対象フェーズ、選択 Skill、対象ファイル、許可パス、参照資料、検証範囲、無関係な既存変更、worker の役割とモデルを brief に含める。
+- task ID、目的、完了条件、実行モード
+- worker の役割と使用するSkill
+- 対象成果物、許可された変更パス、対象外パス
+- 正式な根拠と確認時点または対象コミット
+- 必要な検証、成果物形式、レビュー資料の出力先
+- 作業開始時から存在する無関係な変更
+- コミットを許可するか、Manager だけが行うか
 
-ユーザー入力、localStorage の内容、環境変数、credential、個人情報を brief や成果物へコピーしない。
+秘密情報、credential、個人情報、不要な入力データを brief や成果物へコピーしない。
 
-### 2. Author
+## 作成
 
-Author を luna xhigh で起動する。対象 author Skill と必要な資料だけを渡し、次を明示する。
+1. Manager は作業ツリー、現在のブランチ、対象、既存差分を確認し、今回の変更と無関係な変更を分離する。
+2. Author を起動し、作成Skill、根拠、許可パス、完了条件を渡す。
+3. Author は指定範囲だけを変更し、根拠のない要求や外部可視動作を追加しない。
+4. Author は変更ファイル、根拠、検証結果、未確認範囲を返す。レビューを自己承認しない。
+5. Manager は差分と検証結果を確認する。対象外変更は採用せず、既存のユーザー変更を取り消さない。
 
-- 指定範囲だけを変更する。
-- 上流資料にない外部可視動作を追加しない。
-- 変更ファイル、根拠、検証、未確認範囲を返す。
-- Review を完了扱いにせず、レビュー待ちで返す。
+## 対象変更のコミット
 
-対象外のファイル変更があれば採用せず、Author に戻すかユーザーへ確認する。
+`CREATE_COMMIT_REVIEW` では、独立レビュー前に Author の対象変更だけをコミットする。
 
-### 3. Independent Reviewer
+1. 変更、ステージ済み変更、未追跡ファイルを確認する。
+2. 許可パスを明示的に列挙してステージし、無関係な既存変更やレビュー資料を含めない。
+3. プロジェクト固有の検証とコミットメッセージ規則を満たす。
+4. ステージ済み差分と whitespace error を確認してコミットする。
+5. コミット本文とコミットIDを確認し、そのコミットを Reviewer の固定された対象版とする。
 
-Author の成果物を確認した後、別の Reviewer を luna xhigh で起動する。Reviewer には Author の推測・結論・自己評価を渡さず、対象成果物、上流根拠、依頼範囲、review Skill だけを渡す。
+レビュー前コミットには作成・修正した対象成果物だけを含める。レビュー資料を同じコミットへ混ぜない。コミットできない状態ならレビュー対象版が固定できていないため、理由を報告して停止する。
 
-Reviewer はコード、仕様、要件、README、テスト、静的データを変更しない。対象箇所、根拠、影響、最小修正、再確認条件、検証結果、未確認範囲を返す。
+## 独立レビュー
 
-### 4. Manager gate
+別の Reviewer を起動し、対象レビューSkill、対象成果物、正式な根拠、依頼範囲を渡す。`CREATE_COMMIT_REVIEW` では対象コミットIDを必ず指定する。
 
-Reviewer の結果を次に分類する。
+Author の推測、自己評価、意図した判定、疑っている欠陥を Reviewer へ誘導材料として渡さない。Reviewer は対象成果物を変更せず、対象箇所、根拠、影響、必要な修正、再確認条件、検証結果、未確認範囲、Gate を示す。
 
-- READY: 必須修正なし。
-- REVISE: 必須修正あり。最小修正だけを Author に返す。
-- BLOCKED: 対象不明、上流決定不足、モデル・委譲機構不足、安全に継続できない。
-- OUT_OF_SCOPE: 依頼範囲外。別作業として報告する。
+レビュー資料が必要な場合、Reviewer は指定された出力先へレビュー成果物だけを作成または更新できる。レビュー資料はレビュー対象の変更パスから分離する。
 
-任意改善だけで REVISE にしない。重大度、Gate、Upstream Feedback は対象 review Skill を優先する。
+## Gate と修正ループ
 
-### 5. Revision loop
+対象レビューSkillのGateを優先し、Manager は概ね次のように扱う。
 
-REVISE では、Manager は指摘を新しい要求へ膨らませず Author に返す。修正後は同じ Reviewer を再起動する。再レビューは最大 3 回を既定値とし、READY にならなければ BLOCKED として未解決指摘と必要な判断を報告する。上限の明示指定があれば優先する。
+- **READY**: 必須修正なし。レビュー完了。
+- **READY WITH CONDITIONS**: 対象Skillが許容する場合、条件を明示してレビュー完了。
+- **REVISE**: 必須修正あり。最小限の修正だけを Author へ返す。
+- **BLOCKED**: 対象不明、上位判断不足、権限不足、委譲機構・指定モデル不足などで安全に継続できない。
+- **OUT_OF_SCOPE**: 依頼範囲外。現在の成果物を変更せず、別作業として報告する。
 
-## 実装と検証
+任意改善だけで差し戻さない。重大度とGateの関係は対象レビューSkillを優先する。
 
-Implementation の Author brief には、変更前の git status、許可パス、対象テスト、依存変更の有無を含める。Reviewer の完了前に commit、push、publish を実行しない。
+REVISE の場合は、同じ Author が指摘に必要な範囲だけを修正し、同じ Reviewer が再確認する。`CREATE_COMMIT_REVIEW` では修正を対象変更の追加コミットとして記録し、Reviewer は最新の対象コミットをレビューする。履歴を書き換える操作は、ユーザーが明示しない限り行わない。
 
-検証は AGENTS.md の change-aware validation に従う。文書・Skill だけの作業ではアプリの lint、test、build を要求しない。未実行の検証を成功扱いにしない。
+再レビューは既定で最大3回とする。ユーザー指定があれば優先する。上限までに完了Gateへ到達しなければ、未解決事項と必要な判断を示して `BLOCKED` とする。
 
-## 状態と最終報告
+## レビュー資料のコミット
 
-状態は次のとおり管理する。
+`CREATE_COMMIT_REVIEW` でレビューが完了したら、レビュー資料だけを別コミットにする。
 
-PLANNED → AUTHORING → REVIEWING → READY
+1. Reviewer が最終Gate、Finding の状態、対象コミットID、検証結果、未確認範囲を反映した最終レビュー資料を完成させる。
+2. Manager はレビュー資料が対象成果物を変更していないことと、レビュー対象版へ追跡できることを確認する。
+3. レビュー資料のパスだけを明示的にステージし、ステージ済み差分と whitespace error を確認する。
+4. プロジェクトの規則に従って、対象変更とは別のレビューコミットを作成する。
+5. コミット本文とコミットIDを確認する。
 
-修正時は REVIEWING → REVISION_NEEDED → AUTHORING とし、停止時は BLOCKED または OUT_OF_SCOPE とする。
+レビュー資料が存在しない、最終Gateが確定していない、対象コミットを追跡できない、またはレビューが `BLOCKED` の場合はレビュー資料を完了済みとしてコミットしない。途中レビューを記録するようユーザーが明示した場合だけ、その状態を明記した別コミットを許可する。
 
-最終報告には、task と worker の役割・モデル、変更ファイル、Reviewer の判定・指摘・対応状況、検証結果、未確認範囲、残存する未決定事項を含める。
+## 検証
 
-ユーザーの明示なしに commit、push、tag、publish、外部メッセージ送信を行わない。ユーザーが明示した場合でも、Review が READY になるまで公開操作を実行しない。
+- 変更種別に応じたプロジェクト固有の検証を適用する。
+- レビュー対象コミット、作業ツリー、レビュー資料の対象範囲を分けて確認する。
+- 未実行の検証や未確認の環境を成功扱いにしない。
+- 検証が対象外なら `NOT APPLICABLE` または `SKIPPED`、実行不能なら `Not validated` として記録する。
 
-## 失敗時の扱い
+## 状態
 
-- 指定モデルが利用できない場合は BLOCKED / MODEL_UNAVAILABLE とする。
-- 対象や上流資料が一意に定まらない場合は BLOCKED / TARGET_CONFIRMATION_REQUIRED とする。
-- 無関係な作業ツリー変更は維持し、worker の許可範囲から除外する。
-- Author と Reviewer が同じ成果物を同時に変更しない。
-- Reviewer の指摘だけを根拠に上流資料を無断で変更しない。
-- 入力データや credential の漏えいがあれば処理を止め、範囲を広げず報告する。
+通常フロー:
 
-この Skill は委譲と判定を管理するものであり、対象フェーズの author / review Skill の代替ではない。
+`PLANNED → AUTHORING → VALIDATING → REVIEWING → READY`
+
+コミットを伴うフロー:
+
+`PLANNED → AUTHORING → VALIDATING → SUBJECT_COMMITTED → REVIEWING → REVIEW_COMPLETE → REVIEW_COMMITTED → READY`
+
+修正時:
+
+`REVIEWING → REVISION_NEEDED → AUTHORING → VALIDATING → SUBJECT_COMMITTED → REVIEWING`
+
+停止時は `BLOCKED` または `OUT_OF_SCOPE` とする。
+
+## 最終報告
+
+次を区別して報告する。
+
+- task、実行モード、各workerの役割と使用Skill
+- 変更された対象成果物と対象コミットID
+- レビュー資料とレビューコミットID
+- Reviewer のGate、Finding、対応状況
+- 検証結果と未確認範囲
+- 残存する仮定、条件、未決定事項
+- 実行していない push、tag、publish などの操作
+
+この Skill は委譲、状態、Gate、コミット境界を管理するものであり、個別の作成SkillとレビューSkillの代替ではない。

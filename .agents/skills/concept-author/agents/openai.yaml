@@ -1,0 +1,4 @@
+interface:
+  display_name: "コンセプトシート作成"
+  short_description: "構想の価値・対象・v1境界を簡潔なコンセプトシートへ整理"
+  default_prompt: "$concept-author を使って、提示した構想を簡潔なコンセプトシートに整理してください。"

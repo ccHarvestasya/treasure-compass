@@ -1,0 +1,4 @@
+interface:
+  display_name: "コンセプトシートレビュー"
+  short_description: "企画の価値・境界・成立性を評価して要件定義への進行可否を判定"
+  default_prompt: "$concept-review を使って、指定したコンセプトシートをレビューしてください。"

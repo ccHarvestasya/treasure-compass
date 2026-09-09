@@ -1,4 +1,4 @@
 interface:
   display_name: "作成・レビュー統括"
-  short_description: "作成者とレビュアーを分担して半自動化"
-  default_prompt: "$author-review-orchestrator を使って、作成と独立レビューを半自動で進めてください。"
+  short_description: "作成・検証・独立レビュー・再確認・コミット境界を一括管理"
+  default_prompt: "$author-review-orchestrator を使って、作成と独立レビューを段階的に進めてください。"
