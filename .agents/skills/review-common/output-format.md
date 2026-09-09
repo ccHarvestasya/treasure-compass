@@ -1,0 +1,20 @@
+# Review Output Format
+
+レビュー成果物は Markdown とし、対象 Skill が別途指定しない限り次の章を使う。該当しない項目は「なし」と記載する。
+
+1. Review Target: 対象、確認日、範囲、未確認範囲
+2. Evidence Used: 確認資料と用途
+3. Review Result: 対象 Skill の判定
+4. Summary: 総評
+5. Findings: ID、重大度、対象箇所、事実、根拠、影響、最小修正、再確認条件
+6. Resolved Findings: 過去指摘の対応確認
+7. Upstream Feedback: 上流資料の不足・曖昧さ・矛盾
+8. Deferred Findings: 下流、対象外、後続検証への引継ぎ
+9. Scope and Traceability: 対象境界と根拠の追跡
+10. Validation Results: 実行結果、未実行、未確認範囲
+11. Review Gates: ゲートごとの判定と根拠
+12. Remaining Risks and Open Decisions: 残存リスク、未決定事項、前提
+13. Automatic Changes: レビュー中の変更。なければ「なし」
+14. Final Decision: Review Result と同じ最終判定
+
+レビュー本文に思考過程、個人情報、チャット本文、保存データ、環境変数、credential を記録しない。
