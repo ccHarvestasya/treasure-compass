@@ -1,0 +1,4 @@
+interface:
+  display_name: "仕様書レビュー"
+  short_description: "仕様の追跡性・観測可能性・検証可能性と工程境界をレビュー"
+  default_prompt: "$spec-review を使って、指定した Specification を Requirements への追跡性と工程境界の観点からレビューしてください。"

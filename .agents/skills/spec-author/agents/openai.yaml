@@ -1,0 +1,4 @@
+interface:
+  display_name: "仕様書作成"
+  short_description: "承認済み要件を観測可能で検証可能な外部契約へ具体化"
+  default_prompt: "$spec-author を使って、承認済み Requirements を実装・検証可能な外部仕様へ具体化してください。"
