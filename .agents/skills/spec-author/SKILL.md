@@ -1,9 +1,9 @@
 ---
 name: spec-author
-description: Create or update an implementation- and verification-ready external Specification from approved Requirements without deciding internal design or implementation. Applies to applications, libraries, services, CLIs, file formats, protocols, batch processes, and embedded components.
+description: 承認済み Requirements を基に、内部設計や実装方法を決めず、アプリケーション、ライブラリ、サービス、CLI、ファイル形式、プロトコル、バッチ処理、組込みコンポーネントなどの外部 Specification を、実装・検証可能な契約へ具体化・更新する。
 ---
 
-# Specification Author
+# 仕様書作成（Specification Author）
 
 承認済み Requirements を、利用者・外部システム・実装者・検証者が同じ合否を判定できる、観測可能な外部契約へ具体化する。
 
@@ -22,17 +22,17 @@ Specification
   → Requirements を満たしたか判定するための正確な外部契約・振る舞い
 
 Design
-  → component / module 分割、internal architecture、internal state / API、algorithm、persistence / cache / concurrency strategy、library / framework、deployment、source layout
+  → コンポーネント / モジュール分割、内部アーキテクチャ、内部状態 / API、アルゴリズム、永続化 / キャッシュ / 並行処理方式、ライブラリ / フレームワーク、配備、ソース構成
 
 Implementation / Test
-  → code、configuration、migration、concrete dependency updates、build / CI、成果物、具体的なテスト実装・検証手順
+  → コード、設定、マイグレーション、具体的な依存関係の更新、ビルド / CI、成果物、具体的なテスト実装・検証手順
 ```
 
 迷ったときは、次で判定する。
 
 > 実装内部を知らない第三者が、振る舞いの正しさを判定するために必要な情報か？
 
-Yes なら Specification の候補である。次への回答なら原則として Design である。
+はいなら Specification の候補である。次への回答なら原則として Design である。
 
 > その振る舞いを内部でどう実現するか？
 
@@ -42,23 +42,23 @@ Yes なら Specification の候補である。次への回答なら原則とし�
 
 1. `AGENTS.md` などのプロジェクト作業指示（存在する場合）
 2. `../author-common/author-playbook.md`
-3. 登録済みの Phase Context（提供されている場合だけ。正式根拠ではない）
-4. 承認済み Requirements、Concept、formal reference、既存の正式契約
+3. 登録済みの Phase Context（フェーズコンテキスト。提供されている場合だけ。正式根拠ではない）
+4. 承認済み Requirements、Concept、正式な参照資料、既存の正式契約
 5. 必要な補足資料
 
-## 根拠と Source hierarchy
+## 根拠と優先順位
 
 ユーザーの最新の依頼・明示的判断は、作業範囲と優先順位を定めるものとして常に優先する。Specification の各契約の根拠は、原則として次の順で扱う。
 
-1. **approved Requirements**（直接の主たる根拠）
-2. **approved Concept**（目的、価値、スコープ、責任、対象外の継承）
-3. **approved ADR、標準、規格、その他の formal reference**
+1. **承認済み Requirements**（直接の主たる根拠）
+2. **承認済み Concept**（目的、価値、スコープ、責任、対象外の継承）
+3. **承認済み ADR、標準、規格、その他の正式な参照資料**
 4. 互換性 Requirement が存在する場合の、既存の正式な外部契約
 5. 補足資料
 
-コード、既存の実装、テスト、prototype、README、未承認の設計案は、現在の挙動、互換性、実現可能性、回帰リスクを確認するための補足資料にとどめる。それらに存在する挙動だけを、意図された正式 Specification として昇格させない。
+コード、既存の実装、テスト、試作版、README、未承認の設計案は、現在の挙動、互換性、実現可能性、回帰リスクを確認するための補足資料にとどめる。それらに存在する挙動だけを、意図された正式 Specification として昇格させない。
 
-正式資料同士が矛盾する場合は勝手に統合せず、優先順位、影響、未決定事項を記録する。approved Requirements が存在しない、または要求の意味を確定できない場合は、推測で Specification を完成させず `unresolved`、`upstream feedback`、`clarification needed` として扱う。
+正式資料同士が矛盾する場合は勝手に統合せず、優先順位、影響、未決定事項を記録する。承認済み Requirements が存在しない、または要求の意味を確定できない場合は、推測で Specification を完成させず、`unresolved`（未解決）、`upstream feedback`（上流へのフィードバック）、`clarification needed`（確認が必要）として扱う。
 
 ## 仕様に含める契約
 
@@ -67,16 +67,16 @@ Yes なら Specification の候補である。次への回答なら原則とし�
 - 適用範囲、対象外、用語、外部主体、責任境界
 - 入力、出力、外部インターフェース、データ・ファイル・メッセージ形式
 - 状態、状態遷移、ライフサイクル、操作の順序、外部から見える不変条件
-- validation、正規化、拒否条件、error condition、失敗時の外部結果
+- 入力検証（validation）、正規化、拒否条件、エラー条件、失敗時の外部結果
 - 境界値、空・未知・不正・重複・部分入力など、要求上必要な境界条件
-- compatibility、interoperability、version、後方互換などの外部ルール
+- 互換性（compatibility）、相互運用性（interoperability）、バージョン、後方互換などの外部ルール
 - 同じ入力に対する決定性、順序、丸め、時刻その他の結果に影響する規則
-- security や trust boundary に関して Requirements が要求する、公開範囲、権限結果、入力の扱い、改変・破損時の結果、fail-closed などの観測可能な契約
-- 必要な受け入れ・適合条件、例、未決定事項、Requirements への Traceability
+- セキュリティや信頼境界（trust boundary）に関して Requirements が要求する、公開範囲、権限結果、入力の扱い、改変・破損時の結果、拒否側に倒す扱い（fail-closed）などの観測可能な契約
+- 必要な受入・適合条件、例、未決定事項、Requirements への追跡性（Traceability）
 
 「適切に処理する」「安全に扱う」「エラーを返す」「有効な値」「必要に応じて」「互換性を維持する」だけで終えない。必要な場合は、入力・条件、観測可能な結果、状態への影響、拒否・失敗条件、境界、決定性を第三者が合否判定できる粒度まで定める。ただし、上流で未決定の製品判断を埋めてはならない。
 
-外部の file format、protocol、API、data schema は、Requirement または formal reference が必要とする外部契約なら Specification の対象になり得る。内部 database schema、collection / table layout、内部保存形式は、外部互換契約でない限り Design の対象である。
+外部のファイル形式、プロトコル、API、データスキーマは、Requirement または正式な参照資料が必要とする外部契約なら Specification の対象になり得る。内部データベーススキーマ、コレクション / テーブル構成、内部保存形式は、外部互換契約でない限り Design の対象である。
 
 規範性を表す場合は、`MUST` / `SHOULD` / `MAY` または同等の語の意味を文書内で一意にし、必須・推奨・任意を混同させない。単なる文体上の強調を規範性として扱わない。
 
@@ -86,28 +86,30 @@ Yes なら Specification の候補である。次への回答なら原則とし�
 
 | 分類 | 判定 | 扱い |
 | --- | --- | --- |
-| **Specification-level clarification** | Requirements の意味・スコープ・責任を変えず、一意な外部契約へ展開できる | Specification で決めてよい |
-| **Upstream ambiguity** | 選択によって利用者体験、機能要求、責任、範囲などの製品判断が変わる | Requirements / Concept へ戻し、`upstream feedback` または `clarification needed` とする |
-| **Design choice** | 外部契約が同じで、内部実現方法だけが変わる | Specification では決めず Design へ引き継ぐ |
+| **Specification-level clarification（仕様レベルの明確化）** | Requirements の意味・スコープ・責任を変えず、一意な外部契約へ展開できる | Specification で決めてよい |
+| **Upstream ambiguity（上流の曖昧さ）** | 選択によって利用者体験、機能要求、責任、範囲などの製品判断が変わる | Requirements / Concept へ戻し、`upstream feedback`（上流へのフィードバック）または `clarification needed`（確認が必要）とする |
+| **Design choice（設計上の選択）** | 外部契約が同じで、内部実現方法だけが変わる | Specification では決めず Design へ引き継ぐ |
 
-## Over-specification を防ぐ
+## 過剰仕様（Over-specification）を防ぐ
 
-Requirements に根拠がなく、外部契約として不可欠でもない限り、次を決めない。
+以下の内部方式を Specification で新たに決定しない。これらに関係する外部契約を Specification に記載する場合でも、根拠と優先順位で定めた承認済み Requirements、ユーザーの明示的な最新判断、承認済み Concept から直接継承される範囲・責任・対象外、適用が承認された ADR / standard / formal reference、または互換性 Requirement が参照する既存の正式な外部契約に明確に追跡できなければならない。
 
-- class、module、package structure、source file layout
-- private / internal API、internal function signature、内部 state representation
-- database schema、collection / table layout、cache implementation、queue implementation
-- threading / concurrency model、algorithm choice、optimization strategy
-- framework、library、dependency、deployment topology
-- logging implementation、monitoring implementation、運用内部方式
-- 将来拡張用の abstraction、extra configuration、extra API、extra state、fallback、compatibility layer、operational / security feature
+「外部契約として不可欠そう」という作成者自身の判断だけでは根拠にならない。根拠がなく、必要そう・不可欠そうに見える事項は正式 Specification にせず、内容に応じて `upstream feedback`、`clarification needed`、`unresolved` へ送る。
 
-既存方式の踏襲、一般的な best practice、便利さ、将来性、再利用性、拡張性、スケーラビリティ、一般的な security hardening だけでは追加の根拠にならない。外部から見える security、audit、logging、persistence、performance の結果が上流で要求される場合は、その観測可能な契約だけを定め、実装方式は定めない。
+- クラス、モジュール、パッケージ構成、ソースファイル構成
+- 非公開 / 内部 API、内部関数シグネチャ、内部状態表現
+- データベーススキーマ、コレクション / テーブル構成、キャッシュ実装、キュー実装
+- スレッド / 並行処理モデル、アルゴリズムの選択、最適化方式
+- フレームワーク、ライブラリ、依存関係、配備トポロジー
+- ログ実装、監視実装、運用上の内部方式
+- 将来拡張用の抽象化、追加設定、追加 API、追加状態、フォールバック、互換性層、運用 / セキュリティ機能
+
+既存方式の踏襲、一般的なベストプラクティス、便利さ、将来性、再利用性、拡張性、スケーラビリティ、一般的なセキュリティ強化だけでは追加の根拠にならない。外部から見えるセキュリティ、監査、ログ、永続化、性能の結果が上流で要求される場合は、その観測可能な契約だけを定め、実装方式は定めない。
 
 ## 作成手順
 
-1. 依頼、対象範囲、承認済み Requirements / Concept、formal reference、互換性要求を確認する。
-2. Requirements ID、またはそれに相当する上流根拠を各重要契約へ対応付ける。形式的な表は、役に立つ場合だけ作る。
+1. 依頼、対象範囲、承認済み Requirements / Concept、正式な参照資料、互換性要求を確認する。
+2. Requirement ID、またはそれに相当する上流根拠を各重要契約へ対応付ける。形式的な表は、役に立つ場合だけ作る。
 3. 必要な外部入力・出力・状態・ライフサイクル・失敗・境界・互換性を抽出し、観測可能な結果へ展開する。
 4. 未決定事項を Specification-level clarification / Upstream ambiguity / Design choice に分類する。
 5. 対象に必要な契約だけを記述し、内部方式、将来拡張、実装・テストの詳細を除く。
@@ -117,23 +119,23 @@ Requirements に根拠がなく、外部契約として不可欠でもない限�
 
 固定テンプレートを全章埋めしない。対象に応じて、次のうち必要なものだけを使う。
 
-- scope / terms / responsibility
-- external actors、input / output、interface / data contract
-- state / lifecycle
-- validation / errors / boundary conditions
-- compatibility / interoperability / deterministic behavior
-- security-visible behavior and invariants
-- conformance criteria or examples
-- unresolved items、downstream handoff、traceability / references
+- 適用範囲 / 用語 / 責任境界
+- 外部主体、入力 / 出力、インターフェース / データ契約
+- 状態 / ライフサイクル
+- 入力検証 / エラー / 境界条件
+- 互換性 / 相互運用性 / 決定的な振る舞い
+- セキュリティ上外部から見える振る舞いと不変条件
+- 適合条件または例
+- 未解決事項、下流引継ぎ、追跡性 / 参照資料
 
-Acceptance criteria は外部から判定できる契約として扱い、具体的なテストコード、fixture、テスト framework、DOM、source-level verification は Implementation / Test へ送る。
+受入条件（Acceptance criteria）は外部から判定できる契約として扱い、具体的なテストコード、テスト用固定データ（fixture）、テストフレームワーク、DOM、ソースレベル検証は Implementation / Test へ送る。
 
 ## 自己確認
 
-- 各重要契約が Requirements または許可された formal reference へ追跡できる。
-- Requirements にない機能、利用者、責任、制約、保存、互換性、security 要求を追加していない。
+- 各重要契約が Requirements または許可された正式な参照資料へ追跡できる。
+- Requirements にない機能、利用者、責任、制約、保存、互換性、セキュリティ要求を追加していない。
 - 第三者が実装内部を知らなくても、入力・結果・状態・失敗・境界の合否を判定できる。
-- 曖昧さを推測で埋めず、Specification / upstream / Design の境界へ正しく送っている。
+- 曖昧さを推測で埋めず、Specification / 上流 / Design の境界へ正しく送っている。
 - 内部構造、技術選択、アルゴリズム、実装・テスト方式を固定していない。
-- 対象に不要な章、fallback、将来拡張、一般論を追加していない。
-- 文書が application、library、service、CLI、file format、protocol、batch、embedded component のいずれにも適用可能な一般原則に留まっている。
+- 対象に不要な章、フォールバック、将来拡張、一般論を追加していない。
+- 文書がアプリケーション、ライブラリ、サービス、CLI、ファイル形式、プロトコル、バッチ処理、組込みコンポーネントのいずれにも適用可能な一般原則に留まっている。
