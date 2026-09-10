@@ -4,11 +4,15 @@ import { ManualEntryTab } from './ManualEntryTab';
 import { RouteProgressTab } from './RouteProgressTab';
 import { useAppStore } from '@/store/useAppStore';
 import { Badge } from '@/components/ui/badge';
+import { MobCompassPanel } from '@/components/MobCompass/MobCompassPanel';
 
 export function SideBar() {
+  const product = useAppStore(s => s.product);
   const route = useAppStore(s => s.route);
   const members = useAppStore(s => s.members);
   const memberCount = members.filter(Boolean).length;
+
+  if (product === 'mob') return <MobCompassPanel />;
 
   return (
     <div className="flex flex-col h-full">
