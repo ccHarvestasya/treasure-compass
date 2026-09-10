@@ -1,0 +1,4 @@
+interface:
+  display_name: "実装作成"
+  short_description: "承認済み設計をコード・設定・データ・テストへ忠実に反映する"
+  default_prompt: "$implement-author を使って、承認済み Design / Specification に沿って実装を作成してください。"

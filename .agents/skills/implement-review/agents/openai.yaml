@@ -1,0 +1,4 @@
+interface:
+  display_name: "実装レビュー"
+  short_description: "実装の上流契約適合・正しさ・安全性・回帰をレビュー"
+  default_prompt: "$implement-review を使って、実装を承認済み Specification / Design と依頼に照らしてレビューしてください。"
