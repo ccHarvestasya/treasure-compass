@@ -176,6 +176,10 @@ Treasure Compassは、周回中に次の地図が開封され新しい宝箱座�
 
 本コンセプトから、応答時間、可用性、対応環境、保持期間、同時利用者数その他の数値品質目標は導出できない。根拠のない閾値は本書では追加しない。
 
+#### REQ-Q-003 検証可能な要件のカバレッジ
+
+本書の全Requirement IDを、テスト可能またはテスト不可能のいずれか一方へ重複なく一度ずつ分類すること。テスト可能と分類したRequirementの件数を分母、対応する自動テストまたは自動検証へ追跡できるRequirementの件数を分子とするカバレッジを90%以上とすること。テスト不可能と分類した理由はその分類に記録し、全件の分類一覧、分母・分子、測定結果および証跡を外部から追跡できる形で残すこと。未分類または重複分類がある場合、および分母が0の場合は、カバレッジ90%以上を達成したと扱わないこと。具体的な分類規則、追跡形式、測定手順および検証手段は後工程で定義する。
+
 ## 7. 安全性・責任・外部連携上の制約
 
 #### REQ-S-001 利用者による状態確認
@@ -202,6 +206,59 @@ Treasure Compassは、周回中に次の地図が開封され新しい宝箱座�
 
 マスターデータに用いる参考資料、地図、画像について、出典および利用条件を確認・管理できる責任境界を持つこと。具体的な管理項目と公開手順は後工程で定義する。
 
+#### REQ-S-007 GitHub Security and qualityの指摘解消
+
+対象リポジトリの2026-09-10 10:24 JST時点のGitHub Security APIスナップショットを基準として、GitHubの「Security and quality」に表示される全指摘項目を台帳化し、各項目が解消されたことを示す証跡を残すこと。Dependabotは全58件のうちopen 40件、fixed 18件として確認され、open 40件の全項目を下記の台帳で追跡すること。open 40件は受入時までに各項目の解消証跡を揃え、未解消項目を残さないこと。台帳の`first_patched_version`はGitHub APIが示す修正版の参考値であり、プロジェクトがそのバージョンを実際に採用することを確定するものではない。
+
+Code Scanningは`GET /repos/ccHarvestasya/treasure-compass/code-scanning/alerts?per_page=100`がHTTP 404 `no analysis found`となり、解析結果を確認できない状態である。Secret Scanningは`GET /repos/ccHarvestasya/treasure-compass/secret-scanning/alerts?per_page=100`がHTTP 404 `Secret scanning is disabled on this repository.`となり、機能が無効で確認できない状態である。これらを指摘がない、または解消済みとは扱わず、受入時には各機能の状態または指摘結果を確認できる証跡を必要とする。Security advisoriesは同時点で空配列として確認されたが、Dependabot、Code Scanning、Secret Scanningの確認を代替しない。項目を取得できない場合、分類できない場合、または状態を確認できない場合は未解消または受入不可として扱い、対象母集団自体を取得できない場合も未解消項目がないとは扱わないこと。
+
+##### GitHub Security and qualityスナップショット台帳（2026-09-10 10:24 JST）
+
+取得元: GitHub REST API `GET /repos/ccHarvestasya/treasure-compass/dependabot/alerts?state=open&per_page=100`。以下の`first_patched_version`は、取得時点でAPIが示した修正版識別子であり、採用済み依存バージョンを意味しない。CVEがAPI上で空の場合は`-`とする。
+
+| Alert | Package | Severity | GHSA | CVE | first_patched_version |
+| ---: | --- | --- | --- | --- | --- |
+| 21 | hono | medium | GHSA-j6c9-x7qj-28xf | CVE-2026-54287 | 4.12.25 |
+| 22 | hono | medium | GHSA-wwfh-h76j-fc44 | CVE-2026-54286 | 4.12.25 |
+| 23 | hono | high | GHSA-88fw-hqm2-52qc | CVE-2026-54290 | 4.12.25 |
+| 24 | hono | medium | GHSA-wgpf-jwqj-8h8p | CVE-2026-54289 | 4.12.25 |
+| 25 | hono | medium | GHSA-rv63-4mwf-qqc2 | CVE-2026-54288 | 4.12.25 |
+| 26 | brace-expansion | high | GHSA-3jxr-9vmj-r5cp | CVE-2026-13149 | 5.0.7 |
+| 27 | body-parser | low | GHSA-v422-hmwv-36x6 | CVE-2026-12590 | 2.3.0 |
+| 29 | hono | medium | GHSA-hvrm-45r6-mjfj | CVE-2026-59896 | 4.12.27 |
+| 30 | hono | medium | GHSA-xgm2-5f3f-mvvc | CVE-2026-59897 | 4.12.27 |
+| 31 | hono | medium | GHSA-w62v-xxxg-mg59 | CVE-2026-59895 | 4.12.27 |
+| 32 | fast-uri | high | GHSA-4c8g-83qw-93j6 | CVE-2026-13676 | 3.1.3 |
+| 33 | fast-uri | high | GHSA-v2hh-gcrm-f6hx | CVE-2026-16221 | 3.1.4 |
+| 34 | js-yaml | high | GHSA-52cp-r559-cp3m | CVE-2026-59869 | 4.3.0 |
+| 35 | brace-expansion | high | GHSA-mh99-v99m-4gvg | CVE-2026-14257 | 5.0.8 |
+| 36 | postcss | high | GHSA-r28c-9q8g-f849 | CVE-2026-73646 | 8.5.18 |
+| 37 | ip-address | medium | GHSA-22jq-vg5j-6vgg | CVE-2026-54272 | 10.2.1 |
+| 38 | ip-address | medium | GHSA-4xrf-jv44-h6hh | CVE-2026-69198 | 10.2.2 |
+| 39 | brace-expansion | high | GHSA-rgw5-rvv9-x895 | CVE-2026-69152 | 5.0.9 |
+| 40 | hono | medium | GHSA-8j4g-w8fx-2239 | CVE-2026-69207 | 4.12.34 |
+| 41 | ip-address | high | GHSA-mwp4-54f8-5fhr | CVE-2026-69192 | 10.3.1 |
+| 42 | fast-uri | high | GHSA-7p8r-x3mc-p8w7 | CVE-2026-18446 | 3.1.5 |
+| 43 | hono | medium | GHSA-54fx-42gc-7vw4 | CVE-2026-71848 | 4.12.34 |
+| 44 | hono | low | GHSA-79qm-7rj5-m7r9 | CVE-2026-71849 | 4.12.34 |
+| 45 | hono | medium | GHSA-f23p-vx2j-j53r | CVE-2026-71850 | 4.12.34 |
+| 46 | js-yaml | high | GHSA-5p4m-2wfm-xmqj | - | 4.3.1 |
+| 48 | nanoid | high | GHSA-28wg-ghj8-5hjv | CVE-2026-67214 | 3.3.16 |
+| 49 | postcss | medium | GHSA-fxqj-rqcc-2cmp | CVE-2026-69153 | 8.5.23 |
+| 50 | @hono/node-server | medium | GHSA-frvp-7c67-39w9 | - | 1.19.15 |
+| 51 | nanoid | high | GHSA-2v37-7h3g-55p8 | CVE-2026-67213 | 3.3.18 |
+| 52 | postcss-selector-parser | low | GHSA-w9m9-85wc-3x92 | CVE-2026-9358 | 7.1.3 |
+| 53 | fast-uri | high | GHSA-fph4-wmhf-6fwf | CVE-2026-75899 | 3.1.6 |
+| 54 | qs | medium | GHSA-x5fp-wj9c-mxmx | CVE-2026-82562 | 6.16.0 |
+| 55 | fast-uri | high | GHSA-f65p-4m7j-42xc | CVE-2026-75975 | 3.1.6 |
+| 56 | fast-uri | high | GHSA-jqff-g426-hqxp | CVE-2026-76172 | 3.1.6 |
+| 57 | browserslist | high | GHSA-c83g-rgw3-j3cx | CVE-2026-73089 | 4.28.7 |
+| 58 | browserslist | high | GHSA-73wf-gq98-2v4g | CVE-2026-73088 | 4.28.7 |
+| 59 | qs | medium | GHSA-4mjr-xmp4-gh2g | CVE-2026-82417 | 6.16.0 |
+| 60 | hono | medium | GHSA-g6gw-c38x-mqfc | CVE-2026-84364 | 4.13.5 |
+| 61 | hono | medium | GHSA-gqvv-2mrq-wpjv | CVE-2026-84365 | 4.13.5 |
+| 62 | hono | medium | GHSA-crvj-82cr-hjcx | CVE-2026-84363 | 4.13.5 |
+
 ## 8. 受け入れ条件
 
 以下は、要件を満たしたと外部から判断するための条件である。具体的な操作手順、テストデータ、UI要素、テストコードは定義しない。
@@ -224,6 +281,8 @@ Treasure Compassは、周回中に次の地図が開封され新しい宝箱座�
 | AC-014 | REQ-S-001, REQ-S-002 | ゲーム内状態の自動取得・判定を前提とせず、登録、ルート採用、完了、チャット伝達が利用者の責任範囲として確認できる。 |
 | AC-015 | REQ-Q-002 | ルート結果が対象とマップの対応を維持し、第一に異なるマップへの遷移回数を最小化し、同じ遷移回数の候補ではテレポに伴うゲーム内通貨とロード時間を補助的に評価する判断原則に沿う。正確な評価式と比較方法は、承認済みの下流仕様に追跡できる。 |
 | AC-016 | REQ-D-007 | 空、不正、不完全、未知の入力、または欠落・不正なマスターデータが有効な対象・位置情報として扱われず、処理不能または未確認であることを利用者が識別できる。当該情報によって誤ったルート算出や進行更新が発生しない。 |
+| AC-017 | REQ-Q-003 | 本書の全Requirement IDが、テスト可能またはテスト不可能のいずれかへ重複なく一度ずつ分類され、テスト不可能とした理由が記録されている。テスト可能なRequirementの件数を分母、対応する自動テストまたは自動検証へ追跡できる件数を分子として確認でき、分母が0でなく、分子を分母で割ったカバレッジが90%以上である。未分類・重複分類・分母0・未確認の測定結果は、90%達成の根拠として扱わない。全件一覧、分母・分子、測定結果および証跡が外部から追跡できる。 |
+| AC-018 | REQ-S-007 | 2026-09-10 10:24 JST時点のGitHub Security APIスナップショットとして、Dependabotのtotal 58件、open 40件、fixed 18件、およびopen 40件の全台帳項目を確認できる。受入時にはopen 40件の各項目に解消証跡があり、未解消項目が残っていない。Code Scanningの`no analysis found`（HTTP 404）とSecret Scanningの`disabled`（HTTP 404）は指摘なし・解消済みとは扱わず、受入時に状態または指摘結果を確認できる証跡を必要とする。項目の取得不能・未分類・状態不明、対象母集団自体の未確認、および個別指摘の未確認を、解消済みの根拠として扱わない。台帳の`first_patched_version`はAPI上の参考値であり、実際の依存更新の採用を確定しない。 |
 
 ## 9. 未決定事項 / Specification への引継ぎ
 
@@ -251,6 +310,8 @@ Treasure Compassは、周回中に次の地図が開封され新しい宝箱座�
 - ルート、対象、完了状態、個人の周回情報を保持するか、保持する場合の期間、互換性、破損時の扱い。マスターデータとの分離方法。
 - マスターデータの管理項目、出典・画像利用条件の記録、更新・確認・訂正・公開の正確な契約。
 - 利用者がルート、マップ、進行、候補・確定・確認済み地点を正確に識別できる外部表示契約。
+- `REQ-Q-003` の分類規則、Requirementから自動テストまたは自動検証への追跡形式、測定時点、証跡の保存と確認方法。全Requirement IDをテスト可能 / テスト不可能へ完全に二分すること、未分類・重複分類・分母0を90%達成扱いしないこと、90%以上という受入閾値自体は本書で変更しない。
+- `REQ-S-007` のGitHub「Security and quality」に表示される全指摘項目の取得範囲と確認時点、台帳の項目、解消証跡の形式、取得不能・未分類・状態不明の検出方法および未解消判定。2026-09-10 10:24 JSTのスナップショット台帳は本書に記録した値を基準とし、次回以降の再取得時は差分を追跡する。`first_patched_version`はAPI上の参考値であり、実際の依存更新採用を確定しない。
 
 ### 9.3 Design / Implementation / Testへ引き継ぐ事項
 
@@ -277,8 +338,10 @@ Treasure Compassは、周回中に次の地図が開封され新しい宝箱座�
 - 正式根拠: [Treasure Compass / Mob Compass コンセプト](../concept/concept.md)
 - 補助資料（TEMPORARY / NON-NORMATIVE）: [要件定義以降への検討メモ](../concept/requirements-notes.md)。本書では、コンセプトと矛盾しない検討候補および未決定事項の整理に限って参照し、単独で要件の根拠にはしない。
 - プロジェクトの利用者向け資料: [README](../../README.md)。現行Treasure Compassの説明を確認する補助資料として参照し、新しいMob Compass要件や未記載の仕様を逆生成しない。
+- GitHub Security APIスナップショット（2026-09-10 10:24 JST、read-only取得）: 対象リポジトリ`ccHarvestasya/treasure-compass`のDependabot `GET /repos/ccHarvestasya/treasure-compass/dependabot/alerts?state=open&per_page=100`、Code Scanning `GET /repos/ccHarvestasya/treasure-compass/code-scanning/alerts?per_page=100`、Secret Scanning `GET /repos/ccHarvestasya/treasure-compass/secret-scanning/alerts?per_page=100`、Security advisoriesの各REST API。
 
 ## 11. 作成時の未確認範囲
 
-- 本書の作成では、実装、テスト、静的データ、画像、外部資料を要件の根拠として使用していない。
+- 本書の作成では、実装、テスト、静的データ、画像、GitHub Security APIスナップショット以外の外部資料を要件の根拠として使用していない。
+- GitHub Security APIについては、上記スナップショット時点のDependabot、Code Scanning、Secret Scanning、Security advisoriesの応答を確認した。これは現時点の台帳根拠であり、実際の依存更新、指摘解消、受入時の再確認を完了したことを意味しない。
 - 本書はRequirements Authorによる作成段階のドラフトであり、独立レビューによる承認判定は別工程で行う。
