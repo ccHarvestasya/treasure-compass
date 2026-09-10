@@ -1,0 +1,4 @@
+interface:
+  display_name: "基本設計書作成"
+  short_description: "承認済み仕様を内部構造・責務・境界へ整理する"
+  default_prompt: "$design-author を使って、承認済み Specification を実現する基本設計を作成してください。"

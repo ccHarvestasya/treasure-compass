@@ -1,0 +1,4 @@
+interface:
+  display_name: "基本設計レビュー"
+  short_description: "設計の責務・境界・実装可能性を仕様に照らしてレビュー"
+  default_prompt: "$design-review を使って、指定した Design を承認済み Specification への適合と工程境界の観点からレビューしてください。"
