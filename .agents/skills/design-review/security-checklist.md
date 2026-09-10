@@ -1,32 +1,32 @@
-# Web Application Safety Checklist
+# 安全性・信頼境界チェックリスト
 
-この checklist は、対象資料に追跡できる安全性と失敗時挙動を確認するための探索補助である。単独で新しい要求、仕様、設計判断、保証、重大度を作らない。対象に適用できる項目だけを使い、該当しない項目は N/A とする。
+この checklist は、対象に適用される安全性、信頼境界、完全性、失敗分離、運用責任を探索する補助である。単独で新しい Requirement、Specification、Design Decision、threat、保証、重大度を作らない。該当する項目だけを使い、対象外は N/A とする。
 
-## 入力と表示
+## 入力と境界
 
-- チャット貼り付け、名前、座標、マップ名、JSON、localStorage の信頼境界が明確か。
-- 空、長すぎる、形式不正、範囲外、未知値、重複、解析不能行を必要な範囲で扱っているか。
-- ユーザー入力を HTML、URL、コードとして不要に解釈していないか。
-- エラー、ログ、レビュー成果物に入力本文や保存データを不要に含めていないか。
+- untrusted input、入力の所有者、解釈責任、validation responsibility、出力先、trust / privilege boundary が明確か。
+- malformed、tampered、unknown、duplicate、stale、過大な入力を、上流契約に必要な範囲で安全に扱う責任が割り当てられているか。
+- 外部資源、実行環境、権限、データを越える境界と、各境界での失敗責任が明確か。
 
-## 状態と保存
+## データ、権限、完全性
 
-- localStorage のキー、保存対象、復元、削除、破損、未知形状の責任が明確か。
-- グレード変更、リセット、再計算、キャンセルで古い状態を誤って再利用しないか。
-- JSON と画像の参照先、ロード失敗、想定外形状を扱っているか。
-- 不完全なデータを有効な経路や成功状態として表示しないか。
+- sensitive data の生成、使用、保持、破棄、公開範囲、所有者が明確か。
+- authentication / authorization、privilege separation、integrity、改変・破損検知の責任が必要な範囲で割り当てられているか。
+- failure isolation、fail-closed、回復後の状態が、既存の Specification を満たす構造になっているか。
 
-## 資源と失敗
+## 状態、資源、復旧
 
-- 過大入力、過大な順列、無限ループ、再レンダー連鎖を必要な範囲で考慮しているか。
-- ロード失敗、キャンセル、空データ、重複、境界値を安全側に扱っているか。
-- エラー時に既存状態を無断で破棄したり、誤った結果を確定したりしないか。
+- state / data ownership、lifecycle、persistence、cache、synchronization、replacement の責任が明確か。
+- partial failure、retry、restart、recovery、rollback、atomicity、resource cleanup の境界が、対象に該当する場合に成立しているか。
+- 過大入力、過大な資源消費、無限処理、部分結果が問題になる場合、containment と責任主体が設計されているか。
 
-## 外部連携と公開
+## 運用と観測
 
-- 依頼にない外部送信、計測、広告、認証、サーバー連携を追加していないか。
-- 環境変数、credential、個人情報、ローカルパス、開発用データが公開成果物へ混入していないか。
-- 画像、JSON、フォント、依存関係のライセンスと出典を必要な範囲で確認しているか。
-- build、README、配布物、ブラウザ利用条件が同じ事実を示しているか。
+- runtime、deployment、外部依存、logging / metric / event、incident / recovery の責任分界が、正式な Requirements / Specification / 運用制約に沿っているか。
+- 具体的な security product、library、保存技術、認証方式、監視基盤を、根拠なく採用・要求していないか。
 
-正式な finding は、Requirements、Design、Specification、依頼、README、実装、テスト、静的データのいずれかへ追跡でき、具体的な影響と再確認条件を説明できるものに限る。
+## Finding の基準
+
+- checklist の項目が対象に該当することだけでは finding にしない。正式な finding は、対象 Design、approved Specification / Requirements / Concept、formal reference、既存の正式な architecture constraint、またはユーザー要求へ追跡できる必要がある。
+- 実装、テスト、設定、データは、実現可能性、現行構造、互換性、回帰、明白な矛盾を確認する補足証拠に限る。そこに存在する内容だけを根拠に新しい上流要求や Design responsibility を逆生成しない。
+- 外部契約の未定義は Specification gap、内部の責務・境界・所有の欠落は Design finding、具体コードの不足は Implementation / Test handoff として分ける。
