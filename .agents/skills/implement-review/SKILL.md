@@ -60,7 +60,7 @@ Implementation Review は Implementation / Test の適合性を判定する。Im
 - excluded scope、unavailable evidence
 - existing working tree changes
 
-差分レビューと全体レビューを区別する。差分理解のために周辺コードを確認しても、無関係な既存問題を無制限に formal finding 化しない。確認できない範囲を PASS とみなさず、必要なら unavailable evidence または Deferred として記録する。
+差分レビューと全体レビューを区別する。差分理解のために周辺コードを確認しても、無関係な既存問題を無制限に formal finding 化しない。確認できない範囲を PASS とみなさない。現在の適合性判定に必須なら blocking review condition、後続確認でよいなら Deferred として記録する。
 
 対象に source code、configuration、static data、generated artifact、build / packaging、dependency、lockfile、migration、protocol / serialization、resource、test、fixture、CI、platform-specific implementation、binding / glue code が存在する場合だけ、それをレビューする。存在しない concern を checklist のために要求しない。
 
@@ -196,7 +196,7 @@ Design problem                 → Design gap
 - `MEDIUM`: concrete だが影響が限定された correctness、robustness、compatibility、failure-path、test / validation の defect。
 - `LOW`: 影響・到達可能性が限定された concrete defect / hygiene issue。一般論や任意改善だけでは採用しない。
 
-`CRITICAL` / `HIGH` の New / Open / Reopened が1件以上ある場合は `Required Change` とし、`REVISE IMPLEMENTATION` とする。`MEDIUM` / `LOW` のみ、または解決済み・Deferred のみの場合は `READY` とできる。`READY` と `Required Changes: HIGH` の組み合わせは成立しない。上流問題や unavailable evidence の扱いは、現在工程への blocking impact と既存 Gate policy に従い、severity を自動生成しない。
+`CRITICAL` / `HIGH` の New / Open / Reopened が1件以上ある場合は `Required Change` とし、`REVISE IMPLEMENTATION` とする。これに加えて、unresolved upstream issue、必須 evidence の unavailable、必須 validation の未実行・実行不能等により適合性を安全に判定できない場合は、formal Implementation Finding を架空に作らず、blocking review condition として `REVISE IMPLEMENTATION` とする。`MEDIUM` / `LOW` のみでも、他の blocking condition がなければ `READY` とできる。上流問題や unavailable evidence には Implementation Finding の severity を自動付与せず、Gate rationale で理由と解消条件を区別する。`READY` と `Required Changes: HIGH` の組み合わせは成立しない。
 
 ## レビュアーの役割
 

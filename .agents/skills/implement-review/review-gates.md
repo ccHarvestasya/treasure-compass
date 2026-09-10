@@ -14,6 +14,17 @@ Gate の目的は、Implementation を完璧にすることではなく、対象
 
 各 Gate の結果は、対象箇所、発生条件、具体的事実、根拠、影響、完了条件へ追跡する。Security checklist は独立した大量の Gate や新しい要求へ変換せず、適用される Gate へ対応付ける。
 
+## Gate 判定
+
+`REVISE IMPLEMENTATION` は、次のいずれかがある場合に使用する。
+
+1. **Blocking Implementation Finding**: `CRITICAL` / `HIGH` の New / Open / Reopened がある。
+2. **Blocking review condition**: formal finding ではないが、unresolved upstream issue、必須 evidence の unavailable、必須 validation の未実行・実行不能等により、reviewed Implementation が承認済み Specification / Design に適合しているか安全に判定できない。
+
+`READY` は、blocking な `CRITICAL` / `HIGH` がなく、かつ blocking review condition もない場合に限る。`MEDIUM` / `LOW` のみなら、他の blocking condition がない限り `READY` とできる。blocking review condition には Implementation Finding の Severity を付与せず、Gate rationale に種類、判定不能となる影響、解消条件を記録する。
+
+未確認の evidence / validation は、現在の適合性判定に必須である場合だけ blocking とする。後続確認でよく、現在の Gate 判定を妨げない事項は `Deferred` とする。単に対象外の事項は `Out of Scope` として扱い、Gate blocking や Deferred に自動変換しない。
+
 ## Upstream issue と Current Phase
 
 Concept / Requirements の不足は `Upstream ambiguity`、Specification の外部契約不足は `Specification gap`、Design の内部判断不足は `Design gap` として `Upstream Feedback` に分ける。Implementation Review が具体的な要求・仕様・設計を発明して Gate failure にしてはならない。
@@ -29,4 +40,4 @@ Severity は `CRITICAL` / `HIGH` / `MEDIUM` / `LOW` を維持する。exploitabi
 - `MEDIUM`: concrete だが影響が限定された correctness、robustness、compatibility、failure-path、test / validation の defect。
 - `LOW`: 影響・到達可能性が限定された concrete defect / hygiene issue。一般論や任意改善だけでは採用しない。
 
-`CRITICAL` / `HIGH` の New / Open / Reopened が1件以上ある場合は `REVISE IMPLEMENTATION`、`MEDIUM` / `LOW` のみ、または解決済み・Deferred のみの場合は `READY` とする。`READY` と `Required Changes: HIGH` の組み合わせは成立しない。Severity や Gate を security checklist の存在だけで決めない。
+`CRITICAL` / `HIGH` の New / Open / Reopened は formal Implementation Finding として blocking である。Severity や Gate を security checklist の存在だけで決めず、上記の blocking review condition も合わせて判定する。`READY` と `Required Changes: HIGH` の組み合わせは成立しない。

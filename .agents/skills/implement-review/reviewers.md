@@ -35,4 +35,10 @@ Test 数、coverage、fixture の存在だけで finding にしない。missing 
 
 Concept / Requirements / Specification / Design の不足や曖昧さで正否を判断できない場合は、発生源に応じた `Upstream Feedback` とし、`Implementation defect` と二重計上しない。`Out of Scope` は Review Scope / Excluded Scope に記録し、Deferred にしない。Deferred は後続検証、外部環境、運用、release 等の確認へ限定する。
 
-Required Change は問題が解消したと判断できる最小条件に留め、完成した修正コード、exact private function structure、特定 library、好みの architecture を指定しない。`CRITICAL` / `HIGH` の New / Open / Reopened は `REVISE IMPLEMENTATION`、`MEDIUM` / `LOW` のみなら `READY` とする。
+最終 Gate 判定では、次の3点を分けて確認する。
+
+1. blocking formal finding（`CRITICAL` / `HIGH` の New / Open / Reopened）
+2. unresolved upstream issue による blocking impact
+3. 必須 evidence / validation の unavailable による blocking impact
+
+Required Change は問題が解消したと判断できる最小条件に留め、完成した修正コード、exact private function structure、特定 library、好みの architecture を指定しない。`CRITICAL` / `HIGH` の formal finding がなくても、2 または 3 があれば `REVISE IMPLEMENTATION` とする。`MEDIUM` / `LOW` のみで、他の blocking condition がなければ `READY` とできる。2 または 3 は Implementation Finding の Severity を持たず、Gate rationale に理由と解消条件を記録する。
