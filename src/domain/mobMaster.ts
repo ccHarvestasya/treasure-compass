@@ -5,7 +5,7 @@ import type {
   MobMasterMob,
   MobCandidate,
 } from '@/types';
-import { formatCoordinate, normalizeCoordinateNumber, normalizeIdentifier, normalizeText } from './normalization';
+import { formatCoordinate, normalizeCoordinate, normalizeCoordinateNumber, normalizeIdentifier, normalizeText } from './normalization';
 
 export interface MobMasterValidation {
   ok: boolean;
@@ -19,6 +19,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function finiteNonNegative(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+
+function finiteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
 
 function validateMap(raw: unknown): MobMasterMap | null {
@@ -56,12 +60,13 @@ function validateLocation(raw: unknown, maps: Map<string, MobMasterMap>): MobMas
   const mapId = normalizeIdentifier(raw.mapId);
   const x = typeof raw.x === 'number' ? normalizeCoordinateNumber(raw.x) : null;
   const y = typeof raw.y === 'number' ? normalizeCoordinateNumber(raw.y) : null;
+  const z = raw.z === undefined ? undefined : finiteNumber(raw.z) ? raw.z : null;
   const classification = raw.classification;
   const map = mapId ? maps.get(mapId) : undefined;
-  if (!mapId || !map || x === null || y === null) return null;
+  if (!mapId || !map || x === null || y === null || z === null) return null;
   if (map.validRange && (x < map.validRange.min || x > map.validRange.max || y < map.validRange.min || y > map.validRange.max)) return null;
   if (classification !== 'confirmed' && classification !== 'candidate') return null;
-  return { mapId, x, y, classification };
+  return { mapId, x, y, ...(z === undefined ? {} : { z }), classification };
 }
 
 function validateMob(raw: unknown, maps: Map<string, MobMasterMap>): MobMasterMob | null {
@@ -163,4 +168,68 @@ export function candidateFromMaster(master: MobMasterData, location: MobMasterLo
     classification: location.classification,
     userConfirmed: false,
   };
+}
+
+export interface MobLocationEditInput {
+  mobId: string;
+  locationIndex: number;
+  x: string;
+  y: string;
+  z: string;
+}
+
+export interface MobLocationEdit {
+  mobId: string;
+  locationIndex: number;
+  x: number;
+  y: number;
+  z?: number;
+}
+
+export interface MobMasterUpdateResult {
+  ok: boolean;
+  data?: MobMasterData;
+  reason?: string;
+}
+
+export function parseMobLocationEdit(input: MobLocationEditInput): { ok: boolean; edit?: MobLocationEdit; reason?: string } {
+  const mobId = normalizeIdentifier(input.mobId);
+  const x = typeof input.x === 'string' ? normalizeCoordinate(input.x) : null;
+  const y = typeof input.y === 'string' ? normalizeCoordinate(input.y) : null;
+  const zText = typeof input.z === 'string' ? input.z.trim() : '';
+  const z = zText ? Number(zText) : undefined;
+  if (!mobId || !Number.isSafeInteger(input.locationIndex) || input.locationIndex < 0 || x === null || y === null) {
+    return { ok: false, reason: 'モブ、位置、X/Y を確認してください' };
+  }
+  if (zText && !Number.isFinite(z)) return { ok: false, reason: 'Z は有限の数値で入力してください' };
+  return { ok: true, edit: { mobId, locationIndex: input.locationIndex, x, y, ...(z === undefined ? {} : { z }) } };
+}
+
+export function updateMobMasterLocation(master: MobMasterData, edit: MobLocationEdit): MobMasterUpdateResult {
+  if (master.generation >= Number.MAX_SAFE_INTEGER) return { ok: false, reason: 'マスターの世代を更新できません' };
+  const mobIndex = master.mobs.findIndex((mob) => mob.id === edit.mobId);
+  const mob = mobIndex >= 0 ? master.mobs[mobIndex] : undefined;
+  const location = mob?.locations[edit.locationIndex];
+  if (!mob || !location) return { ok: false, reason: '編集対象の Mob 位置がありません' };
+  const x = normalizeCoordinateNumber(edit.x);
+  const y = normalizeCoordinateNumber(edit.y);
+  if (x === null || y === null || edit.z !== undefined && !Number.isFinite(edit.z)) return { ok: false, reason: '位置の値が不正です' };
+  const map = master.maps.find((entry) => entry.id === location.mapId);
+  if (!map) return { ok: false, reason: '位置のマップがありません' };
+  if (map.validRange && (x < map.validRange.min || x > map.validRange.max || y < map.validRange.min || y > map.validRange.max)) {
+    return { ok: false, reason: 'X/Y がマップの有効範囲外です' };
+  }
+  const nextCandidateId = mobCandidateId(location.mapId, x, y);
+  if (mob.locations.some((entry, index) => index !== edit.locationIndex && mobCandidateId(entry.mapId, entry.x, entry.y) === nextCandidateId)) {
+    return { ok: false, reason: '同じ Mob に同一地点が既にあります' };
+  }
+
+  const next = structuredClone(master);
+  const nextLocation = next.mobs[mobIndex].locations[edit.locationIndex];
+  nextLocation.x = x;
+  nextLocation.y = y;
+  if (edit.z === undefined) delete nextLocation.z;
+  else nextLocation.z = edit.z;
+  next.generation += 1;
+  return { ok: true, data: next };
 }

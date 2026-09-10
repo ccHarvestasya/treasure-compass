@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { MobMasterData, MobSession } from '../../src/types';
 import { normalizeCoordinate, normalizeText } from '../../src/domain/normalization';
-import { candidateFromMaster, mobCandidateId, validateMobMaster } from '../../src/domain/mobMaster';
+import { candidateFromMaster, mobCandidateId, parseMobLocationEdit, updateMobMasterLocation, validateMobMaster } from '../../src/domain/mobMaster';
 import { addMobCandidate, adoptMobRoute, createEmptyMobSession, setMobTargetCompletion, updateMasterClassifications } from '../../src/domain/mobSession';
 import { calculateMobRoute, isCurrentMobRoute } from '../../src/domain/mobRoute';
 import { compareMobGuides, parseMobGuide, serializeMobGuide, snapshotFromMobSession } from '../../src/domain/mobGuide';
@@ -76,6 +76,26 @@ describe('Mob Compass normalization and session', () => {
       mobs: [{ ...master.mobs[0], locations: [{ ...master.mobs[0].locations[0], x: 50.1 }] }, master.mobs[1]],
     });
     expect(result.ok).toBe(false);
+  });
+
+  it('edits master X/Y/Z while keeping Z outside candidate identity', () => {
+    const parsed = parseMobLocationEdit({ mobId: 'alpha', locationIndex: 0, x: '10.0', y: '10.0', z: '-2.5' });
+    expect(parsed.ok).toBe(true);
+    if (!parsed.edit) throw new Error('edit fixture missing');
+    const result = updateMobMasterLocation(master, parsed.edit);
+    expect(result.ok).toBe(true);
+    expect(result.data?.generation).toBe(2);
+    expect(result.data?.mobs[0].locations[0]).toMatchObject({ x: 10, y: 10, z: -2.5 });
+    expect(mobCandidateId('map-a', 10, 10)).toBe('map-a@10.0,10.0');
+  });
+
+  it('rejects an edited location that duplicates another location', () => {
+    const duplicateMaster = structuredClone(master);
+    duplicateMaster.mobs[0].locations.push({ mapId: 'map-b', x: 25, y: 25, classification: 'candidate' });
+    const parsed = parseMobLocationEdit({ mobId: 'alpha', locationIndex: 1, x: '25', y: '25', z: '' });
+    expect(parsed.ok).toBe(true);
+    if (!parsed.edit) throw new Error('edit fixture missing');
+    expect(updateMobMasterLocation(duplicateMaster, parsed.edit)).toMatchObject({ ok: false });
   });
 
   it('keeps multiple candidates in one Mob target and makes duplicate a no-op', () => {

@@ -19,6 +19,8 @@ export interface MobMasterLocation {
   mapId: string;
   x: number;
   y: number;
+  /** 高さは表示用の補足情報であり、candidate identity や route には使わない。 */
+  z?: number;
   classification: MobClassification;
   point?: Point;
 }

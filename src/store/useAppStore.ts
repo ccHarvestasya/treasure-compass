@@ -14,7 +14,7 @@ import type {
 import { DEFAULT_GRADE, FULL_PARTY } from '@/constants';
 import { calcShortestRoute, toRouteSteps } from '@/utils/distance';
 import { normalizeCoordinate, normalizeText } from '@/domain/normalization';
-import { candidateFromMaster, mobCandidateId, resolveMap, resolveMob } from '@/domain/mobMaster';
+import { candidateFromMaster, mobCandidateId, parseMobLocationEdit, resolveMap, resolveMob, updateMobMasterLocation } from '@/domain/mobMaster';
 import { addMobCandidate, adoptMobRoute, createEmptyMobSession, removeMobTarget, reorderMobManual, setMobCandidateConfirmation, setMobRouteFailure, setMobTargetCompletion, updateMasterClassifications } from '@/domain/mobSession';
 import { calculateMobRoute, isCurrentMobRoute } from '@/domain/mobRoute';
 import { parseMobGuide, compareMobGuides, mobSessionFromGuide, serializeMobGuide, snapshotFromMobSession } from '@/domain/mobGuide';
@@ -188,6 +188,7 @@ interface AppState {
   mobMaster: MobMasterData | null;
   mobMasterError: string | null;
   setMobMaster: (master: MobMasterData | null, error?: string) => void;
+  editMobMasterLocation: (mobId: string, locationIndex: number, x: string, y: string, z: string, expectedGeneration: number) => MobOperationResult;
   mobSession: MobSession;
   mobInputText: string;
   setMobInputText: (text: string) => void;
@@ -386,6 +387,35 @@ export const useAppStore = create<AppState>((set, get) => ({
       mob = setMobRouteFailure(mob, 'no-master', mob.route.masterGeneration);
     }
     set({ mobMaster: master, mobMasterError: error ?? null, mobSession: mob });
+  },
+  editMobMasterLocation: (mobId, locationIndex, x, y, z, expectedGeneration) => {
+    const state = get();
+    if (!state.mobMaster) {
+      const result = operationFailure('invalid', 'Mob マスターデータがありません');
+      set({ mobLastResult: result });
+      return result;
+    }
+    if (state.mobMaster.generation !== expectedGeneration) {
+      const result = operationFailure('master-mismatch', 'マスターデータが更新されています。画面を確認してください');
+      set({ mobLastResult: result });
+      return result;
+    }
+    const parsed = parseMobLocationEdit({ mobId, locationIndex, x, y, z });
+    if (!parsed.ok || !parsed.edit) {
+      const result = operationFailure('invalid', parsed.reason ?? '位置を確認してください');
+      set({ mobLastResult: result });
+      return result;
+    }
+    const updated = updateMobMasterLocation(state.mobMaster, parsed.edit);
+    if (!updated.ok || !updated.data) {
+      const result = operationFailure('invalid', updated.reason ?? 'マスター位置を更新できません');
+      set({ mobLastResult: result });
+      return result;
+    }
+    get().setMobMaster(updated.data);
+    const result: MobOperationResult = { ok: true, kind: 'accepted', reason: 'マスター位置を更新しました' };
+    set({ mobLastResult: result });
+    return result;
   },
   mobSession: initialMob,
   mobInputText: '',

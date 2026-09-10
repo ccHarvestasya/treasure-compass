@@ -61,6 +61,28 @@ function candidate(mobId: string, locationIndex: number) {
 }
 
 describe('Mob session application', () => {
+  it('edits a master location and invalidates a route when its identity changes', () => {
+    expect(store.getState().addMobCandidate('alpha', 'Alpha', candidate('alpha', 0)).ok).toBe(true);
+    const before = structuredClone(store.getState().mobSession);
+    const generation = store.getState().mobMaster?.generation;
+    if (generation === undefined) throw new Error('master generation missing');
+    const result = store.getState().editMobMasterLocation('alpha', 0, '11', '10', '-1.5', generation);
+    expect(result.ok).toBe(true);
+    expect(store.getState().mobMaster?.generation).toBe(generation + 1);
+    expect(store.getState().mobMaster?.mobs[0].locations[0].z).toBe(-1.5);
+    expect(store.getState().mobSession.targets.alpha.candidates).toEqual(before.targets.alpha.candidates);
+    expect(store.getState().mobSession.route.status).toBe('failure');
+    expect(store.getState().mobSession.route.failure).toBe('master-mismatch');
+  });
+
+  it('rejects an editor command based on an old master generation', () => {
+    const generation = store.getState().mobMaster?.generation;
+    if (generation === undefined) throw new Error('master generation missing');
+    store.getState().setMobMaster({ ...master, generation: generation + 1 });
+    const result = store.getState().editMobMasterLocation('alpha', 0, '10', '10', '', generation);
+    expect(result.failure).toBe('master-mismatch');
+  });
+
   it('keeps candidates in one target and completion at Mob level', () => {
     const first = store.getState().addMobCandidate('alpha', 'Alpha', candidate('alpha', 0));
     const second = store.getState().addMobCandidate('alpha', 'Alpha', candidate('alpha', 1));

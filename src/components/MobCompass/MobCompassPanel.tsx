@@ -7,7 +7,8 @@ import { formatCoordinate } from '@/domain/normalization';
 import { serializeMobGuide } from '@/domain/mobGuide';
 import type { MobOperationResult } from '@/types';
 import { toast } from 'sonner';
-import { Check, Copy, RotateCcw, Trash2, Upload, X } from 'lucide-react';
+import { Check, Copy, MapPin, RotateCcw, Trash2, Upload, X } from 'lucide-react';
+import { MobLocationEditor } from './MobLocationEditor';
 
 function resultMessage(result: MobOperationResult) {
   if (result.failure === 'persistence-write') return '保存書込みに失敗しました。状態は変更されていません。';
@@ -43,6 +44,7 @@ export function MobCompassPanel() {
   const [generatedGuide, setGeneratedGuide] = useState('');
   const [selectedMobId, setSelectedMobId] = useState('');
   const [selectedCandidateId, setSelectedCandidateId] = useState('');
+  const [isLocationEditorOpen, setIsLocationEditorOpen] = useState(false);
 
   const selectedMob = master?.mobs.find((mob) => mob.id === selectedMobId);
 
@@ -99,6 +101,14 @@ export function MobCompassPanel() {
       {masterError && <p className="rounded-md border border-red-900/60 bg-red-950/30 p-2 text-xs text-red-300">{masterError}</p>}
       {!master && !masterError && <p className="text-xs text-slate-400">Mob マスターデータを読み込んでいます。</p>}
       {master && master.mobs.length === 0 && <p className="rounded-md border border-amber-900/60 bg-amber-950/30 p-2 text-xs text-amber-300">利用可能な Mob マスターがありません。</p>}
+
+      <section className="flex items-center justify-between gap-3 rounded-md border border-slate-700 bg-slate-800/30 p-2">
+        <div className="min-w-0">
+          <h2 className="text-xs font-semibold text-fuchsia-300">マスター位置</h2>
+          <p className="mt-0.5 text-[10px] text-slate-500">Mob の X / Y / Z を編集</p>
+        </div>
+        <Button onClick={() => setIsLocationEditorOpen(true)} disabled={!master || master.mobs.length === 0} variant="outline" className="h-8 shrink-0 border-fuchsia-800 text-xs text-fuchsia-200 hover:bg-fuchsia-950/40"><MapPin className="mr-1 size-3" />位置を編集</Button>
+      </section>
 
       <section className="space-y-2">
         <div className="flex items-center justify-between">
@@ -185,6 +195,8 @@ export function MobCompassPanel() {
         <Textarea value={guideText} onChange={(event) => setGuideText(event.target.value)} placeholder="MOB-COMPASS/1 の案内を貼り付け" className="h-28 text-[10px] font-mono bg-slate-900 border-slate-700 resize-y" />
         {generatedGuide && <Textarea readOnly value={generatedGuide} className="h-28 text-[10px] font-mono bg-slate-950 border-emerald-900/60 text-emerald-200 resize-y" />}
       </section>
+
+      <MobLocationEditor open={isLocationEditorOpen} onOpenChange={setIsLocationEditorOpen} />
     </div>
   );
 }
