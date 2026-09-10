@@ -28,9 +28,9 @@ Implementation / Test
   → 実際のコード、設定、成果物、具体的な検証
 ```
 
-Specification は Design の直接の上流である。Design 時点で外部から観測される入力、出力、error result、状態遷移、ordering、互換性、protocol behavior、timeout / retry semantics などが不足し、内部設計を安全に決められない場合、Design で勝手に補完せず、Implementation に押し流さない。`Specification の不足` または `Upstream ambiguity` として上流へ戻し、必要なら Requirements / Concept の不足として確認する。
+Specification は Design の直接の上流である。Design 時点で外部から観測される入力、出力、error result、状態遷移、ordering、互換性、protocol behavior、timeout / retry semantics などが不足し、内部設計を安全に決められない場合、Design で勝手に補完せず、Implementation に押し流さない。外部契約の不足は `Specification gap`、製品判断や要件の不足は `Upstream ambiguity` として上流へ戻す。
 
-同じ Specification に適合する二つの Design / Implementation が、同じ外部入力・状態に対して異なる観測可能な結果を返すなら、それは原則として内部 Design choice ではない。差を許容する正式な外部契約がない限り、Specification の不足または上流判断の不足として扱う。逆に、外部入力、出力、状態遷移、失敗結果、互換性、決定性が同じで内部方式だけが異なるなら、原則として Design / Implementation の責務である。
+同じ Specification に適合する二つの Design / Implementation が、同じ外部入力・状態に対して異なる観測可能な結果を返すなら、それは原則として内部 Design choice ではない。差を許容する正式な外部契約がない限り、`Specification gap` または `Upstream ambiguity` として扱う。逆に、外部入力、出力、状態遷移、失敗結果、互換性、決定性が同じで内部方式だけが異なるなら、原則として Design / Implementation の責務である。
 
 ## 参照と根拠
 
@@ -78,7 +78,7 @@ Specification は Design の直接の上流である。Design 時点で外部か
 
 ### 上流へ戻すもの
 
-次のような外部から観測される結果を変える判断が Specification に存在しない場合、Design で決めない。Implementation に押し流さず、`Specification の不足` または `Upstream ambiguity` として上流へ戻す。
+次のような外部から観測される結果を変える判断が Specification に存在しない場合、Design で決めない。Implementation に押し流さず、外部契約の不足は `Specification gap`、製品判断や要件の不足は `Upstream ambiguity` として上流へ戻す。
 
 - 外部入力の解釈、accepted representation、field semantics
 - 外部出力、error result、拒否条件、外部から見える状態遷移
@@ -86,7 +86,7 @@ Specification は Design の直接の上流である。Design 時点で外部か
 - compatibility behavior、version semantics、protocol behavior
 - externally visible timeout / retry / recovery semantics
 
-Specification の意味を変えずに展開できる不足は Specification の不足として扱う。製品判断、範囲、責任、許容する外部結果の選択が不足する場合は Requirements / Concept へ戻す。
+Specification の意味を変えずに展開できる外部契約の不足は `Specification gap` として扱う。製品判断、範囲、責任、許容する外部結果の選択が不足する場合は `Upstream ambiguity` として Requirements / Concept へ戻す。
 
 ### Implementation / Test へ委譲するもの
 
@@ -142,17 +142,19 @@ Implementation constraint / handoff
 
 未決定事項を一括して下流へ投げない。
 
+上流問題は、Concept / Requirements の判断不足を `Upstream ambiguity`、Requirements の意味や製品判断は十分だが Specification に外部契約が不足する状態を `Specification gap` として分ける。
+
 | 分類 | 扱い |
 | --- | --- |
-| **Upstream ambiguity** | Specification / Requirements / Concept の判断不足。Design で決めず、必要なら上流へ差し戻す |
-| **Specification の不足** | Requirements が求める外部契約が Specification に不足している。Design で補完せず、Specification の修正を依頼する |
+| **Upstream ambiguity** | Concept / Requirements の判断不足。Design で決めず、必要なら上流へ差し戻す |
+| **Specification gap** | Requirements の意味や製品判断は十分だが、Specification に外部契約が不足している。Design で補完せず、Specification の修正を依頼する |
 | **Design decision pending** | 外部契約を変えず Design の裁量で選択できるが、Design 完了に必要な判断。Design 工程で解決する |
 | **Implementation detail** | Design の責務・constraint が十分で、具体的な実装方法だけが未決定。Implementation / Test へ委譲する |
 | **Out of Scope** | 現在の対象外。未決定事項や Implementation handoff として蓄積しない |
 
 ## 質問規律
 
-不明点を見つけるたびに質問しない。まず `Upstream ambiguity`、`Specification の不足`、`Design decision pending`、`Implementation detail`、`Out of Scope` に分類する。
+不明点を見つけるたびに質問しない。まず `Upstream ambiguity`、`Specification gap`、`Design decision pending`、`Implementation detail`、`Out of Scope` に分類する。
 
 Design を成立させるために外部契約や上流判断が本当に必要な場合だけ確認する。Implementation で決められる内容を Design Author が質問して確定しない。
 
@@ -174,7 +176,7 @@ Design を成立させるために外部契約や上流判断が本当に必要�
 3. system context、trust boundary、component / data / state ownership、dependency direction を整理する。
 4. 主要な内部フロー、失敗 containment、transaction / atomicity、retry / recovery、runtime / operation boundary を必要な範囲で設計する。
 5. 各 Design Decision を根拠、代替案、影響、前提、見直し条件へ追跡する。
-6. 未決定事項を上流、Design、Implementation / Test、対象外へ分類する。
+6. 未決定事項を `Upstream ambiguity`、`Specification gap`、Design、Implementation / Test、対象外へ分類する。
 7. 外部契約を勝手に変更せず、不要な内部構造やコード詳細を除き、自己確認と対象範囲の検証を行う。
 
 ## 標準構成
@@ -209,7 +211,7 @@ Design を成立させるために外部契約や上流判断が本当に必要�
 - 一般論や将来拡張だけを理由に過剰設計していない。
 - Implementation detail を固定しすぎていない。
 - Implementation に必要な constraint は十分である。
-- Upstream ambiguity や Specification の不足を Implementation に押し流していない。
+- Upstream ambiguity や Specification gap を Implementation に押し流していない。
 - Out of Scope を unresolved item や Implementation handoff と混同していない。
 - Specification から Design、Design から Implementation への追跡が可能である。
 - 対象固有の技術を汎用 Skill の必須事項として固定していない。
