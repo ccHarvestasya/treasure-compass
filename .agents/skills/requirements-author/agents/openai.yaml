@@ -1,0 +1,4 @@
+interface:
+  display_name: "要件定義書作成"
+  short_description: "承認済みコンセプトを外部から検証可能な要件へ整理する"
+  default_prompt: "$requirements-author を使って、提示したコンセプトと依頼を要件定義へ整理してください。"

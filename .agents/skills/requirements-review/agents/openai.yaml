@@ -1,0 +1,4 @@
+interface:
+  display_name: "要件定義レビュー"
+  short_description: "要件の根拠・境界・検証可能性をレビューし判定する"
+  default_prompt: "$requirements-review を使って、指定した要件定義をレビューしてください。"
