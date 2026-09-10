@@ -1,29 +1,38 @@
 # Reviewers
 
-メインエージェントは Review Board Chair として、対象確定、根拠管理、重複排除、重大度・状態、ゲート、成果物を担当する。Phase 1 では次の4観点を独立して確認する。Reviewer Board の構造は変更せず、Security の責任だけを Reviewer B に閉じない。
+メインエージェントは Review Board Chair として、対象、根拠、重複、重大度、状態、Gate、成果物を管理する。次の4観点を独立に確認するが、人数や分担のためだけに追加のレビューを作らない。Security の責任を Reviewer B だけに閉じず、各 Reviewer は担当領域の concrete な security implication を cross-check する。
 
-## Reviewer A: 仕様適合性
+## Reviewer A: Conformance / Phase Boundary
 
-入力、出力、事前・事後条件、field、制約、処理順序、状態、error、warning、replacement 保存状態、禁止事項、公開動作を承認済み仕様と照合する。仕様が曖昧な場合は欠陥と断定しない。
+承認済み Specification / Design と Implementation の入力、出力、error、state transition、ordering、validation result、公開動作、制約を照合する。requested scope、upstream traceability、外部挙動の変更、上流問題の分類を確認する。契約が不足する場合は `Specification gap` 等へ分け、Reviewer が新しい契約を作らない。
 
-## Reviewer B: セキュリティ
+## Reviewer B: Security / Runtime Safety
 
-4フェーズ中で最も深い Security Review を担う。変更から 保護対象データ、attack surface、入力データ path、trust boundary を特定し、`security-checklist.md` の該当項目を適用する。ユーザー入力、入力データ、保存データ、派生 保存データ、一時的な入力データ、localStorage、保存形式から派生した値、復元済み保存データ の 生成、復元、取り込み、利用、一時表現、保存、置換、削除、再起動・復旧、失敗経路 を追跡する。
+`security-checklist.md` の適用項目を使い、trust boundary、authentication / authorization、sensitive data、secret lifecycle、integrity、privilege、unsafe execution、resource safety、concurrency、外部通信、logging / error leakage、dependency / build boundary 等を確認する。対象に適用される範囲だけを深く扱う。
 
-入力データ ownership、unnecessary copy、lifetime、不要データの破棄、logging / error / panic leakage、actual データ検証処理、計算処理、具体的な side-channel、RNG / entropy、入力処理、localStorage、attacker-controlled parser、ブラウザ実行境界、build / JavaScript boundary、`危険な実行経路`、failure / atomicity、適用可能な concurrency、dependency / feature interaction を確認する。`security-checklist.md` の tests、known vectors、異常入力テスト、differential testing、入力データ-bearing test data も対象にする。
+既存の上流契約、安全条件、言語・実行境界を具体的に破る到達可能な defect は finding とする。一方、security best practice、任意の hardening、特定 library / service / mechanism の好みだけで要求を作らない。checklist の項目だけで finding、severity、Gate を生成しない。
 
-仕様に存在しない新しい製品要求、任意の hardening、将来機能、API、policy を発明しない。別のデータ保護ライブラリ、2FA、外部サービス、一般論としての rate limit、実装スタイルの好み、threat model 外の hardening は finding にしない。一方、保存データ / ユーザー入力 の漏えい、入力データ copy / lifetime / 不要データの破棄 の具体的な破綻、入力識別値の再利用、ブラウザの安全な乱数 failure、データ完全性 authentication result の未検証、仕様と異なる 入力データ、計算処理 の correctness defect、具体的な 入力データ-dependent leakage、ブラウザ境界 の use-after-free / double-free、build / JS への不要な 入力データ 露出、実行安全性 invariant の破壊、攻撃者入力による panic / UB / resource exhaustion、アプリの対象環境・データ または 開発・本番 の混同による誤署名など、既存の security property や言語・境界の安全性を破る具体的 defect は、個別の防御策が仕様へ列挙されていなくても指摘する。
+## Reviewer C: Data / Compatibility / Integration
 
-copy が存在すること、`不要データの破棄` crate を使っていること、予測可能な処理 でないこと、異常入力テスト がないことだけでは finding にしない。必要性、lifetime、消去可能性、具体的 leakage path、asset impact、reachability、契約または安全条件の破綻を確認する。仕様・設計・要件または確認済みの データ整合性 / 仕様 fact で正否を判定できる事項は finding として根拠へ追跡し、契約自体が不足・曖昧な場合は `Specification ambiguity` / `Specification gap` / `Implementation → Specification feedback` として分離する。成果物の `Domain Checks` には、適用項目、主要な適用外項目、未確認範囲を明記する。
+対象に存在する場合、data representation、persistence、protocol / serialization、encoding、version、public compatibility、migration、dependency、platform、resource、外部連携、cross-implementation interoperability を確認する。異なる実装や環境でも承認済み契約を満たすか、互換性回帰や統合上の具体的な defect がないかを評価する。
 
-## Reviewer C: 相互運用性・プロトコル
+protocol、serialization、persistence、migration 等が対象にない場合は適用しない。canonical encoding、byte order、known vector、differential test 等を一般論で要求せず、実装方式の好みを finding にしない。
 
-文字コード、正規化、byte order、整数と精度、deterministic encoding、hex / raw bytes、canonical 入力データ、未知値、fixture、ブラウザ実行・build 境界 の外部形式、依存ライブラリ表現、アプリの対象環境・データ、開発・本番 を確認する。署名対象、domain separation、環境・データ 境界、replay / substitution、wrong account / 環境・データ の観点は Security Reviewer と重なってよい。C は 仕様 contract の観点から独立に確認し、内部方式の好みは指摘しない。
+## Reviewer D: Software Quality / Test / Validation
 
-## Reviewer D: ソフトウェア品質・テスト
+具体的な実装 correctness、責務、型、依存、例外、resource lifecycle、error handling、regression、Test / validation evidence を確認する。対象に応じて normal、boundary、failure、compatibility、security の検証が、Specification、Design invariant、Requirement、bug reproduction、regression risk へ追跡できるかを見る。
 
-変更範囲内の責務、ownership、型、依存、panic、公開互換性、`危険な実行経路` の安全条件、正常・異常・境界・改ざん・不正署名・認証失敗・replay・未知 version・サイズ超過・不正 encoding・deterministic encoding のテストを確認する。Security-sensitive path では wrong password / account / 環境・データ、corrupted ciphertext、invalid 検証結果、malformed / truncated input、不要データの破棄 / failure path、fuzz、differential test、known vector、独立した oracle、入力データ-bearing test data を対象にする。実装ロジックを複製した期待値や出典不明 fixture だけで独立検証したことにしない。重大な security property を独立検出できない test gap は、具体的な未検出 defect、到達可能性、影響および最小の検証方法が示せる場合に限り finding とする。
+Test 数、coverage、fixture の存在だけで finding にしない。missing test を指摘する場合は、どの具体的な defect、契約、invariant、regression、security property をどの条件で検出できないかを示す。base revision の既存 failure と今回の regression を区別する。
 
 ## Chair の採用基準
 
-対象箇所、発生条件、既存根拠、具体的事実、影響、必要条件、完了条件が揃い、現在の変更範囲に直接関係するものだけを採用する。重複する Security / 仕様 / Test finding は根拠を失わないよう統合する。CRITICAL / HIGH は Required Change とし、状態が New / Open / Reopened の1件以上があれば `REVISE IMPLEMENTATION` とする。MEDIUM / LOW は Optional / non-blocking とし、それらのみなら `READY` とできる。新規設計、将来拡張、好みのリファクタリング、optional hardening は却下する。仕様・設計・要件の不足、曖昧さ、未決定により Implementation の正否を判断できない場合は、Implementation defect と断定せず、発生源に応じた `Upstream Feedback` へ分離する。`Upstream Feedback` 自体は formal finding ではなく、Severity を持たない non-normative な記録とする。ただし、upstream gap により Implementation を安全に評価・完了できない場合は、current Implementation phase への影響を示す Implementation 側の formal finding を記録し、`Upstream Feedback` へ trace する。この formal finding には既存の Implementation Gate / Severity policy を適用する。`Deferred Findings` は current scope outside、later verification、operations / release confirmation 等に限定し、Specification / Design / Requirements の不足、曖昧さ、未決定事項には使用しない。formal finding と `Upstream Feedback` は同じ root cause を二重計上せず、前者は current Implementation phase への影響、後者は上流資料へ返す方向・不足・解消条件を記録する。
+次を満たすものだけを正式 finding として採用する。
+
+- location、発生条件、事実、根拠、impact、解消条件がある
+- reviewed Implementation / Test または適用される上流根拠へ追跡できる
+- Current Phase で解決すべき concrete defect である
+- reviewer preference、future feature、optional hardening、checklist の存在だけに依存しない
+
+Concept / Requirements / Specification / Design の不足や曖昧さで正否を判断できない場合は、発生源に応じた `Upstream Feedback` とし、`Implementation defect` と二重計上しない。`Out of Scope` は Review Scope / Excluded Scope に記録し、Deferred にしない。Deferred は後続検証、外部環境、運用、release 等の確認へ限定する。
+
+Required Change は問題が解消したと判断できる最小条件に留め、完成した修正コード、exact private function structure、特定 library、好みの architecture を指定しない。`CRITICAL` / `HIGH` の New / Open / Reopened は `REVISE IMPLEMENTATION`、`MEDIUM` / `LOW` のみなら `READY` とする。

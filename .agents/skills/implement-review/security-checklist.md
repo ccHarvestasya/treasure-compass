@@ -1,32 +1,39 @@
-# Web Application Safety Checklist
+# Security / Runtime Safety Checklist
 
-この checklist は、対象資料に追跡できる安全性と失敗時挙動を確認するための探索補助である。単独で新しい要求、仕様、設計判断、保証、重大度を作らない。対象に適用できる項目だけを使い、該当しない項目は N/A とする。
+この checklist は、Implementation Review で適用可能な security、trust boundary、integrity、実行安全性、resource safety を探索する補助である。全対象へ強制せず、対象に該当する項目だけを使い、該当しない項目は N/A とする。
 
-## 入力と表示
+checklist の項目だけを根拠に Requirement、Specification、Design Decision、finding、severity、Gate を作らない。一般的な security hardening、特定の製品・library・方式・サービスの採用も要求しない。
 
-- チャット貼り付け、名前、座標、マップ名、JSON、localStorage の信頼境界が明確か。
-- 空、長すぎる、形式不正、範囲外、未知値、重複、解析不能行を必要な範囲で扱っているか。
-- ユーザー入力を HTML、URL、コードとして不要に解釈していないか。
-- エラー、ログ、レビュー成果物に入力本文や保存データを不要に含めていないか。
+## 入力、信頼、実行境界
 
-## 状態と保存
+- untrusted input、外部 resource、実行環境、privilege、trust boundary と責任分界が明確か。
+- malformed、tampered、unknown、duplicate、stale、truncated、過大な入力を、適用される契約と安全条件に沿って扱っているか。
+- validation、parsing、解釈、出力、外部 effect の責任が境界を越えて逆流していないか。
+- injection、unsafe execution、権限逸脱、予期しない code / command 実行、resource exhaustion が具体的に到達可能でないか。
 
-- localStorage のキー、保存対象、復元、削除、破損、未知形状の責任が明確か。
-- グレード変更、リセット、再計算、キャンセルで古い状態を誤って再利用しないか。
-- JSON と画像の参照先、ロード失敗、想定外形状を扱っているか。
-- 不完全なデータを有効な経路や成功状態として表示しないか。
+## データ、認証、完全性
 
-## 資源と失敗
+- sensitive data、secret、credential、認証情報の生成、使用、保持、公開、破棄の扱いが契約と Design に沿っているか。
+- authentication / authorization、privilege separation、integrity、改変・破損検知の結果を実装が正しく扱っているか。
+- logging、error、例外、panic、debug output、生成物へ不要な入力・秘密・個人情報を漏えいしていないか。
+- 既存の confidentiality、integrity、availability、safety property を、具体的な実行経路で破っていないか。
 
-- 過大入力、過大な順列、無限ループ、再レンダー連鎖を必要な範囲で考慮しているか。
-- ロード失敗、キャンセル、空データ、重複、境界値を安全側に扱っているか。
-- エラー時に既存状態を無断で破棄したり、誤った結果を確定したりしないか。
+## 状態、資源、失敗
 
-## 外部連携と公開
+- state / data ownership、lifecycle、persistence、cache、synchronization、replacement が適用される場合に安全か。
+- partial failure、retry、restart、recovery、rollback、atomicity、cleanup、timeout を上流契約と Design に沿って実装しているか。
+- fail-open / fail-closed、部分結果、既存状態の保持・破棄が、許可された外部結果と内部責任に一致しているか。
+- memory、CPU、storage、network、process、file、外部 resource 等の過剰消費や leak が具体的に到達可能でないか。
 
-- 依頼にない外部送信、計測、広告、認証、サーバー連携を追加していないか。
-- 環境変数、credential、個人情報、ローカルパス、開発用データが公開成果物へ混入していないか。
-- 画像、JSON、フォント、依存関係のライセンスと出典を必要な範囲で確認しているか。
-- build、README、配布物、ブラウザ利用条件が同じ事実を示しているか。
+## 依存、生成物、運用
 
-正式な finding は、Requirements、Design、Specification、依頼、README、実装、テスト、静的データのいずれかへ追跡でき、具体的な影響と再確認条件を説明できるものに限る。
+- dependency、lockfile、generated artifact、build、packaging、platform boundary、外部通信が、必要な scope と安全条件に整合しているか。
+- third-party や生成物を未検証の正本として扱い、trust boundary や integrity を崩していないか。
+- runtime、deployment、monitoring、incident / recovery の責任が、正式な Requirements / Specification / Design または運用制約に沿っているか。
+
+## Finding の基準
+
+- checklist の該当だけでは finding にしない。正式 finding は reviewed Implementation / Test、承認済み Specification / Design / Requirements / Concept、formal reference、repository instruction 等へ追跡できる必要がある。
+- Implementation / Test が既存の安全条件、上流契約、互換性、実行境界を具体的に破り、到達可能な impact がある場合は finding とする。
+- security property や外部契約そのものが不足・曖昧な場合は、`Implementation defect` と断定せず `Upstream Feedback` の `Upstream ambiguity`、`Specification gap`、`Design gap` に分ける。
+- 「より安全な方式」、「一般的な hardening」、「特定の認証、暗号、rate limit、監視、dependency を使うべき」という好みは、正式な根拠と concrete impact がない限り finding にしない。
