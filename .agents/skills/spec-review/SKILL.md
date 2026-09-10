@@ -67,6 +67,24 @@ Implementation / Test
 - Requirement の意味、スコープ、責任、強さを変更していないか。欠落、弱すぎる契約、根拠のない追加、過剰な制約を区別する。
 - 既存挙動や実装上の便利さだけで新しい要求を作っていないか。
 
+### Requirements → Specification handoff の完結
+
+Requirements から、次の事項を明示的に抽出する。
+
+- Specification で決めるとされた事項
+- 後工程で決定するとされた外部判断
+- 正確な形式、状態遷移、互換性、version、error result、parsing result の引継ぎ
+- Acceptance を成立させるために必要な外部契約
+- `unresolved`、`TBD`、`later phase` などの未決定事項
+
+各項目が次のどれになっているかを確認する。
+
+- Specification で外部契約として確定済み
+- 製品判断が不足する `Upstream ambiguity` として、Requirements / Concept へ正当に差し戻し
+- 外部契約は一意で、内部実現だけが異なる純粋な `Design choice` として正当に委譲
+
+Requirements が目的、制約、責任、許容範囲を与え、その範囲内で一意な外部契約へ展開できる場合は Specification-level clarification である。具体値が Requirements に書かれていないだけで Design / Implementation へ再委譲してはならない。「Design に送った」と記録されているだけでは PASS とせず、外部結果が一意になっているか、または上流判断が本当に不足しているかを確認する。
+
 ### 観測可能で検証可能な契約
 
 対象に必要な範囲で、第三者が実装を知らずに次を判定できるか確認する。
@@ -75,11 +93,15 @@ Implementation / Test
 - 状態、状態遷移、ライフサイクル、外部から見える不変条件
 - 入力検証、未知 / 空 / 不正 / 重複 / 境界入力の結果
 - エラー条件、拒否条件、失敗時の状態と利用者・外部主体への結果
-- 互換性、相互運用性、バージョン、決定性、順序や結果の規則
+- 互換性、相互運用性、バージョン、migration、決定性、順序や結果の規則
 - Requirements が求めるセキュリティ / 信頼境界上の公開範囲、権限結果、改変・破損時の扱い、拒否側に倒す扱いなど
 - `MUST` / `SHOULD` / `MAY` または同等の規範性が、文書内で一意に解釈できるか
 
 「適切に」「正しく」「安全に」「必要に応じて」「互換性を維持する」のような解釈依存の表現だけで、合否が定まらない箇所を残さない。ただし、上流で未決定の製品判断をレビュアーが補完してはならない。
+
+### Two-implementation test
+
+この Specification に適合する合理的な Design / Implementation を二つ作ったと仮定し、同じ外部入力・同じ外部状態から、異なる利用者可視結果、外部 message、file、protocol result、error result、state transition、ordering、compatibility result が得られないかを確認する。差異が得られ、その差を許容する approved Requirements / Concept / formal reference / 互換性契約がない場合は、Specification の不足候補として扱う。外部結果が同じで内部方式だけが異なる場合は、原則として Design / Implementation の責務である。
 
 ### 過剰仕様と仕様不足
 
@@ -96,6 +118,12 @@ Implementation / Test
 一方、必要な入力、出力、状態、入力検証、エラー、境界、互換性、セキュリティ上外部から見える振る舞いを「Design で決める」とだけしていないか確認する。Requirements が十分なら未定義の外部挙動は Specification の指摘になり得る。
 
 外部のファイル形式、プロトコル、API、データスキーマは、Requirement または正式な参照資料が要求する場合 Specification の契約である。内部データベーススキーマなどと混同しない。
+
+### 用語だけで工程を分類しない
+
+`algorithm`、`parser`、`schema`、`persistence`、`serialization`、`encoding`、`ranking`、`scoring`、`cache`、`timestamp`、`version` という語が登場しただけで Design と判断しない。まず、その選択が外部から観測される入力、出力、状態遷移、失敗結果、互換性、決定性を変えるかを確認する。変えるなら、許可された根拠の範囲で Specification の外部契約として確認し、根拠が不足する場合は `Upstream ambiguity` として扱う。変えない内部方式だけを Design / Implementation に委譲する。
+
+例えば、経路探索アルゴリズムの選択は Design だが、同率結果の決着規則は Specification である。parser の実装方法は Design / Implementation だが、外部メッセージの delimiter の escape 規則は Specification である。特定の保存技術とデータベースの選択は Design だが、破損した永続データを全拒否するか部分復元するかは Specification であり、部分復元処理をどの関数で実装するかは Implementation である。
 
 ## 曖昧さと工程分類
 
@@ -116,7 +144,7 @@ Implementation / Test
 - チェックリストに項目がある、実装に存在する、別製品で採用されている
 - 可用性、拡張性、再利用性、性能、セキュリティ強化、運用 / セキュリティ機能を追加できる
 
-正式な Requirement / Concept / 参照資料に追跡できるか、または Requirements が既に十分で、外部から正しさを判定するために不可欠な明確化かを確認する。そうでなければ指摘ではなく、必要に応じて上流へのフィードバック、保留、対象外へ分類する。
+正式な Requirement / Concept / 参照資料に追跡できるか、または Requirements が既に十分で、外部から正しさを判定するために不可欠な明確化かを確認する。そうでなければ指摘ではなく、必要に応じて上流へのフィードバック、下流引継ぎとしての保留、対象外へ分類する。
 
 ## 指摘の規律
 
@@ -143,9 +171,9 @@ Implementation / Test
 ## レビュー手順
 
 1. 対象、版、範囲、根拠、未確認範囲を確定し、適用可能な観点だけを選ぶ。
-2. Requirements から Specification への追跡を確認し、欠落・意味変更・未承認追加を抽出する。
-3. 外部契約を敵対的な観点から確認し、入力、結果、状態、エラー、境界、互換性、決定性、安全性の解釈が一意か確認する。
-4. 内部決定の混入を探し、設計上の好みと不要な過剰仕様を分離する。
+2. Requirements から Specification への追跡と handoff を確認し、欠落・意味変更・未承認追加・正当な再委譲でない Design handoff を抽出する。
+3. 外部契約を敵対的な観点から確認し、入力、結果、状態、エラー、境界、互換性、決定性、安全性の解釈が一意か、two-implementation test で差異が残らないか確認する。
+4. 内部決定の混入を探し、用語ではなく外部結果への影響で、設計上の好みと不要な過剰仕様を分離する。
 5. 各候補を Specification / 上流 / Design / 対象外に分類し、反証してから指摘にする。
 6. 既存スキーマ、重大度、ゲート、過去の指摘の状態を適用し、必要な根拠と再確認条件を記録する。
 
@@ -154,8 +182,11 @@ Implementation / Test
 ## 自己確認
 
 - Author が Requirements にない要求を作れない基準になっているか。
+- Requirements が Specification へ明示的に委譲した外部判断が、正当な理由なく Design / Implementation へ再委譲されていないか。
 - Author が内部構造・技術選択・実装方式を書き始める余地を抑えられているか。
 - レビュアーが Design の好みを指摘にせず、必要な外部契約を Design に誤送しないか。
+- 同じ入力・状態に対する合理的な二実装の外部結果の差異を、許可された根拠なしに見逃さないか。
+- 外部形式、プロトコル、互換性、version、復旧、破損・重複・stale / replay の結果を、内部方式と混同せず確認できるか。
 - Requirements → Specification → Design の責任境界、根拠の優先順位、未解決事項の扱いが Author と一致しているか。
 - 仕様適合を外部から観測・検証でき、対象に不要な章や機能を強制していないか。
 - プロジェクト固有の技術・ドメイン・保存方式を一般ルールとして埋め込んでいないか。

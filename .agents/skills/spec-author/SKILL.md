@@ -69,7 +69,7 @@ Implementation / Test
 - 状態、状態遷移、ライフサイクル、操作の順序、外部から見える不変条件
 - 入力検証（validation）、正規化、拒否条件、エラー条件、失敗時の外部結果
 - 境界値、空・未知・不正・重複・部分入力など、要求上必要な境界条件
-- 互換性（compatibility）、相互運用性（interoperability）、バージョン、後方互換などの外部ルール
+- 互換性（compatibility）、相互運用性（interoperability）、バージョン、migration、後方互換などの外部ルール
 - 同じ入力に対する決定性、順序、丸め、時刻その他の結果に影響する規則
 - セキュリティや信頼境界（trust boundary）に関して Requirements が要求する、公開範囲、権限結果、入力の扱い、改変・破損時の結果、拒否側に倒す扱い（fail-closed）などの観測可能な契約
 - 必要な受入・適合条件、例、未決定事項、Requirements への追跡性（Traceability）
@@ -79,6 +79,50 @@ Implementation / Test
 外部のファイル形式、プロトコル、API、データスキーマは、Requirement または正式な参照資料が必要とする外部契約なら Specification の対象になり得る。内部データベーススキーマ、コレクション / テーブル構成、内部保存形式は、外部互換契約でない限り Design の対象である。
 
 規範性を表す場合は、`MUST` / `SHOULD` / `MAY` または同等の語の意味を文書内で一意にし、必須・推奨・任意を混同させない。単なる文体上の強調を規範性として扱わない。
+
+## Requirements からの handoff を完結させる
+
+Requirements を読むときは、次の事項を先に抽出する。
+
+- Specification で決めると明示された事項
+- 後工程で外部契約を定義するとされた事項
+- 正確な形式、状態遷移、互換性、version、error result、parsing result を Specification へ引き継ぐ記述
+- Acceptance を成立させるために必要な外部契約
+- `unresolved`、`TBD`、`later phase` などの未決定事項
+
+Requirements が目的、制約、責任、許容範囲を与えており、その範囲内で一意な外部契約へ展開できる場合は、単なる Specification-level clarification である。具体的な値や形式が Requirements に書かれていないだけで、Design / Implementation へ再委譲してはならない。製品判断が不足していて一意に決められない場合だけ `upstream feedback` / `clarification needed` とし、外部契約が同じで内部実現だけが異なる場合だけ Design choice として引き継ぐ。
+
+## 外部結果を決める規則と内部方式を分離する
+
+同じ Specification に適合する二つの Design / Implementation が、同じ外部入力または同じ外部状態に対して異なる観測可能な結果を返せるなら、その差を許容する承認済みの Requirements、Concept、formal reference、互換性契約などがない限り、外部契約が不足している可能性が高い。逆に、内部実現が異なっても外部から観測される入力、出力、状態遷移、失敗結果、互換性、決定性が同じなら、その違いは原則として Design / Implementation の責務である。
+
+次のように、結果を決める規則と実現方式を分ける。
+
+Specification で定める候補:
+
+- accepted representation、外部 message / file / protocol format、field semantics、version semantics
+- ordering、deterministic tie-break、rounding、normalization、timestamp interpretation
+- replay / stale / duplicate の判定、compatibility / migration rules、same-input same-result に必要な評価規則
+- failure 時に外部から見える状態、partial recovery / full rejection の条件、externally visible atomicity
+
+Design / Implementation に残す候補:
+
+- algorithm、parser の内部実装、storage engine、persistence strategy、internal schema、internal representation
+- module decomposition、caching、indexing、optimization、threading / concurrency model
+- concrete library、framework、依存関係、配置方式
+
+`algorithm`、`parser`、`schema`、`persistence`、`serialization`、`encoding`、`ranking`、`scoring`、`cache`、`timestamp`、`version` という語だけで所属工程を決めない。その選択が外部結果を変える場合は、承認済みの根拠と許容範囲に沿って外部契約を Specification に残し、根拠が不足する場合は `upstream feedback` / `clarification needed` とする。外部結果を変えない内部方式だけを Design / Implementation に送る。例えば、経路探索アルゴリズムの選択は Design だが、同率結果の決着規則は Specification である。parser の実装方法は Design / Implementation だが、外部メッセージの delimiter の escape 規則は Specification である。特定の保存技術とデータベースの選択は Design だが、破損した永続データを全拒否するか部分復元するかは Specification であり、部分復元処理をどの関数で実装するかは Implementation である。
+
+## Design handoff の自己監査
+
+Specification を完成させる前に、Design / Implementation へ送った各事項について次を確認する。
+
+1. その違いによって外部結果は変わらないか。
+2. 同じ Specification に適合する二つの実装が、差異を許容する承認済みの根拠なく異なる外部結果を返す余地を作っていないか。
+3. Requirements がその事項を Specification に明示的に委譲していないか。
+4. 外部 interoperability / compatibility / determinism に必要な情報ではないか。
+
+該当するなら Design に送らず Specification に残す。製品判断が不足する場合に限り `upstream feedback` / `clarification needed` とし、内部実現だけの選択であることを確認できた場合だけ Design handoff とする。
 
 ## 曖昧さの分類
 
@@ -109,11 +153,12 @@ Implementation / Test
 ## 作成手順
 
 1. 依頼、対象範囲、承認済み Requirements / Concept、正式な参照資料、互換性要求を確認する。
-2. Requirement ID、またはそれに相当する上流根拠を各重要契約へ対応付ける。形式的な表は、役に立つ場合だけ作る。
-3. 必要な外部入力・出力・状態・ライフサイクル・失敗・境界・互換性を抽出し、観測可能な結果へ展開する。
-4. 未決定事項を Specification-level clarification / Upstream ambiguity / Design choice に分類する。
-5. 対象に必要な契約だけを記述し、内部方式、将来拡張、実装・テストの詳細を除く。
-6. 自己確認し、既存の文書配置・命名・レビュー運用がある場合はそれに従う。依頼がなければ他成果物やコードを変更しない。
+2. Requirements から Specification への handoff、未決定事項、Acceptance に必要な外部契約を抽出する。
+3. Requirement ID、またはそれに相当する上流根拠を各重要契約へ対応付ける。形式的な表は、役に立つ場合だけ作る。
+4. 必要な外部入力・出力・状態・ライフサイクル・失敗・境界・互換性・決定性を抽出し、観測可能な結果へ展開する。
+5. 未決定事項を Specification-level clarification / Upstream ambiguity / Design choice に分類し、Design handoff の自己監査を行う。
+6. 対象に必要な契約だけを記述し、内部方式、将来拡張、実装・テストの詳細を除く。
+7. 自己確認し、既存の文書配置・命名・レビュー運用がある場合はそれに従う。依頼がなければ他成果物やコードを変更しない。
 
 ## 構成の選択
 
@@ -133,9 +178,12 @@ Implementation / Test
 ## 自己確認
 
 - 各重要契約が Requirements または許可された正式な参照資料へ追跡できる。
+- Requirements が Specification へ明示的に委譲した外部判断を、正当な理由なく Design / Implementation へ再委譲していない。
 - Requirements にない機能、利用者、責任、制約、保存、互換性、セキュリティ要求を追加していない。
 - 第三者が実装内部を知らなくても、入力・結果・状態・失敗・境界の合否を判定できる。
+- 同じ入力・状態に対する合理的な二実装の外部結果が、承認済みの根拠なく分岐しない。
 - 曖昧さを推測で埋めず、Specification / 上流 / Design の境界へ正しく送っている。
+- algorithm、parser、persistence、schema などの語だけで Design に分類していない。
 - 内部構造、技術選択、アルゴリズム、実装・テスト方式を固定していない。
 - 対象に不要な章、フォールバック、将来拡張、一般論を追加していない。
 - 文書がアプリケーション、ライブラリ、サービス、CLI、ファイル形式、プロトコル、バッチ処理、組込みコンポーネントのいずれにも適用可能な一般原則に留まっている。

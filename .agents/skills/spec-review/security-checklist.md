@@ -17,15 +17,15 @@
 
 ## 完全性・状態・失敗
 
-- integrity、改変検知、replay（該当する場合）、unknown / version の扱いが外部から判定できるか。
-- malformed / tampered input や権限エラー時に、fail-closed が必要な箇所の結果が明確か。
+- integrity、改変検知、stale、replay（該当する場合）、unknown / version の扱いが外部から判定できるか。
+- malformed / tampered / stale input や権限エラー時に、fail-closed が必要な箇所の結果が明確か。
 - partial failure、再試行、取消し、復旧、rollback、externally visible atomicity が外部契約に関係する場合、結果と状態遷移が一意か。
-- persistence / lifecycle が外部から観測できる契約に含まれる場合、保存・復元・破損・削除・互換性の扱いが明確か。
+- persistence / lifecycle が外部から観測できる契約に含まれる場合、保存・復元・破損・削除・互換性・migration の扱いが明確か。
 
 ## インターフェースと相互運用性
 
 - interface、データ形式、encoding、エラー表現、順序、deterministic representation が相手から判定できるか。
-- compatibility / versioning、未知の値や版、既存の正式外部契約との互換条件が必要な範囲で明確か。
+- compatibility / versioning / migration、未知の値や版、既存の正式外部契約との互換条件が必要な範囲で明確か。
 - 外部依存や責任分界がある場合、どの結果を対象の契約として保証するかが明確か。
 
 ## 資源と検証可能性
