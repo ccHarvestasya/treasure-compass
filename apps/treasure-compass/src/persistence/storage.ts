@@ -1,5 +1,4 @@
 import {
-  DEFAULT_GRADE,
   FULL_PARTY,
   GRADES,
   STORAGE_KEY_GRADE,
@@ -7,7 +6,9 @@ import {
 } from "@/constants";
 import type { Grade, UserItem } from "@/types";
 
-export const STORAGE_KEY_SESSIONS = "treasure-compass:sessions:v1";
+export const STORAGE_KEY_TREASURE_SESSION =
+  "treasure-compass:treasure-session:v2";
+export const STORAGE_KEY_LEGACY_SESSIONS = "treasure-compass:sessions:v1";
 
 export interface PersistedTreasureSession {
   grade: Grade;
@@ -19,34 +20,17 @@ export interface ReadTreasureResult {
   restoreFailure: boolean;
 }
 
-const EMPTY_LEGACY_MOB_SESSION = {
-  run: null,
-  revision: null,
-  issuedAt: null,
-  mode: null,
-  targets: {},
-  manualOrder: [],
-  currentSelections: {},
-  selectionHistory: {},
-  route: {
-    status: "empty",
-    steps: [],
-    order: [],
-    transitions: 0,
-    ties: [],
-    sessionVersion: 0,
-    masterGeneration: 0,
-  },
-  acceptedGuide: null,
-  sessionVersion: 0,
-} as const;
-
 function storage(): Storage | null {
   return typeof localStorage === "undefined" ? null : localStorage;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
+  const allowed = new Set(keys);
+  return Object.keys(value).every((key) => allowed.has(key));
 }
 
 function isGrade(value: unknown): value is Grade {
@@ -102,60 +86,115 @@ function parseTreasure(value: unknown): PersistedTreasureSession | null {
   return { grade: value.grade, members: value.members };
 }
 
-function parseOlderKeys(
+function parseCurrentSession(value: unknown): PersistedTreasureSession | null {
+  if (
+    !isRecord(value) ||
+    !hasExactKeys(value, ["schemaVersion", "sessionRevision", "state"]) ||
+    value.schemaVersion !== 1 ||
+    typeof value.sessionRevision !== "number" ||
+    !Number.isInteger(value.sessionRevision) ||
+    value.sessionRevision < 1
+  ) {
+    return null;
+  }
+  return parseTreasure(value.state);
+}
+
+function parseLegacySeparateKeys(
   currentStorage: Storage,
 ): PersistedTreasureSession | null {
   try {
     const gradeRaw = currentStorage.getItem(STORAGE_KEY_GRADE);
     const membersRaw = currentStorage.getItem(STORAGE_KEY_MEMBERS);
-    const grade: unknown = gradeRaw ? JSON.parse(gradeRaw) : DEFAULT_GRADE;
-    const members: unknown = membersRaw
-      ? JSON.parse(membersRaw)
-      : Array<UserItem | null>(FULL_PARTY).fill(null);
+    if (gradeRaw === null && membersRaw === null) return null;
+    if (gradeRaw === null || membersRaw === null) return null;
+    const grade: unknown = JSON.parse(gradeRaw);
+    const members: unknown = JSON.parse(membersRaw);
     return parseTreasure({ grade, members });
   } catch {
     return null;
   }
 }
 
-export function readPersistedTreasure(): ReadTreasureResult {
-  const currentStorage = storage();
-  if (!currentStorage) return { snapshot: null, restoreFailure: false };
-  let raw: string | null;
-  try {
-    raw = currentStorage.getItem(STORAGE_KEY_SESSIONS);
-  } catch {
-    return { snapshot: null, restoreFailure: true };
-  }
-  if (!raw)
-    return { snapshot: parseOlderKeys(currentStorage), restoreFailure: false };
-  try {
-    const value: unknown = JSON.parse(raw);
-    if (!isRecord(value) || value.version !== 1) {
-      return { snapshot: null, restoreFailure: true };
+function parseLegacyIntegratedSession(
+  value: unknown,
+): PersistedTreasureSession | null {
+  if (!isRecord(value) || value.version !== 1) return null;
+  return parseTreasure(value.treasure);
+}
+
+function removeLegacyRecords(currentStorage: Storage): void {
+  for (const key of [
+    STORAGE_KEY_LEGACY_SESSIONS,
+    STORAGE_KEY_GRADE,
+    STORAGE_KEY_MEMBERS,
+  ]) {
+    try {
+      currentStorage.removeItem(key);
+    } catch {
+      // The new record remains the migration marker even if cleanup fails.
     }
-    const snapshot = parseTreasure(value.treasure);
-    return snapshot
-      ? { snapshot, restoreFailure: false }
-      : { snapshot: null, restoreFailure: true };
-  } catch {
-    return { snapshot: null, restoreFailure: true };
   }
 }
 
-function legacyMobForWrite(
-  currentStorage: Storage,
-): Record<string, unknown> | typeof EMPTY_LEGACY_MOB_SESSION {
+export function readPersistedTreasure(): ReadTreasureResult {
+  const currentStorage = storage();
+  if (!currentStorage) return { snapshot: null, restoreFailure: false };
+  let currentRaw: string | null;
   try {
-    const currentRaw = currentStorage.getItem(STORAGE_KEY_SESSIONS);
-    if (!currentRaw) return EMPTY_LEGACY_MOB_SESSION;
-    const current: unknown = JSON.parse(currentRaw);
-    return isRecord(current) && current.version === 1 && isRecord(current.mob)
-      ? current.mob
-      : EMPTY_LEGACY_MOB_SESSION;
+    currentRaw = currentStorage.getItem(STORAGE_KEY_TREASURE_SESSION);
   } catch {
-    return EMPTY_LEGACY_MOB_SESSION;
+    return { snapshot: null, restoreFailure: true };
   }
+
+  if (currentRaw !== null) {
+    try {
+      const snapshot = parseCurrentSession(JSON.parse(currentRaw));
+      return snapshot
+        ? { snapshot, restoreFailure: false }
+        : { snapshot: null, restoreFailure: true };
+    } catch {
+      return { snapshot: null, restoreFailure: true };
+    }
+  }
+
+  let legacyRaw: string | null;
+  try {
+    legacyRaw = currentStorage.getItem(STORAGE_KEY_LEGACY_SESSIONS);
+  } catch {
+    return { snapshot: null, restoreFailure: true };
+  }
+
+  let legacySnapshot: PersistedTreasureSession | null = null;
+  if (legacyRaw !== null) {
+    try {
+      legacySnapshot = parseLegacyIntegratedSession(JSON.parse(legacyRaw));
+    } catch {
+      return { snapshot: null, restoreFailure: true };
+    }
+    if (!legacySnapshot) return { snapshot: null, restoreFailure: true };
+  } else {
+    let hasSeparateLegacyRecord = false;
+    try {
+      hasSeparateLegacyRecord =
+        currentStorage.getItem(STORAGE_KEY_GRADE) !== null ||
+        currentStorage.getItem(STORAGE_KEY_MEMBERS) !== null;
+    } catch {
+      return { snapshot: null, restoreFailure: true };
+    }
+    if (!hasSeparateLegacyRecord) {
+      return { snapshot: null, restoreFailure: false };
+    }
+    legacySnapshot = parseLegacySeparateKeys(currentStorage);
+    if (!legacySnapshot) return { snapshot: null, restoreFailure: true };
+  }
+
+  if (!writePersistedTreasure(legacySnapshot)) {
+    return { snapshot: null, restoreFailure: true };
+  }
+
+  removeLegacyRecords(currentStorage);
+  return { snapshot: legacySnapshot, restoreFailure: false };
 }
 
 export function writePersistedTreasure(
@@ -165,12 +204,11 @@ export function writePersistedTreasure(
   if (!currentStorage) return false;
   try {
     currentStorage.setItem(
-      STORAGE_KEY_SESSIONS,
+      STORAGE_KEY_TREASURE_SESSION,
       JSON.stringify({
-        version: 1,
-        product: "treasure",
-        treasure: snapshot,
-        mob: legacyMobForWrite(currentStorage),
+        schemaVersion: 1,
+        sessionRevision: 1,
+        state: snapshot,
       }),
     );
     return true;

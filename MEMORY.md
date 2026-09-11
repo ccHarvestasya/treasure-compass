@@ -70,16 +70,19 @@
 - 正式文書は Concept、Requirements、Specification、Design まで存在する。現行上流の最終レビューは [Concept Review 005](docs/reviews/concept/concept-review-005.md)、[Requirements Review 007](docs/reviews/requirements/requirements-review-007.md)、[Specification Review 007](docs/reviews/specification/specification-review-007.md) で `READY`。Design Revision 004 は [Design Review 004](docs/reviews/design/design-review-004.md) で `READY`（Critical 0 / Major 0 / Minor 0）となり、DR-005〜DR-008 はすべて解消済みである。
 - 現在のブランチは `maintenance/add-mob-compass`。Treasure と Mob の実装・unit test はリポジトリに存在するが、`docs/reviews/implementation/` の実装レビュー成果物はまだない。正式契約への実装適合は未レビューである。
 - 現在のリポジトリ実体は React / TypeScript / Vite、Zustand、Tailwind を用いるブラウザアプリで、静的地図・地点データと browser localStorage を扱う。
+- 2026-09-12 に Treasure の保存境界の第一段階を実装した。Treasure は `treasure-compass:treasure-session:v2` を優先して読み書きし、旧 `treasure-compass:sessions:v1` と旧 separate keys は有効な Treasure 部分だけを一度移行してから削除する。Treasure の書き込みで旧 Mob 部分を再保存しないこと、移行失敗時に旧保存を変更しないことを unit test で確認済みである。現段階の新 record は既存 UI の grade / member projection のみで、Design が定める master identity、stable point reference、route / progress 全体の snapshot には未到達である。
+- 現行 legacy Treasure JSON の実在する設定済み入力は `g8`（4 maps / 43 points）、`g10`（6 / 68）、`g12`（6 / 64）、`g14`（6 / 65）、`g17`（6 / 65）。`P` はそれぞれ 35 / 48 / 48 / 48 / 48、`T` は 8 / 19 / 16 / 17 / 17。`g10` に `P/T` 以外の record が 1 件ある。これは棚卸し結果であり、正式 master 採用を意味しない。
 
 ## Open Issues
 
-- 現在の Treasure 実装では、上部の `clearAllData` が Treasure と Mob の両状態を同時に初期化する。公開単位および Mob のソロ／パーティごとに状態を分離し、現在の対象だけを消去する決定と競合するため、正式な消去範囲と実装を揃える必要がある。
-- 現在の実装は一つの画面内で Treasure / Mob を切り替え、両者を一つの保存スナップショットで扱っている。別 build entry、共有地図基盤、独立した Treasure／Mob ソロ／Mob パーティ保存境界へ実装を移行する必要がある。
+- Treasure の `clearAllData` は現在 Treasure 専用 key だけを書き換えるようになった。ただし、Treasure の全 session snapshot と Mob ソロ／パーティの独立 persistence はまだ未実装であり、最終的な全消去契約までの統合が必要である。
+- 二つの build entry は存在するが、Mob entry は placeholder UI のままである。Treasure は旧 route store を使用しているため、共有 map 基盤、Treasure／Mob ソロ／Mob パーティの各 session root、Mob preference の独立保存へ移行する必要がある。
 - 現在の Treasure 実装では、手動で巡回順を並べ替えた後も、メンバーの登録・地点変更・削除によって自動計算へ戻り、手動順序が失われる。明示的な「経路自動計算」まで既存順序を維持する決定に合わせ、正式文書と実装を更新する必要がある。
-- 現在の Treasure 保存形式はグレードとメンバーだけを保持する。新 snapshot への初回移行、旧データの非破壊、全消去後の旧状態復活防止を実装する必要がある。
+- Treasure の新 key への初回移行、旧データの非破壊、移行後の旧 key 削除は第一段階として実装済み。ただし現在の新 record はグレードとメンバー projection だけを保持するため、master identity、stable reference、順序、完了、現在地点を含む正式 snapshot へ拡張する必要がある。
 - Mob master は新規準備が必要であり、正式名、別名、rank、map、全候補地点、出典を確認しなければならない。旧試作が要求する `/json/mobs.json` は存在せず、移行元として扱わない。
 - map 間のテレポ料金と比較可能なロード時間は、現行 JSON の未使用 `time` から推測せず、検証済み情報源から準備する必要がある。
 - 現行 Treasure JSON のうち設定から参照される `g8`、`g10`、`g12`、`g14`、`g17` だけを移行候補とする。未使用 `g11`、用途不明 field、`division=R/Z` は自動移行せず、変換 report と stable ID 対応を承認する必要がある。
+- master data preparation gate は未完了。Mob の正式 master、map / Treasure stable ID、テレポ料金、比較可能なロード時間、情報 source、画像 license を確認するまで production master を追加しない。
 - 実装は存在するが、承認済み Specification / Design に対する独立した Implementation Review と、その検証証跡は未作成。適合性・残存差分の有無は未確定。
 
 ## Historical Decisions
