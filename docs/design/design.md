@@ -2,10 +2,10 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| Status | Design Author Revision 004（Design Review 003 の DR-005〜DR-008 対応、再レビュー待ち） |
+| Status | Design Author Revision 005（動的エーテライト表示・ローカライズ境界を反映、Design Review 005 待ち） |
 | 対象 | Treasure Compass / Mob Compass v1 |
 | 直接の上流 | [Specification](../specification/specification.md) |
-| 上流の承認状態 | [Specification Review 007](../reviews/specification/specification-review-007.md) は `READY` |
+| 上流の承認状態 | [Specification Review 009](../reviews/specification/specification-review-009.md) は `READY` |
 | 文書の責務 | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める |
 
 ## 1. 目的、対象、対象外
@@ -24,13 +24,16 @@
 - 手動順序は明示的な経路自動計算と保存の成功まで維持する。
 - 保存失敗時は、操作前の最後に正常保存された状態を画面と保存先の双方で維持する。
 - 静的 JSON、localStorage、利用者入力は、検証を通過するまで信頼しない。
+- 通常の地図表示と地点選択表示は、同じ表示対象マップの全ての有効なエーテライトを、session state と独立した案内 overlay として継続表示する。
+- エーテライト案内は共通 map master の検証済み projection だけから作り、案内アイコン・町名ラベルを操作対象または保存対象にしない。
+- 初期リリースの表示名は日本語とし、内部の名称解決境界は安定 ID と言語別表示名の対応を維持する。
 
 ### 1.2 対象
 
 - 二つのブラウザアプリと共有パッケージからなるモノレポの論理構成。
 - Treasure、Mob ソロ、Mob パーティの状態所有と操作調停。
 - 共通地図基盤、経路計算、マスターデータ読込、保存・復元の責務境界。
-- 地図・エーテライト、Treasure、Mob の静的マスター形式と参照関係。
+- 地図・エーテライト、Treasure、Mob の静的マスター形式、検証済み projection と参照関係。
 - 現行 Treasure データと保存状態からの移行境界。
 - 320 CSS px 以上を含むレスポンシブ UI の構造。
 
@@ -46,7 +49,7 @@
 
 ### 2.1 根拠と工程境界
 
-直接の規範的根拠は [Specification](../specification/specification.md) である。[Requirements](../requirements/requirements.md) と [Concept](../concept/concept.md) は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。[Design Review 003](../reviews/design/design-review-003.md) の DR-005〜DR-008 は、本 Revision で内部の配備・経路・データ・文書境界へ反映する。
+直接の規範的根拠は [Specification](../specification/specification.md) である。[Requirements](../requirements/requirements.md) と [Concept](../concept/concept.md) は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。[Design Review 004](../reviews/design/design-review-004.md) までの DR-005〜DR-008 は既存設計の解消済み判断として維持する。
 
 現行 JSON には実装から参照されない項目と設定から到達できないデータがある。そのため、既存形式をそのまま共通マスターへ昇格させず、参照実績、上流上の必要性、出典・利用条件を個別に確認してから移行する。
 
@@ -61,13 +64,13 @@
 | `mapName` / `mapNameShort` | 表示、Treasure チャット照合・出力 | map の正式名・短縮名として移行 |
 | `pointNo` | グレード内の地点識別、表示 key | 安定した地点 ID へ置換し、旧保存移行用の対応表だけを保持 |
 | `division=P` | 宝箱候補 | Treasure point として移行候補 |
-| `division=T` | エーテライト | 共通 map master の aetheryte として移行候補 |
+| `division=T` | エーテライト | 検証後、共通 map master の aetheryte projection として移行候補 |
 | `posX` / `posY` | 描画、入力照合、表示、経路 | 10 倍値をゲーム座標へ変換して移行 |
-| `pointName` | 地点・エーテライトの表示 | 対応する名称として移行 |
+| `pointName` | 地点・エーテライトの表示 | 検証済み T の日本語表示名として移行候補 |
 | `posZ` | 旧距離関数の高さ | 新マスターへ移行しない。v1 は X/Y のみ |
 | `time` | 現行 JSON に値はあるが、現行経路処理からの参照なし | ロード時間へ転用しない。別の検証済み情報源から登録する |
 | `region` / `block` / `posT` | 実行時参照を確認できない | 移行しない |
-| `division=R` | `g10.json` に存在するが現行 UI・経路から到達しない | 役割が承認されるまで移行しない |
+| `division=R` | `g10.json` に存在するが現行 UI・経路から到達しない | 検証済みでも v1 の共通地図情報へ移行しない |
 | `division=Z` | 型には存在するが現行 JSON で実レコードを確認できない | 移行しない |
 
 `GRADE_CONFIG` から参照される `g8`、`g10`、`g12`、`g14`、`g17` だけを Treasure の移行入力候補とする。`g11.json` と対応画像は現行設定から到達できず、`g12` との関係も外部契約から確定できないため、自動移行しない。後から採用する場合は、対応グレード、地点、画像、出典および重複関係を別途承認する。
@@ -102,10 +105,10 @@ pnpm workspace の root から二つの Vite application を個別に build で�
 | `packages/treasure-domain` / `@treasure-compass/treasure-domain` | 8 枠、地点置換、チャット入力適用、完了、順序の Treasure 固有規則 |
 | `packages/mob-domain` / `@treasure-compass/mob-domain` | ランク別登録、候補集合、一般モブ採用、B 探索、パーティ地点置換の固有規則 |
 | `packages/map-core` / `@treasure-compass/map-core` | map/座標 value、map group 順序、同一 map 内の二次元経路、同率判定を行う純粋計算 |
-| `packages/map-ui` / `@treasure-compass/map-ui` | 地図画像、marker、route、地点選択 dialog、pan/zoom とレスポンシブ表示 |
-| `packages/master-data` / `@treasure-compass/master-data` | repo 管理 JSON・画像、schema、validator、検証済み read model、legacy lookup と移行 report |
+| `packages/map-ui` / `@treasure-compass/map-ui` | 地図画像、通常表示・地点選択表示の marker/route、共通エーテライト案内 overlay、地点選択 dialog、pan/zoom とレスポンシブ表示 |
+| `packages/master-data` / `@treasure-compass/master-data` | repo 管理 JSON・画像、schema、validator、検証済み map projection、legacy lookup と移行 report。`division=T` の採用と `division=R` の除外を所有する |
 
-Treasure application と Mob application は相互依存しない。`map-core` は他 workspace package に依存しない。`map-ui`、`master-data`、各 product domain は `map-core` の公開 value/contract だけへ依存できる。各 application は必要な共有 package と自 product domain に依存する。`treasure-domain` と `mob-domain` は相互依存しない。Map UI は検証済み map projection と明示的な UI event を扱い、JSON や session aggregate を直接解釈しない。
+Treasure application と Mob application は相互依存しない。`map-core` は他 workspace package に依存しない。`map-ui`、`master-data`、各 product domain は `map-core` の公開 value/contract だけへ依存できる。各 application は必要な共有 package と自 product domain に依存する。`treasure-domain` と `mob-domain` は相互依存しない。Map UI は検証済み map projection、overlay projection と明示的な UI event を扱い、JSON や session aggregate を直接解釈しない。案内 overlay から application coordinator へ状態変更 command を逆向きに発行しない。
 
 master の正本は `packages/master-data/data/` の `map-master.v1.json`、`treasure-master.v1.json`、`mob-master.v1.json` に分ける。地図画像は `packages/master-data/assets/maps/`、旧保存用対応表は `packages/master-data/migration/legacy-treasure-map.v1.json`、変換 report は `packages/master-data/reports/` に置く。build 時に各 app が必要な検証済み JSON と画像だけを静的 asset として出力する。report と移行元 JSON は runtime asset に含めない。
 
@@ -117,7 +120,8 @@ master の正本は `packages/master-data/data/` の `map-master.v1.json`、`tre
 | Session coordinator | working state の作成、domain operation、必要な経路計算、保存、公開 state の採用を順に調停 | route algorithm、描画、未検証値の補完 |
 | Domain operation | 操作前後の invariant、対象・進捗・順序の状態遷移 | browser API、非同期処理、画面表示 |
 | Route planner | 固定 snapshot から success / tie / failure を返す読み取り専用計算 | session commit、保存、UI 通知 |
-| Master adapter | JSON の構文・schema・参照・範囲を検証し read model を作る | session 変更、欠損値の推測 |
+| Master adapter | JSON の構文・schema・参照・範囲を検証し、共通 map projection と app 固有 read model を作る。T のみを aetheryte projection に通し、R と無効・重複 record を除外する | session 変更、欠損値の推測、表示上の配置 |
+| Aetheryte overlay | map projection と viewport projection から、アイコンと町名ラベルの案内表示を組み立てる。通常表示と地点選択表示で同じ入力・配置責務を共有する | master 検証、route/session 状態、登録・選択 command |
 | Persistence adapter | snapshot の serialize、検証、原子的な logical read/write/delete | domain の部分復元、route 計算 |
 
 依存は presentation → application → domain/port の一方向とし、browser storage、fetch、React 等の環境依存は adapter に閉じ込める。domain と route core は環境 API を参照しない。
@@ -202,6 +206,8 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
 
 上記および 4.3、4.4 の値は構造例であり、座標、料金、ロード時間、名称、revision を実データとして採用する根拠にはしない。各値は 6 章の移行 gate または新規データの確認を経て確定する。`sources` と `licenses` は結合 master context の共通 catalog であり、Treasure/Mob master の `sourceIds` もこの catalog を参照する。
 
+この構造例の aetheryte `name` は master 入力側の名称表現を示すためのものであり、実行時には Master adapter が stable ID に対応する言語 keyed な表示名を含む aetheryte projection へ変換する。raw master の field 形状と projection の内部表現を混同しない。
+
 各 expansion、map、aetheryte、travel edge、grade set、Treasure point、mob、mob candidate の `sourceIds` は必須かつ一件以上とし、同じ ID を重複させない。すべての ID は共通 `sources` catalog の有効 record を参照しなければならない。`sourceIds` は名称、分類、座標、参照関係等の意味情報を確認・訂正する根拠を表し、画像の利用条件を表す `licenseId` とは分離する。
 
 - `bounds` は X/Y の包含範囲であり、有限数かつ `min <= max` とする。
@@ -212,6 +218,12 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
 - 初回 map への到達は map 間遷移回数に含めない。異なる map group 間の移動だけが edge を消費する。必要な edge の欠落をゼロ値で補わない。
 
 `loadTime` は経路比較用の同一基準による値であり、現行 JSON の `time` を転用しない。料金とロード時間は独立した軸として保持し、重み付け値を master に持たせない。
+
+Master adapter は raw map record から、アプリが参照する検証済み map projection を一度だけ生成する。aetheryte projection は stable ID、所属 map ID、canonical X/Y、言語別表示名の対応を持ち、v1 では日本語表示名を必須とする。raw record の `division` は adapter 内の検証境界に留め、検証済み `division=T` だけを projection へ通し、`division=R` は検証済みでも projection、表示、参照および経路入力へ渡さない。stable ID が衝突した場合は衝突する全 record を除外し、別の有効 record の projection 生成を妨げない。
+
+言語別表示名の解決は stable ID から projection の表示名集合を参照する責務とする。初期リリースの active language は日本語だけであり、表示名がない場合に別言語の文字列を翻訳・推測して補わない。map、aetheryte、Treasure および Mob の名称は、将来の追加言語を妨げない言語 keyed な read-model 境界で扱うが、言語選択や多言語 UI はこの Design の v1 実装対象に含めない。
+
+地図画像は map projection の背景 asset であり、案内情報の正本ではない。configured な G8、G10、G12、G14、G17 の対応画像は、採用 gate の時点で埋め込み町名・エーテライト表示を除いた状態を確認し、同じ projection の案内表示と重複させない。画像の出典・利用条件は `licenseId` と source catalog の確認結果が揃うまで runtime asset として採用しない。
 
 ### 4.3 Treasure master
 
@@ -293,12 +305,15 @@ Master adapter は次の順で検証する。
 2. allow-list による field、型、有限数、enum、文字列および配列 cardinality。
 3. 同じ entity 種別内の ID 一意性。
 4. map、expansion、aetheryte、source、license の参照整合性と、各意味 record の一件以上の出典対応。
-5. X/Y の map bounds 包含、rank/category 整合、巡回 map の aetheryte 必須条件。
-6. app 固有 master と map master の結合整合性。
+5. X/Y の map bounds 包含、rank/category 整合、巡回 map の aetheryte 必須条件。aetheryte は検証済み `division=T`、非空の日本語町名、有限 X/Y を満たすものだけを候補にする。
+6. aetheryte の stable ID 衝突を全件除外し、その他の有効 record から共通 map projection を生成する。`division=R` はこの projection に入力しない。
+7. app 固有 master と map master の結合整合性。
 
 root envelope または未知 `schemaVersion` が不正なら、その論理ファイル全体を利用不可にする。record 単位の不正は、不正 record とそれに依存する record を除外し、他の独立した有効 record は利用できる。重複 ID は配列先頭を採用せず、衝突する全 record を除外する。未知参照、範囲外座標、非有限数、空の必須文字列を推測修正しない。
 
 UI へは、利用不能なファイル、除外した対象または地点、理由を区別した diagnostic projection を渡す。内部 stack、JSON 全文、保存内容を表示・log しない。
+
+Master adapter が生成した aetheryte projection は、grade set や product master の複製ではなく、正規 map ID に一つだけ属する read model とする。除外された R、無効、参照不能、範囲外または重複 record は diagnostic に理由を残すが、aetheryte projection や overlay の入力へ戻さない。
 
 ### 5.2 部分障害
 
@@ -307,10 +322,13 @@ UI へは、利用不能なファイル、除外した対象または地点、�
 - Mob master だけが利用不能なら Mob の登録・経路を停止するが、Treasure app は map/Treasure master が有効なら利用できる。
 - travel edge の不足・不正があっても、マップ間遷移回数の第一評価だけで全体経路が一意になる場合は、補助情報不足 warning を持つ route success とする。第一評価後に複数候補が残り、不足値なしでは Pareto 比較を完了できない場合だけ route failure とする。一つの map 内だけの経路まで無効にしない。
 - 一部 record の除外後も利用可能な候補一覧を表示し、除外理由を利用者が識別できるようにする。
+- aetheryte record の部分除外後も、同じ map の他の有効な aetheryte projection は overlay と route の入力として利用する。全件が除外され対象 map に有効な aetheryte がない場合だけ、既存の master 不備・経路計算不能境界へ渡す。
 
 ### 5.3 更新と既存 session の照合
 
 Master 更新後は stable ID で session reference を解決する。解決できた対象は名称・座標を新 read model から表示し、登録、完了、探索を維持する。解決不能 reference は session 内に unresolved として保持し、route から除外する。近い座標や同名対象へ自動置換しない。
+
+Master revision が変わった場合、coordinator は新しい map projection を overlay と route の入力へ切り替え、session の aetheryte 案内表示状態を保存・復元しない。session が参照する current location が解決不能になった場合は既存の reconcile 規則で unresolved とし、別のエーテライトへ自動置換しない。
 
 一般モブまたは B モブを再選択した場合だけ、現行 master の候補集合と照合し、新 candidate を追加する。既存 candidate の探索状態は ID が同じなら維持する。消えた candidate は unresolved のまま残す。削除・全消去以外で利用者進捗を黙って失わない。
 
@@ -326,14 +344,14 @@ Master 更新後は stable ID で session reference を解決する。解決で�
 | `mapNo` | 設計時に割り当てた stable map ID と legacy lookup |
 | `pointNo` | 設計時に割り当てた stable point/aetheryte ID と legacy lookup |
 | `division=P` | Treasure point |
-| `division=T` | map aetheryte |
+| `division=T` | 検証後に共通 map master の aetheryte projection |
 | `mapName` / `mapNameShort` / `pointName` | 対応する表示名 |
 | `posX / 10`、`posY / 10` | canonical game X/Y |
 | `mapSize / 10` | 旧描画領域を再現する map 座標範囲の変換根拠 |
 
 現行描画の正規化位置は `u = (x - 1) / (mapSize / 10)`、`v = (y - 1) / (mapSize / 10)` で再現できることを migration fixture で確認する。新 master は 10 倍済み内部座標ではなく、表示と距離評価に使う game X/Y を canonical value とする。
 
-`region`、`block`、`posT`、`posZ`、`time`、未承認の `division=R/Z` は変換しない。`g11` は対象外として report へ記録する。画像は設定から参照される実行時画像だけを候補とし、map identity、実参照、内容、出典、license を確認してから新 map asset に関連付ける。
+`region`、`block`、`posT`、`posZ`、`time`、`division=R/Z` は変換しない。`division=R` は現行データ上の意味が確認できても v1 の共通 map projection から除外し、その理由を report に記録する。`g11` は対象外として report へ記録する。画像は設定から参照される実行時画像だけを候補とし、map identity、実参照、内容、出典、license を確認してから新 map asset に関連付ける。configured な G8、G10、G12、G14、G17 の対応画像では、埋め込み町名・エーテライト表示が残っていないことを確認する。
 
 同じ map が複数の configured JSON に現れる場合、名称だけで自動統合しない。画像の同一性、座標範囲、正式名・短縮名、エーテライト ID・名称・X/Y が一致することを確認して初めて一つの stable map ID へ統合する。不一致は変換 report の conflict とし、解消されるまで関係 record を採用しない。Treasure point は同一座標でも grade set ごとの地点として扱い、明示的な根拠なしに統合しない。
 
@@ -348,6 +366,7 @@ Master 更新後は stable ID で session reference を解決する。解決で�
 - stable legacy lookup が旧 grade/mapNo/pointNo を一意に解決する。
 - 画像参照と利用条件が確認される。
 - 除外・未解決 record が report 上で明示的に承認または保留される。
+- configured な地図画像が背景専用で、動的な町名・エーテライト案内と重複しないことが確認される。
 
 Mob master は現行試作から生成しない。名称、rank、map、全候補地点、別名、出典を新規データとして準備し、同じ validation gate を通す。
 
@@ -356,6 +375,8 @@ Mob master は現行試作から生成しない。名称、rank、map、全候�
 ### 7.1 共通の状態原則
 
 Treasure、Mob ソロ、Mob パーティは別々の aggregate root である。各 root は単調増加する内部 revision、参照する master identity、order mode、visit order、map 別 current location、progress を持つ。Mob の最後に選択した mode は独立した小さな preference record とする。
+
+エーテライト案内 overlay は aggregate root に含めない。master adapter の検証済み aetheryte projection と、Map UI が管理する現在の viewport 投影から導出する一時的な表示 projection とし、アイコン・ラベルの採否、候補順位、viewport の変化を session の revision、progress、order、current location または localStorage へ反映しない。通常表示と地点選択表示は同じ overlay 責務を利用し、地点選択用 marker の選択 event だけを application coordinator へ渡す。
 
 route に並べる単位は `visitId` とする。同じ target に複数候補がある B モブは candidate ごとに別 visit を持つ。一方、完了と進捗表示は `targetId` 単位とする。進捗一覧の位置と未完了 route の位置を混同せず、`progressOrder` と `visitOrder` を分ける。
 
@@ -396,6 +417,8 @@ Solo target は mob ID、登録時の candidate ID 集合、各 candidate の `u
 ### 7.5 Party target
 
 Party target は mob ID と一つの selected candidate ID を持つ。同じ mob の再選択は target を増やさず candidate reference を置き換える。手動順序では visit の位置と完了状態を維持する。自由座標は session に入らない。
+
+Map UI の案内 overlay は、Treasure の grade set、Mob の target、登録地点および完了状態を所有しない。grade 変更、target 登録、route 更新、完了・取消、再描画は、共通 map ID と master revision が変わらない限り同じ aetheryte projection を参照する。表示領域や zoom/pan の変化は viewport-local な再投影だけを起こす。
 
 ## 8. Application transaction と永続化
 
@@ -478,7 +501,7 @@ legacy lookup により grade、mapNo、pointNo を stable ID へ一意に解決
 
 ### 9.1 入力と出力
 
-Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、order mode を入力する。返り値は次のいずれかである。
+Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、共通 map projection に含まれる有効なエーテライトおよび travel data、order mode を入力する。返り値は次のいずれかである。
 
 - success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、利用可能な料金・ロード時間、tie 情報、0件以上の warning。
 - empty: 有効な未完了 visit がない正常結果。
@@ -493,7 +516,7 @@ Application は result の session revision と master identity が現在値に�
 3. 第一評価で全体経路が一つに決まった場合は、補助値を採用条件に使わない。不足・不正な料金またはロード時間があれば、該当 edge と値種別を warning にして success とする。
 4. 第一評価後に複数候補が残る場合は、必要な全 travel edge の料金合計とロード時間合計による Pareto 優越を判定する。比較に必要な値が不足・不正なら補助情報不足 failure とし、部分的な比較結果を採用しない。
 5. 優越されない候補が複数なら tie を保持し、Specification の stable tuple 列で表示採用順を一つ決める。
-6. map ごとに、保存済み current location があればそれを、なければ各 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。
+6. map ごとに、保存済み current location があればそれを、なければ共通 map projection の各有効 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。raw record や `division=R` は route planner に渡さない。
 7. 一般モブは全 candidate のうち map 内巡回全体を最短にする一地点を同時に選ぶ。B は全未探索 candidate を visit とする。
 
 料金とロード時間を加算して一つの score にしない。Z、帰還距離、入力順を評価軸にしない。同率の最終順は Specification の Unicode code point、数値、stable ID の規則を用いる。
@@ -518,23 +541,31 @@ Application は result の session revision と master identity が現在値に�
 4. coordinator が master と session reference を reconcile する。
 5. 有効 state、unresolved 情報、master/session failure を presentation projection として公開する。
 
-### 10.2 Mob ソロ登録
+### 10.2 エーテライト案内 overlay
+
+1. master adapter は app 固有 master や grade set から独立した共通 map projection を coordinator へ提供する。
+2. coordinator は表示対象 map の projection と、地点選択用なら選択対象 marker の projection を Map UI へ渡す。案内 overlay には全ての有効 aetheryte を渡し、登録対象や完了状態で絞らない。
+3. Map UI の Aetheryte overlay は、現在の viewport へ X/Y を投影し、全件のアイコンを固定アンカーへ置く。町名ラベルは Specification の矩形、4 CSS px、8方向、重なり、最大数、安定 ID・候補順の制約を満たす配置結果だけを描画し、採用できないラベルを省略する。通常表示と地点選択表示は同じ projection 入力に対して同じ結果を返す。
+4. overlay の描画、再描画、pan/zoom およびラベル省略は、application command、session mutation、persistence write を発生させない。案内 icon/label の pointer event は Map UI 内で消費し、地点選択 coordinator へ転送しない。
+5. master revision または表示対象 map が変わった場合だけ新しい共通 projection から再構築し、viewport の変更時は表示 projection だけを再計算する。Master adapter の検証失敗は §12 の failure boundary へ渡し、Map UI は未検証値や座標・名称の推測 fallback を作らない。
+
+### 10.3 Mob ソロ登録
 
 検索 projection は Unicode NFC とラテン文字の case-fold を行い、正式名・明示 alias の部分一致と、map 由来 expansion、category/rank filter を AND/OR 規則で適用する。候補行の明示選択でのみ command を発行する。
 
 選択した一般/B target へ現 master の全 candidate reference を登録する。一般は現在 order mode の規則で一 candidate、B は全未探索 candidate を visit 化する。保存成功後も登録 tab と検索・filter の UI-local state を維持する。検索文字列と filter は session 永続化対象にしない。
 
-### 10.3 Mob パーティ登録
+### 10.4 Mob パーティ登録
 
 A/S/SS の選択で Map UI の選択 dialog を開く。dialog には対象 mob の map と有効 candidate marker だけを渡す。marker の click/tap は candidate ID を返し、coordinator が即時登録または置換して保存する。成功時だけ dialog を閉じ、登録 tab に戻る。閉じる操作と無効 marker は state を変えない。
 
-### 10.4 完了、取消、B 探索
+### 10.5 完了、取消、B 探索
 
 完了 command は target を完了し、その全 visit を route から外すが、progress order に残す。取消は当該 target の完了直前 state と位置だけを戻す。
 
 B Next は current candidate を explored にし、その map の current location を当該 candidate に更新する。直前 snapshot を一段だけ保存し、残りを order mode に従って更新する。Next 取消はその snapshot だけを復元する。全候補探索済みなら unfound を導出し、明示的な再探索で全 candidate を unexplored へ戻す。一般とパーティには Next を発行しない。
 
-### 10.5 対象削除
+### 10.6 対象削除
 
 削除は target とその candidate/visit/progress/取消情報を一単位で除く。map 別 current location は戻さない。手動では残りの相対順序を維持し、自動では残りを再計算する。削除操作自体の undo snapshot は持たない。
 
@@ -543,6 +574,8 @@ B Next は current candidate を explored にし、その map の current locati
 ### 11.1 共通操作感
 
 両 app は共通 Map UI と共通 interaction contract を使い、marker 選択、pan/zoom、route 表示、現在地点、完了表示、並べ替え、完了・取消、全消去確認の結果を揃える。見た目の theme を完全共有する必要はないが、同じ意味の control label、状態色、feedback、確認 dialog を shared design token と interaction pattern で提供する。
+
+共通 Map UI は、地点登録用 marker と案内 overlay を別の表示・イベント境界として扱う。案内 overlay は全有効エーテライトのアイコンを実座標へ固定し、町名ラベルだけを表示領域と他ラベルとの関係で省略できる。ラベル配置は Map UI 内の純粋な表示 projection とし、4 CSS px、8方向、矩形、正の面積の重なり、最大8件、安定 ID と候補順の全制約を満たす。overlay の視覚資産と新ラベルデザインは地図背景と別の表示責務にする。
 
 Treasure は既存の一括入力、手動入力、巡回経路への到達性を維持する。Mob は上部にソロ／パーティ switch、その下に登録／巡回経路 tab を持つ。mode と tab を一つの selector に混在させない。登録後は登録 tab に留まる。
 
@@ -564,6 +597,8 @@ Treasure は既存の一括入力、手動入力、巡回経路への到達性�
 | save failure | working state を破棄 | 操作前表示と最後の正常保存を維持 |
 | restore failure | root 全体を採用しない | 該当 root を初期表示し、元保存を上書きしない |
 | legacy migration failure | 新 record を作らない | 旧保存を保持し、部分移行しない |
+| aetheryte record failure / R exclusion | invalid・重複・参照不能・範囲外 record と R を projection から除外し、diagnostic へ理由を渡す | 他の有効な案内を継続し、全件無効時だけ既存の master 不備・経路計算不能を適用 |
+| image source / license 未確認 | 背景 asset としての採用を停止し、動的案内の正本とは分離する | 未確認画像や埋め込み案内を runtime の正常 asset として表示しない |
 
 利用者入力、名称、diagnostic は文字列として rendering し、HTML として解釈しない。`dangerouslySetInnerHTML`、`eval`、動的 script 実行を使わない。JSON、localStorage、入力全文、個人名を不要に console、例外、telemetry へ出さない。新しい外部通信は静的 asset の取得以外に導入しない。
 
@@ -578,6 +613,10 @@ Treasure は既存の一括入力、手動入力、巡回経路への到達性�
 | master を map/Treasure/Mob に分割 | 汎用 point の曖昧さと未使用 field の継承を避ける | 参照検証と revision 結合が必要になる |
 | game X/Y を canonical にする | 表示・入力・距離の単位を揃え、Z と 10 倍内部値を排除する | 現行 data と描画の移行確認が必要になる |
 | strict schema、必須 source 対応、衝突全除外 | 不明な field、出典なし情報、first-wins による誤登録を防ぐ | 一部データ不備が明示的な除外になる |
+| 共通 map projection と overlay の分離 | grade/product master の重複を避け、通常表示と地点選択表示の案内を同一化する | map projection の revision と viewport 投影を連携する必要がある |
+| overlay を session root 外に置く | 案内表示の再描画・省略が周回状態や保存を変更しないことを保証する | 表示時に master と viewport から再投影する必要がある |
+| 地図背景と案内資産を分離 | 画像内の町名・アイコンとの重複と未確認資産の採用を防ぐ | 既存画像の除去確認と資産 provenance gate が必要になる |
+| 言語 keyed な表示名境界 | 初期日本語を維持しながら stable ID を将来言語へ引き継ぐ | v1 では言語選択・翻訳・Mob 多言語検索を提供しない |
 | complete snapshot の write-before-publish | 保存失敗時の非部分適用を単純に保証する | state が大きくても操作ごとに serialize が必要になる |
 | visit order と progress order を分離 | B 候補単位の並べ替えと対象単位の完了を両立する | projection と復元検証が増える |
 | 旧データの allow-list 移行 | 未使用 `g11` や不明 field の誤採用を防ぐ | 新データ準備時に人手の承認が必要になる |
@@ -589,7 +628,11 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 検証は少なくとも次を含む。
 
 - 各 JSON の unknown field、重複 ID、空・未知 source 参照、未知 entity 参照、範囲外・非有限 X/Y、aetheryte なし、rank/category 不整合。
-- configured 5 dataset の変換件数、legacy lookup、座標・画像 marker の一致、`g11` と未使用 field の除外 report。
+- 各 map の T/R 混在、検証済み T のみの aetheryte projection、R・無効・重複 record の除外と diagnostic、他の有効 record の継続利用。
+- configured 5 dataset の変換件数、legacy lookup、座標・動的 overlay marker の一致、背景画像からの埋め込み案内除去、`g11` と未使用 field の除外 report。
+- 通常の地図表示と地点選択表示の共通 map projection、全有効エーテライトの継続表示、アイコン固定、町名ラベルの8方向配置・重なり回避・最大8件・省略、案内表示の非操作性と session 非変更。
+- アイコン視覚資産の出典・利用条件確認、新ラベルデザインの地図画像由来でないこと、未確認 asset が採用されないこと。
+- 初期日本語表示、安定 ID から言語別表示名を解決する境界、未提供言語を翻訳・推測しないこと、Mob 多言語名称照合を提供しないこと。
 - Treasure の手動・一括入力、8 枠、置換、grade 変更、旧保存移行、legacy resurrection 防止。
 - Mob の正式名・alias 検索、filter、mode eligibility、全候補登録、一般一地点、B 全候補、パーティ即時登録・置換。
 - マップ間遷移最小、料金／ロード時間 Pareto、第一評価で一意な場合の補助値不足 warning、補助値が必要な場合の failure、複数 aetheryte、二次元最短、同率 stable order。
@@ -615,6 +658,8 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 | §11 / REQ-Q-001 | 3.1、11、14 |
 | §1.2 / REQ-S-001〜005 | 1.3、4、12 |
 | §12 / SPC-AC-001〜021 | 3〜14 の責務・flow・failure・test 引継ぎ |
+| §4.4、§10.1〜10.3 / SPC-AC-022〜024、REQ-F-006〜008、REQ-A-003〜004 | 1.1、3.1〜3.2、4.2、5、6、7.1、9.1、10.2、11.1、12、13、14 |
+| §10.3 / SPC-AC-025、REQ-D-004 | 1.1、4.2、10.2、13、14、16 |
 
 ## 16. 未決定事項と参照資料
 
@@ -624,15 +669,16 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 
 - Mob の正式 master 全件、別名、rank、候補地点と出典。
 - map 間 teleport 料金、比較可能な load time と出典。
-- map/地点画像の利用条件と、map 単位で再利用できることの確認。
+- map/地点画像の利用条件、既存アイコン視覚資産の出典と利用条件、および map 単位で再利用できることの確認。
+- configured な G8、G10、G12、G14、G17 の地図画像から埋め込み町名・エーテライト表示を除去したことの確認。新しいラベルデザインは地図画像から再利用しない。
 - 現行設定対象データの変換 report と stable ID 対応表の承認。
 
 参照資料:
 
 - [Specification](../specification/specification.md)
-- [Specification Review 007](../reviews/specification/specification-review-007.md)
+- [Specification Review 009](../reviews/specification/specification-review-009.md)
 - [Requirements](../requirements/requirements.md)
-- [Requirements Review 007](../reviews/requirements/requirements-review-007.md)
+- [Requirements Review 009](../reviews/requirements/requirements-review-009.md)
 - [Concept](../concept/concept.md)
 - [Concept Review 005](../reviews/concept/concept-review-005.md)
 - [README](../../README.md)
