@@ -68,3 +68,13 @@ packages/
 ## ライセンス
 
 [Apache License 2.0](LICENSE)
+
+Original source code and documentation in this repository are licensed
+under the Apache License 2.0.
+
+FINAL FANTASY XIV names, trademarks, game data, images, icons,
+screenshots, maps, text, and other related materials are the property of
+SQUARE ENIX CO., LTD. and/or their respective rights holders and are not
+covered by the Apache License 2.0.
+
+See [NOTICE](NOTICE) for details.
