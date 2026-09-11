@@ -12,6 +12,7 @@
 
 - Treasure Compass は現在運用中であり、外部仕様を大きく変更する必要はない。Mob Compass は新規作成であり、UI は未確定である。
 - Treasure Compass と Mob Compass は同一アプリ内の製品切替ではなく、別アプリに分ける。同じリポジトリ内で管理し、Treasure と Mob を別エントリ・別 URL としてビルド・公開する。リポジトリ自体は分割しない。地図表示、地点選択、経路描画などの基本機能は共有してよいが、画面、入力フロー、周回状態、保存、消去はアプリごとに分離する。
+- 既存 Treasure の localStorage を初回移行できるよう、v1 の Treasure entry は運用中 Treasure と同じ browser origin に配備する。具体的な URL や path は固定しない。異なる origin へ移す場合は、旧保存へ到達できる別の移行設計を事前に追加する。
 - Treasure Compass と Mob Compass はどちらもスマートフォン表示へ対応し、小さい画面でも対象登録、地図上の地点選択、巡回経路の確認、完了・取消、モード切替、クリアを利用できるようにする。スマートフォンは縦向きを主対象とし、横向きでも主要操作が不能にならないようにする。
 - Treasure Compass の外部仕様は大きく変えず、Treasure と Mob の操作感は可能な範囲で統一する。地図上のマスター地点をクリックした時点で登録すること、巡回リストを選択・ドラッグして順序を扱うこと、完了と取消、確認付きクリア、現在地点と完了状態の視覚的な区別は共通の操作規則とする。チャット一括入力、固定メンバースロット、Mob のランク別探索など、用途固有の入口や進行は無理に共通化しない。
 - Treasure も Mob と同様、手動で巡回順を並べ替えた後は、メンバーの追加・地点変更・削除で既存の相対順序を変えない。追加対象は末尾へ加え、地点変更は同じ位置を維持し、削除は該当対象だけを外す。利用者が「経路自動計算」を明示的に実行した場合だけ、自動順序へ戻して並べ直す。
@@ -66,7 +67,7 @@
 
 ## Current State
 
-- 正式文書は Concept、Requirements、Specification、Design まで存在する。現行上流の最終レビューは [Concept Review 005](docs/reviews/concept/concept-review-005.md)、[Requirements Review 007](docs/reviews/requirements/requirements-review-007.md)、[Specification Review 007](docs/reviews/specification/specification-review-007.md) で `READY`。Design は Revision 003 へ全面改訂済みで、次の Design Review 待ちである。
+- 正式文書は Concept、Requirements、Specification、Design まで存在する。現行上流の最終レビューは [Concept Review 005](docs/reviews/concept/concept-review-005.md)、[Requirements Review 007](docs/reviews/requirements/requirements-review-007.md)、[Specification Review 007](docs/reviews/specification/specification-review-007.md) で `READY`。Design Revision 004 は [Design Review 004](docs/reviews/design/design-review-004.md) で `READY`（Critical 0 / Major 0 / Minor 0）となり、DR-005〜DR-008 はすべて解消済みである。
 - 現在のブランチは `maintenance/add-mob-compass`。Treasure と Mob の実装・unit test はリポジトリに存在するが、`docs/reviews/implementation/` の実装レビュー成果物はまだない。正式契約への実装適合は未レビューである。
 - 現在のリポジトリ実体は React / TypeScript / Vite、Zustand、Tailwind を用いるブラウザアプリで、静的地図・地点データと browser localStorage を扱う。
 

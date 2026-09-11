@@ -2,7 +2,7 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| Status | Design Author Revision 003（全面改訂、Design Review 待ち） |
+| Status | Design Author Revision 004（Design Review 003 の DR-005〜DR-008 対応、再レビュー待ち） |
 | 対象 | Treasure Compass / Mob Compass v1 |
 | 直接の上流 | [Specification](../specification/specification.md) |
 | 上流の承認状態 | [Specification Review 007](../reviews/specification/specification-review-007.md) は `READY` |
@@ -46,7 +46,7 @@
 
 ### 2.1 根拠と工程境界
 
-直接の規範的根拠は [Specification](../specification/specification.md) である。[Requirements](../requirements/requirements.md) と [Concept](../concept/concept.md) は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
+直接の規範的根拠は [Specification](../specification/specification.md) である。[Requirements](../requirements/requirements.md) と [Concept](../concept/concept.md) は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。[Design Review 003](../reviews/design/design-review-003.md) の DR-005〜DR-008 は、本 Revision で内部の配備・経路・データ・文書境界へ反映する。
 
 現行 JSON には実装から参照されない項目と設定から到達できないデータがある。そのため、既存形式をそのまま共通マスターへ昇格させず、参照実績、上流上の必要性、出典・利用条件を個別に確認してから移行する。
 
@@ -126,6 +126,8 @@ master の正本は `packages/master-data/data/` の `map-master.v1.json`、`tre
 
 Treasure と Mob は別々の HTML/JavaScript entry を生成できる build target とする。各 target は、もう一方の shell や Zustand store を起動せず、必要な共有 package と自アプリの package だけを読み込む。配備設定が各 entry に異なるアドレスを割り当てる。具体的な文字列は本 Design の決定事項にしない。
 
+v1 の Treasure entry は、運用中 Treasure が使用する localStorage と同じ browser origin から配備する。path や entry 名は変更できるが、origin を変更する release は、旧 key を読める別の承認済み移行 boundary が Design に追加されるまで行わない。Mob entry の origin は Treasure 保存の互換性に影響しないため、この制約の対象外である。
+
 ## 4. マスターデータ設計
 
 ### 4.1 分割原則
@@ -161,6 +163,7 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
       "shortName": "短縮名",
       "aliases": [],
       "expansionId": "expansion-id",
+      "sourceIds": ["source-id"],
       "bounds": { "minX": 0, "maxX": 42, "minY": 0, "maxY": 42 },
       "image": { "asset": "relative-asset-name", "licenseId": "license-id" },
       "aetherytes": [
@@ -199,6 +202,8 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
 
 上記および 4.3、4.4 の値は構造例であり、座標、料金、ロード時間、名称、revision を実データとして採用する根拠にはしない。各値は 6 章の移行 gate または新規データの確認を経て確定する。`sources` と `licenses` は結合 master context の共通 catalog であり、Treasure/Mob master の `sourceIds` もこの catalog を参照する。
 
+各 expansion、map、aetheryte、travel edge、grade set、Treasure point、mob、mob candidate の `sourceIds` は必須かつ一件以上とし、同じ ID を重複させない。すべての ID は共通 `sources` catalog の有効 record を参照しなければならない。`sourceIds` は名称、分類、座標、参照関係等の意味情報を確認・訂正する根拠を表し、画像の利用条件を表す `licenseId` とは分離する。
+
 - `bounds` は X/Y の包含範囲であり、有限数かつ `min <= max` とする。
 - map の `name` と `shortName` は Treasure の既存チャット照合へ供給し、`aliases` は明示登録された別名だけを持つ。
 - `image.asset` は実行時 asset への相対参照で、map ごとに一つの正規画像を参照する。同じ画像の再利用は、実データと利用条件を確認した場合だけ行う。
@@ -219,6 +224,7 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
       "id": "grade-set-id",
       "label": "G14 / G15",
       "grades": [14, 15],
+      "sourceIds": ["source-id"],
       "points": [
         {
           "id": "treasure-point-id",
@@ -250,6 +256,7 @@ Treasure master は map 名、画像、エーテライトを重複保持せず�
       "category": "regular",
       "rank": "normal",
       "mapId": "map-id",
+      "sourceIds": ["source-id"],
       "candidates": [
         {
           "id": "mob-candidate-id",
@@ -285,7 +292,7 @@ Master adapter は次の順で検証する。
 1. JSON 構文、root object、`schemaVersion`、`dataRevision`。
 2. allow-list による field、型、有限数、enum、文字列および配列 cardinality。
 3. 同じ entity 種別内の ID 一意性。
-4. map、expansion、aetheryte、source、license の参照整合性。
+4. map、expansion、aetheryte、source、license の参照整合性と、各意味 record の一件以上の出典対応。
 5. X/Y の map bounds 包含、rank/category 整合、巡回 map の aetheryte 必須条件。
 6. app 固有 master と map master の結合整合性。
 
@@ -298,7 +305,7 @@ UI へは、利用不能なファイル、除外した対象または地点、�
 - map master が利用不能なら両アプリの地点登録・経路を成立させられないため、既存 session を変更せず master 読込失敗を表示する。
 - Treasure master だけが利用不能なら Treasure の登録・経路を停止するが、Mob app は map/Mob master が有効なら利用できる。
 - Mob master だけが利用不能なら Mob の登録・経路を停止するが、Treasure app は map/Treasure master が有効なら利用できる。
-- travel edge の不足は、当該 edge が必要な複数 map 計算時に route failure とする。一つの map 内だけの経路まで無効にしない。
+- travel edge の不足・不正があっても、マップ間遷移回数の第一評価だけで全体経路が一意になる場合は、補助情報不足 warning を持つ route success とする。第一評価後に複数候補が残り、不足値なしでは Pareto 比較を完了できない場合だけ route failure とする。一つの map 内だけの経路まで無効にしない。
 - 一部 record の除外後も利用可能な候補一覧を表示し、除外理由を利用者が識別できるようにする。
 
 ### 5.3 更新と既存 session の照合
@@ -448,7 +455,7 @@ master identity が異なる保存状態は stable ID で reconcile する。解
 
 ### 8.4 旧 Treasure 保存の初回移行
 
-新 Treasure record が存在しない場合だけ、次の優先順で legacy decoder を使う。
+新 Treasure record が存在しない場合だけ、Treasure entry と運用中 Treasure が共有する origin の localStorage に対し、次の優先順で legacy decoder を使う。Persistence adapter はこの origin 内での読込と新 key への write を所有し、Mob app や別 origin へ旧値を渡さない。
 
 1. 現行統合 key `treasure-compass:sessions:v1` の `treasure.grade` と `treasure.members`。廃止する `product` と `mob` は移行しないが、Treasure 部分と envelope 自体は独立に検証する。
 2. それが存在しない場合、旧 key `treasure-compass:grade` と `treasure-compass:members`。
@@ -473,20 +480,21 @@ legacy lookup により grade、mapNo、pointNo を stable ID へ一意に解決
 
 Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、order mode を入力する。返り値は次のいずれかである。
 
-- success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、料金・ロード時間、tie 情報。
+- success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、利用可能な料金・ロード時間、tie 情報、0件以上の warning。
 - empty: 有効な未完了 visit がない正常結果。
 - failure: 対象と、missing aetheryte、unresolved visit、missing travel data 等の理由。
 
-Application は result の session revision と master identity が現在値に一致する場合だけ採用する。非同期計算中の入力変更や master reload により stale になった result は破棄する。
+Application は result の session revision と master identity が現在値に一致する場合だけ採用する。非同期計算中の入力変更や master reload により stale になった result は破棄する。success の warning は route と同じ result の一部として presentation へ渡し、補助情報が利用できない対象を識別可能に表示する。warning を failure へ昇格させたり、表示せず捨てたりしない。
 
 ### 9.2 計算の段階
 
 1. 完了、探索済み、unresolved を除外し、一般モブの候補選択を含む有効 visit 集合を作る。
 2. visit を map group に分け、異なる map group が隣接する回数が最小となる group order 候補を求める。
-3. 同じ遷移回数の候補について、必要な travel edge の料金合計とロード時間合計による Pareto 優越を判定する。
-4. 優越されない候補が複数なら tie を保持し、Specification の stable tuple 列で表示採用順を一つ決める。
-5. map ごとに、保存済み current location があればそれを、なければ各 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。
-6. 一般モブは全 candidate のうち map 内巡回全体を最短にする一地点を同時に選ぶ。B は全未探索 candidate を visit とする。
+3. 第一評価で全体経路が一つに決まった場合は、補助値を採用条件に使わない。不足・不正な料金またはロード時間があれば、該当 edge と値種別を warning にして success とする。
+4. 第一評価後に複数候補が残る場合は、必要な全 travel edge の料金合計とロード時間合計による Pareto 優越を判定する。比較に必要な値が不足・不正なら補助情報不足 failure とし、部分的な比較結果を採用しない。
+5. 優越されない候補が複数なら tie を保持し、Specification の stable tuple 列で表示採用順を一つ決める。
+6. map ごとに、保存済み current location があればそれを、なければ各 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。
+7. 一般モブは全 candidate のうち map 内巡回全体を最短にする一地点を同時に選ぶ。B は全未探索 candidate を visit とする。
 
 料金とロード時間を加算して一つの score にしない。Z、帰還距離、入力順を評価軸にしない。同率の最終順は Specification の Unicode code point、数値、stable ID の規則を用いる。
 
@@ -550,6 +558,7 @@ Treasure は既存の一括入力、手動入力、巡回経路への到達性�
 | --- | --- | --- |
 | master fetch/envelope failure | 該当 master context を作らない | 対象 app の登録・経路を停止し、既存 state を変更しない |
 | master record failure | 不正 record と依存 record を除外 | 利用可能分と除外理由を区別表示 |
+| route success with warning | result と warning を同じ revision で採用 | 経路を表示し、利用できない補助情報と対象を識別可能に表示 |
 | route failure | result を session へ採用しない | 理由と対象を表示し、既存順序・mode・進捗を維持 |
 | stale calculation | result を破棄 | 現在 state を維持し、必要なら現 revision で再要求 |
 | save failure | working state を破棄 | 操作前表示と最後の正常保存を維持 |
@@ -568,7 +577,7 @@ Treasure は既存の一括入力、手動入力、巡回経路への到達性�
 | 地図基盤だけを共有 | 操作感と座標・marker の意味を揃え、固有 workflow の混線を防ぐ | 共通 UI の input contract を維持する必要がある |
 | master を map/Treasure/Mob に分割 | 汎用 point の曖昧さと未使用 field の継承を避ける | 参照検証と revision 結合が必要になる |
 | game X/Y を canonical にする | 表示・入力・距離の単位を揃え、Z と 10 倍内部値を排除する | 現行 data と描画の移行確認が必要になる |
-| strict schema と衝突全除外 | 不明な field や first-wins による誤登録を防ぐ | 一部データ不備が明示的な除外になる |
+| strict schema、必須 source 対応、衝突全除外 | 不明な field、出典なし情報、first-wins による誤登録を防ぐ | 一部データ不備が明示的な除外になる |
 | complete snapshot の write-before-publish | 保存失敗時の非部分適用を単純に保証する | state が大きくても操作ごとに serialize が必要になる |
 | visit order と progress order を分離 | B 候補単位の並べ替えと対象単位の完了を両立する | projection と復元検証が増える |
 | 旧データの allow-list 移行 | 未使用 `g11` や不明 field の誤採用を防ぐ | 新データ準備時に人手の承認が必要になる |
@@ -579,11 +588,11 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 
 検証は少なくとも次を含む。
 
-- 各 JSON の unknown field、重複 ID、未知参照、範囲外・非有限 X/Y、aetheryte なし、rank/category 不整合。
+- 各 JSON の unknown field、重複 ID、空・未知 source 参照、未知 entity 参照、範囲外・非有限 X/Y、aetheryte なし、rank/category 不整合。
 - configured 5 dataset の変換件数、legacy lookup、座標・画像 marker の一致、`g11` と未使用 field の除外 report。
 - Treasure の手動・一括入力、8 枠、置換、grade 変更、旧保存移行、legacy resurrection 防止。
 - Mob の正式名・alias 検索、filter、mode eligibility、全候補登録、一般一地点、B 全候補、パーティ即時登録・置換。
-- マップ間遷移最小、料金／ロード時間 Pareto、補助値不足、複数 aetheryte、二次元最短、同率 stable order。
+- マップ間遷移最小、料金／ロード時間 Pareto、第一評価で一意な場合の補助値不足 warning、補助値が必要な場合の failure、複数 aetheryte、二次元最短、同率 stable order。
 - 手動順序の末尾追加・位置維持・候補単位並べ替え、自動計算成功時だけの切替。
 - 完了・取消、B Next・一段取消・unfound・再探索、対象削除、map 別 current location。
 - 各 root の独立保存・復元・全消去、破損保存、write failure、stale calculation。
@@ -609,7 +618,7 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 
 ## 16. 未決定事項と参照資料
 
-上流へ戻す必要がある製品判断はない。具体的な URL 文字列と配備先は未決定だが、二つの build entry と state boundary により後から割り当てられる。物理 package 名、探索アルゴリズムの具体実装、UI component 分割は、本 Design の責務・外部結果を維持して Implementation で決める。
+上流へ戻す必要がある製品判断はない。具体的な URL 文字列と配備先は未決定だが、二つの build entry と state boundary により後から割り当てられる。ただし Treasure の origin 維持は §3.3 の確定した配備制約である。§3.1 の workspace package 名・配置は確定 Design とし、各 package 内の source file、探索アルゴリズムの具体実装、UI component 分割は、本 Design の責務・外部結果を維持して Implementation で決める。
 
 一方、次は未決定値を仮定して実装してはならない data preparation 項目である。
 
