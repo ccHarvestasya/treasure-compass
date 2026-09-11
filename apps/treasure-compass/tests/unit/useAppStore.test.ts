@@ -5,6 +5,7 @@ import { DEFAULT_GRADE, FULL_PARTY } from "../../src/constants";
 vi.mock("@/utils/distance", () => ({
   calcShortestRoute: (
     members: Array<{
+      memberNo: number;
       memberName: string;
       mapNo: number;
       mapName: string;
@@ -13,6 +14,7 @@ vi.mock("@/utils/distance", () => ({
     }>,
   ) => ({
     orderedSteps: members.map((m) => ({
+      memberNo: m.memberNo,
       mapNo: m.mapNo,
       mapName: m.mapName,
       mapNameShort: m.mapNameShort,
@@ -23,6 +25,7 @@ vi.mock("@/utils/distance", () => ({
   }),
   toRouteSteps: (
     orderedSteps: Array<{
+      memberNo: number;
       mapNo: number;
       mapName: string;
       mapNameShort: string;
@@ -33,6 +36,7 @@ vi.mock("@/utils/distance", () => ({
   ) =>
     orderedSteps.map((s, i) => ({
       orderNo: i + 1,
+      memberNo: s.memberNo,
       mapNo: s.mapNo,
       mapName: s.mapName,
       mapNameShort: s.mapNameShort,
@@ -152,7 +156,7 @@ describe("useAppStore", () => {
     expect(next.activeStep).toBe(0);
   });
 
-  it("manual route order is cleared and recalculated after member data change", () => {
+  it("manual route order is preserved when a member changes", () => {
     const s = useAppStore.getState();
     s.setMapData(mapData);
     s.setMember(
@@ -178,10 +182,39 @@ describe("useAppStore", () => {
     );
 
     const next = useAppStore.getState();
-    expect(next.isManualSort).toBe(false);
-    expect(next.route.map((r) => r.memberName)).toEqual(["Alice", "Bob"]);
-    expect(next.route[0].point.posX).toBe(210);
-    expect(next.route[0].point.posY).toBe(220);
+    expect(next.isManualSort).toBe(true);
+    expect(next.route.map((r) => r.memberName)).toEqual(["Bob", "Alice"]);
+    expect(next.route[1].point.posX).toBe(210);
+    expect(next.route[1].point.posY).toBe(220);
+  });
+
+  it("manual route appends a new member and removes only a deleted member", () => {
+    const s = useAppStore.getState();
+    s.setMapData(mapData);
+    s.setMember(
+      0,
+      makeMember(0, "Alice", 1, "Living Memory", "Memory", 1, 100, 100),
+    );
+    s.setMember(
+      1,
+      makeMember(1, "Bob", 1, "Living Memory", "Memory", 2, 120, 130),
+    );
+    s.setRoute([...useAppStore.getState().route].reverse());
+
+    s.setMember(
+      2,
+      makeMember(2, "Carol", 1, "Living Memory", "Memory", 3, 210, 220),
+    );
+    expect(useAppStore.getState().route.map((step) => step.memberName)).toEqual([
+      "Bob",
+      "Alice",
+      "Carol",
+    ]);
+
+    s.removeMember(0);
+    const next = useAppStore.getState();
+    expect(next.isManualSort).toBe(true);
+    expect(next.route.map((step) => step.memberName)).toEqual(["Bob", "Carol"]);
   });
 
   it("completion flags are reset on recalculation after data change", () => {

@@ -30,6 +30,7 @@ function makeStep(
 ): RouteStep {
   return {
     orderNo,
+    memberNo: orderNo - 1,
     mapNo: orderNo,
     mapName,
     mapNameShort,

@@ -71,13 +71,14 @@
 - 現在のブランチは `maintenance/add-mob-compass`。Treasure と Mob の実装・unit test はリポジトリに存在するが、`docs/reviews/implementation/` の実装レビュー成果物はまだない。正式契約への実装適合は未レビューである。
 - 現在のリポジトリ実体は React / TypeScript / Vite、Zustand、Tailwind を用いるブラウザアプリで、静的地図・地点データと browser localStorage を扱う。
 - 2026-09-12 に Treasure の保存境界の第一段階を実装した。Treasure は `treasure-compass:treasure-session:v2` を優先して読み書きし、旧 `treasure-compass:sessions:v1` と旧 separate keys は有効な Treasure 部分だけを一度移行してから削除する。Treasure の書き込みで旧 Mob 部分を再保存しないこと、移行失敗時に旧保存を変更しないことを unit test で確認済みである。現段階の新 record は既存 UI の grade / member projection のみで、Design が定める master identity、stable point reference、route / progress 全体の snapshot には未到達である。
+- 2026-09-12 に Treasure の手動巡回順維持を実装した。route step に `memberNo` を持たせ、手動順序中の地点変更は同じ位置で置換し、新規登録は末尾へ追加、削除は対象だけを外して残りの相対順序を維持する。自動順序中の既存再計算挙動は変更していない。unit test で変更・追加・削除を確認済みである。
 - 現行 legacy Treasure JSON の実在する設定済み入力は `g8`（4 maps / 43 points）、`g10`（6 / 68）、`g12`（6 / 64）、`g14`（6 / 65）、`g17`（6 / 65）。`P` はそれぞれ 35 / 48 / 48 / 48 / 48、`T` は 8 / 19 / 16 / 17 / 17。`g10` に `P/T` 以外の record が 1 件ある。これは棚卸し結果であり、正式 master 採用を意味しない。
 
 ## Open Issues
 
 - Treasure の `clearAllData` は現在 Treasure 専用 key だけを書き換えるようになった。ただし、Treasure の全 session snapshot と Mob ソロ／パーティの独立 persistence はまだ未実装であり、最終的な全消去契約までの統合が必要である。
 - 二つの build entry は存在するが、Mob entry は placeholder UI のままである。Treasure は旧 route store を使用しているため、共有 map 基盤、Treasure／Mob ソロ／Mob パーティの各 session root、Mob preference の独立保存へ移行する必要がある。
-- 現在の Treasure 実装では、手動で巡回順を並べ替えた後も、メンバーの登録・地点変更・削除によって自動計算へ戻り、手動順序が失われる。明示的な「経路自動計算」まで既存順序を維持する決定に合わせ、正式文書と実装を更新する必要がある。
+- Treasure の手動順序について、登録・地点変更・削除時の相対順序維持は実装済み。明示的な「経路自動計算」による自動順序への復帰、完了・取消・現在地点を含む正式 snapshot 保存は引き続き未実装である。
 - Treasure の新 key への初回移行、旧データの非破壊、移行後の旧 key 削除は第一段階として実装済み。ただし現在の新 record はグレードとメンバー projection だけを保持するため、master identity、stable reference、順序、完了、現在地点を含む正式 snapshot へ拡張する必要がある。
 - Mob master は新規準備が必要であり、正式名、別名、rank、map、全候補地点、出典を確認しなければならない。旧試作が要求する `/json/mobs.json` は存在せず、移行元として扱わない。
 - map 間のテレポ料金と比較可能なロード時間は、現行 JSON の未使用 `time` から推測せず、検証済み情報源から準備する必要がある。

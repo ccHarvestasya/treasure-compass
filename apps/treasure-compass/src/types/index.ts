@@ -39,6 +39,7 @@ export interface UserItem {
 
 export interface RouteStep {
   orderNo: number;
+  memberNo: number;
   mapNo: number;
   mapName: string;
   mapNameShort: string;

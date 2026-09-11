@@ -26,6 +26,7 @@ function permutations<T>(arr: T[]): T[][] {
 /** 最短経路の計算結果 */
 export interface ShortestRouteResult {
   orderedSteps: Array<{
+    memberNo: number;
     mapNo: number;
     mapName: string;
     mapNameShort: string;
@@ -42,7 +43,14 @@ export interface ShortestRouteResult {
  * permutationで全パターンを評価する
  */
 export function calcShortestRoute(
-  members: Array<{ memberName: string; mapNo: number; mapName: string; mapNameShort: string; mapPoint: Point }>,
+  members: Array<{
+    memberNo: number;
+    memberName: string;
+    mapNo: number;
+    mapName: string;
+    mapNameShort: string;
+    mapPoint: Point;
+  }>,
   allMapData: MapDataItem[],
 ): ShortestRouteResult {
   // マップNoでグループ化
@@ -90,6 +98,7 @@ export function calcShortestRoute(
           if (dist < bestMapDist) {
             bestMapDist = dist;
             bestMapSteps = memberOrder.map(m => ({
+              memberNo: m.memberNo,
               mapNo: m.mapNo,
               mapName: m.mapName,
               mapNameShort: m.mapNameShort,
@@ -138,6 +147,7 @@ export function toRouteSteps(
 ): RouteStep[] {
   return result.map((s, i) => ({
     orderNo: i + 1,
+    memberNo: s.memberNo,
     mapNo: s.mapNo,
     mapName: s.mapName,
     mapNameShort: s.mapNameShort,

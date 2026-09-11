@@ -53,6 +53,78 @@ function persist(grade: Grade, members: (UserItem | null)[]): boolean {
   return writePersistedTreasure({ grade, members });
 }
 
+function samePoint(left: RouteStep, right: UserItem): boolean {
+  return (
+    left.mapNo === right.mapNo &&
+    left.point.pointNo === right.mapPoint.pointNo
+  );
+}
+
+function createRouteStep(
+  member: UserItem,
+  mapData: MapData | null,
+): RouteStep | null {
+  if (!mapData) return null;
+  const result = calcShortestRoute(
+    [
+      {
+        memberNo: member.memberNo,
+        memberName: member.memberName,
+        mapNo: member.mapNo,
+        mapName: member.mapName,
+        mapNameShort: member.mapNameShort,
+        mapPoint: member.mapPoint,
+      },
+    ],
+    mapData.mapData,
+  );
+  const step = result.orderedSteps[0];
+  return step ? toRouteSteps([step])[0] ?? null : null;
+}
+
+function updateManualRoute(
+  route: RouteStep[],
+  members: (UserItem | null)[],
+  mapData: MapData | null,
+  changedMemberNo?: number,
+): RouteStep[] {
+  const activeMembers = members.filter(
+    (member): member is UserItem => member !== null,
+  );
+  const memberByNo = new Map(
+    activeMembers.map((member) => [member.memberNo, member]),
+  );
+  const routeMemberNos = new Set<number>();
+  const nextRoute: RouteStep[] = [];
+
+  for (const step of route) {
+    const member = memberByNo.get(step.memberNo);
+    if (!member) continue;
+    routeMemberNos.add(step.memberNo);
+    if (step.memberNo !== changedMemberNo) {
+      nextRoute.push(step);
+      continue;
+    }
+    const replacement = createRouteStep(member, mapData);
+    nextRoute.push(
+      replacement
+        ? {
+            ...replacement,
+            isCompleted: samePoint(step, member) ? step.isCompleted : false,
+          }
+        : step,
+    );
+  }
+
+  for (const member of activeMembers) {
+    if (routeMemberNos.has(member.memberNo)) continue;
+    const appended = createRouteStep(member, mapData);
+    if (appended) nextRoute.push(appended);
+  }
+
+  return nextRoute.map((step, index) => ({ ...step, orderNo: index + 1 }));
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
   grade: initialTreasure.grade,
   setGrade: (grade) => {
@@ -90,6 +162,19 @@ export const useAppStore = create<AppState>((set, get) => ({
     members[memberNo] = item;
     draftMemberNames[memberNo] = "";
     if (!persist(state.grade, members)) return;
+    if (state.isManualSort) {
+      set({
+        members,
+        draftMemberNames,
+        route: updateManualRoute(
+          state.route,
+          members,
+          state.mapData,
+          item.memberNo,
+        ),
+      });
+      return;
+    }
     set({ members, draftMemberNames });
     get().recalcRoute();
   },
@@ -100,6 +185,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     members[memberNo] = null;
     draftMemberNames[memberNo] = "";
     if (!persist(state.grade, members)) return;
+    if (state.isManualSort) {
+      set({
+        members,
+        draftMemberNames,
+        route: updateManualRoute(state.route, members, state.mapData),
+      });
+      return;
+    }
     set({ members, draftMemberNames });
     get().recalcRoute();
   },
@@ -189,6 +282,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     const result = calcShortestRoute(
       activeMembers.map((member) => ({
+        memberNo: member.memberNo,
         memberName: member.memberName,
         mapNo: member.mapNo,
         mapName: member.mapName,
