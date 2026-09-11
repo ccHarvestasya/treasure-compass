@@ -1,0 +1,41 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #e2e8f0;
+  background: #020617;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.shell {
+  display: grid;
+  min-height: 100vh;
+  padding: 1rem;
+  place-items: center;
+}
+
+.panel {
+  width: min(100%, 42rem);
+  padding: clamp(1.25rem, 5vw, 3rem);
+  border: 1px solid #334155;
+  border-radius: 1rem;
+  background: #0f172a;
+}
+
+.panel h1 {
+  margin: 0.25rem 0 1rem;
+  font-size: clamp(2rem, 8vw, 4rem);
+}
+
+.eyebrow,
+.status {
+  color: #c084fc;
+}

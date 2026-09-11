@@ -1,6 +1,6 @@
 # Treasure Compass
 
-FFXIV トレジャーハント支援ツールです。パーティメンバーのマップ情報を登録し、最短巡回ルートを自動計算・可視化します。
+FFXIV のトレジャーハントとモブハントを支援する、二つのブラウザアプリのモノレポです。Treasure Compass は運用中の機能を提供し、Mob Compass は独立したアプリ基盤を構築中です。
 
 ## 機能
 
@@ -13,20 +13,27 @@ FFXIV トレジャーハント支援ツールです。パーティメンバー�
 
 ## 技術スタック
 
-| 分類 | 使用技術 |
-|------|----------|
-| フレームワーク | React 19 + TypeScript |
-| ビルド | Vite |
-| スタイリング | Tailwind CSS v4 |
-| UIコンポーネント | shadcn/ui, Base UI |
-| 状態管理 | Zustand |
-| ドラッグ&ドロップ | dnd-kit |
+| 分類              | 使用技術                         |
+| ----------------- | -------------------------------- |
+| フレームワーク    | React 19 + TypeScript            |
+| ビルド            | Vite                             |
+| スタイリング      | Tailwind CSS v4                  |
+| UIコンポーネント  | shadcn/ui, Base UI               |
+| 状態管理          | Zustand                          |
+| ドラッグ&ドロップ | dnd-kit                          |
+| Lint / 型検査     | Oxlint + tsgolint / TypeScript 7 |
 
 ## セットアップ
 
 ```bash
 pnpm install
-pnpm run dev
+pnpm run dev:treasure
+```
+
+Mob Compass を起動する場合:
+
+```bash
+pnpm run dev:mob
 ```
 
 ビルド:
@@ -35,29 +42,24 @@ pnpm run dev
 pnpm run build
 ```
 
+`pnpm run build` は Treasure Compass と Mob Compass をそれぞれ build します。個別に build する場合は `pnpm run build:treasure` または `pnpm run build:mob` を使用します。
+
 ## ディレクトリ構成
 
 ```
-src/
-├── components/
-│   ├── GradeSelector/   # グレード切り替えUI
-│   ├── MapCanvas/       # マップ描画・ルート表示
-│   ├── PositionModal/   # ポイント手動選択モーダル
-│   ├── SideBar/         # メンバー登録・ルート進捗パネル
-│   └── ui/              # 共通UIコンポーネント (shadcn/ui)
-├── constants/           # グレード設定テーブル・定数
-├── hooks/               # useMapData (マップJSONフェッチ)
-├── store/               # Zustand ストア
-├── types/               # 型定義
-└── utils/               # 一括解析・距離計算・マクロ生成
-public/
-├── json/                # グレード別ポイントデータ (g8.json など)
-└── img/                 # グレード別マップ画像
+apps/
+├── treasure-compass/    # 運用中の Treasure Vite app、静的データ、UI、保存 adapter
+└── mob-compass/         # 独立した Mob Vite app の起動基盤
+packages/
+├── treasure-domain/     # Treasure 固有ルール
+├── mob-domain/          # Mob 固有ルール
+├── map-core/            # 共通の二次元座標・地図計算
+└── master-data/         # 共通 master schema・validator・移行 report
 ```
 
 ## 新グレードの追加
 
-`src/constants/index.ts` の `GRADE_CONFIG` に1行追加し、対応する JSON ファイルと画像を `public/` に配置するだけです。
+`apps/treasure-compass/src/constants/index.ts` の `GRADE_CONFIG` に1行追加し、対応する JSON ファイルと画像を `apps/treasure-compass/public/` に配置します。
 
 ```ts
 { grade: 20, label: 'G20', jsonFile: '/json/g20.json', imagePrefix: '/img/map_g20_' },

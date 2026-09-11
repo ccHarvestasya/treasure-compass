@@ -1,14 +1,13 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+    { "path": "./packages/map-core" },
+    { "path": "./packages/master-data" },
+    { "path": "./packages/treasure-domain" },
+    { "path": "./packages/mob-domain" },
+    { "path": "./apps/treasure-compass/tsconfig.app.json" },
+    { "path": "./apps/treasure-compass/tsconfig.node.json" },
+    { "path": "./apps/mob-compass/tsconfig.app.json" },
+    { "path": "./apps/mob-compass/tsconfig.node.json" }
+  ]
 }

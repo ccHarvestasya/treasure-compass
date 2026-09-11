@@ -1,0 +1,13 @@
+{
+  "name": "@treasure-compass/master-data",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./legacy-report": "./src/legacy-report.ts"
+  },
+  "dependencies": {
+    "@treasure-compass/map-core": "workspace:*"
+  }
+}

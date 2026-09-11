@@ -4,11 +4,11 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./apps/treasure-compass/src"),
     },
   },
   test: {
-    include: ["tests/unit/**/*.test.ts"],
+    include: ["apps/*/tests/**/*.test.ts", "packages/*/tests/**/*.test.ts"],
     environment: "node",
   },
 });
