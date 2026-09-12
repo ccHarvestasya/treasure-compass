@@ -48,6 +48,7 @@ export function calcShortestRoute(
     mapPoint: Point;
   }>,
   allMapData: MapDataItem[],
+  currentMapPoints: Readonly<Record<string, Point>> = {},
 ): ShortestRouteResult {
   // マップNoでグループ化
   const mapGroups = new Map<number, typeof members>();
@@ -72,6 +73,7 @@ export function calcShortestRoute(
       const group = mapGroups.get(mapNo)!;
       const mapInfo = allMapData.find(m => m.mapNo === mapNo);
       const teleportPoints = mapInfo?.point.filter(p => p.division === 'T') ?? [];
+      const currentPoint = currentMapPoints[String(mapNo)];
 
       // このマップ内でのメンバー順序の最適化
       // テレポートポイントからの最短順序を計算
@@ -109,11 +111,15 @@ export function calcShortestRoute(
         }
       };
 
-      // 各マップはエーテライトを起点とする。T がない場合のみ起点なし。
-      for (const tp of teleportPoints) {
-        tryFromStart(null, tp);
+      if (currentPoint) {
+        tryFromStart(currentPoint);
+      } else {
+        // 現在地点がないマップはエーテライトを起点とする。
+        for (const tp of teleportPoints) {
+          tryFromStart(null, tp);
+        }
+        if (teleportPoints.length === 0) tryFromStart(null);
       }
-      if (teleportPoints.length === 0) tryFromStart(null);
 
       totalDist += bestMapDist;
       steps.push(...bestMapSteps);

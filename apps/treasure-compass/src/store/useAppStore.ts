@@ -96,6 +96,7 @@ function samePoint(left: RouteStep, right: UserItem): boolean {
 function createRouteStep(
   member: UserItem,
   mapData: MapData | null,
+  currentMapPoints: Readonly<Record<string, Point>> = {},
 ): RouteStep | null {
   if (!mapData) return null;
   const result = calcShortestRoute(
@@ -110,6 +111,7 @@ function createRouteStep(
       },
     ],
     mapData.mapData,
+    currentMapPoints,
   );
   const step = result.orderedSteps[0];
   return step ? toRouteSteps([step])[0] ?? null : null;
@@ -120,6 +122,7 @@ function updateManualRoute(
   members: (UserItem | null)[],
   mapData: MapData | null,
   changedMemberNo?: number,
+  currentMapPoints: Readonly<Record<string, Point>> = {},
 ): RouteStep[] {
   const activeMembers = members.filter(
     (member): member is UserItem => member !== null,
@@ -138,7 +141,7 @@ function updateManualRoute(
       nextRoute.push(step);
       continue;
     }
-    const replacement = createRouteStep(member, mapData);
+    const replacement = createRouteStep(member, mapData, currentMapPoints);
     nextRoute.push(
       replacement
         ? {
@@ -151,7 +154,7 @@ function updateManualRoute(
 
   for (const member of activeMembers) {
     if (routeMemberNos.has(member.memberNo)) continue;
-    const appended = createRouteStep(member, mapData);
+    const appended = createRouteStep(member, mapData, currentMapPoints);
     if (appended) nextRoute.push(appended);
   }
 
@@ -209,6 +212,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         members,
         state.mapData,
         item.memberNo,
+        state.currentMapPoints,
       );
       if (!persistNext(state, { members, route })) return;
       set({
@@ -229,7 +233,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     members[memberNo] = null;
     draftMemberNames[memberNo] = "";
     if (state.isManualSort) {
-      const route = updateManualRoute(state.route, members, state.mapData);
+      const route = updateManualRoute(
+        state.route,
+        members,
+        state.mapData,
+        undefined,
+        state.currentMapPoints,
+      );
       if (!persistNext(state, { members, route })) return;
       set({
         members,
@@ -372,6 +382,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         mapPoint: member.mapPoint,
       })),
       state.mapData.mapData,
+      state.currentMapPoints,
     );
     const nextRoute = toRouteSteps(result.orderedSteps);
     if (!persistNext(state, {
