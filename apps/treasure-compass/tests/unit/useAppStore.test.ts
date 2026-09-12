@@ -267,6 +267,30 @@ describe("useAppStore", () => {
     expect(next.route[1]?.isCompleted).toBe(false);
   });
 
+  it("recalculates the automatic route after completion and cancellation", () => {
+    const s = useAppStore.getState();
+    s.setMapData(mapData);
+    s.setMember(
+      0,
+      makeMember(0, "Alice", 1, "Living Memory", "Memory", 1, 100, 100),
+    );
+    s.setMember(
+      1,
+      makeMember(1, "Bob", 1, "Living Memory", "Memory", 2, 120, 130),
+    );
+
+    s.completeStep(0);
+    let next = useAppStore.getState();
+    expect(next.route[0]?.isCompleted).toBe(true);
+    expect(next.route[1]?.isCompleted).toBe(false);
+    expect(next.currentMapPoints["1"]?.pointNo).toBe(1);
+
+    s.uncompleteStep(0);
+    next = useAppStore.getState();
+    expect(next.route.every((step) => step.isCompleted === false)).toBe(true);
+    expect(next.activeStep).toBe(0);
+  });
+
   it("clearMembers resets members, route, manual sort and active step", () => {
     const s = useAppStore.getState();
     s.setMapData(mapData);

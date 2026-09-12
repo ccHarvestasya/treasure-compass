@@ -379,6 +379,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     };
     if (!persistNext(state, { route, activeStep: nextActiveStep, currentMapPoints })) return;
     set({ route, activeStep: nextActiveStep, currentMapPoints });
+    if (!state.isManualSort) get().recalcRoute();
   },
   uncompleteStep: (index) => {
     const state = get();
@@ -387,6 +388,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     );
     if (!persistNext(state, { route, activeStep: index })) return;
     set({ route, activeStep: index });
+    if (!state.isManualSort) get().recalcRoute();
   },
   bulkText: initialBulkText,
   setBulkText: (text) => {
