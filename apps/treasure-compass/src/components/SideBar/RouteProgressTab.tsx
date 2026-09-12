@@ -127,12 +127,26 @@ export function RouteProgressTab() {
   const oneLineMacro = generateOneLineMacro(route);
   const multiLineMacro = generateMultiLineMacro(route);
 
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand('copy');
+        textarea.remove();
+        if (!copied) throw new Error('copy failed');
+      }
       toast.success(`${label}をコピーしました`);
-    }).catch(() => {
+    } catch {
       toast.error('コピーに失敗しました');
-    });
+    }
   };
 
   if (route.length === 0) {

@@ -81,7 +81,8 @@ function drawRoute(
   });
 
   // 各ポイントのマーカーを描画
-  steps.forEach((step, i) => {
+  [...steps].reverse().forEach((step) => {
+    const i = steps.indexOf(step);
     const x = toCanvas(step.point.posX, scale);
     const y = toCanvas(step.point.posY, scale);
     const isActive = i === activeStep;
