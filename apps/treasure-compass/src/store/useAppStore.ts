@@ -3,7 +3,7 @@ import {
   readPersistedTreasure,
   writePersistedTreasure,
 } from "@/persistence/storage";
-import type { Grade, MapData, RouteStep, UserItem } from "@/types";
+import type { Grade, MapData, Point, RouteStep, UserItem } from "@/types";
 import { calcShortestRoute, toRouteSteps } from "@/utils/distance";
 import { create } from "zustand";
 
@@ -12,6 +12,12 @@ const initialTreasure = restored.snapshot ?? {
   grade: DEFAULT_GRADE,
   members: Array<UserItem | null>(FULL_PARTY).fill(null),
 };
+
+const initialRoute = initialTreasure.route ?? [];
+const initialManualSort = initialTreasure.isManualSort ?? false;
+const initialActiveStep = initialTreasure.activeStep ?? 0;
+const initialBulkText = initialTreasure.bulkText ?? "";
+const initialCurrentMapPoints = initialTreasure.currentMapPoints ?? {};
 
 function emptyMembers(): (UserItem | null)[] {
   return Array<UserItem | null>(FULL_PARTY).fill(null);
@@ -39,6 +45,7 @@ interface AppState {
   setManualSort: (value: boolean) => void;
   activeStep: number;
   setActiveStep: (value: number) => void;
+  currentMapPoints: Record<string, Point>;
   completeStep: (index: number) => void;
   uncompleteStep: (index: number) => void;
   bulkText: string;
@@ -49,8 +56,34 @@ interface AppState {
   recalcRoute: () => void;
 }
 
-function persist(grade: Grade, members: (UserItem | null)[]): boolean {
-  return writePersistedTreasure({ grade, members });
+function persistState(
+  state: Pick<
+    AppState,
+    | "grade"
+    | "members"
+    | "route"
+    | "isManualSort"
+    | "activeStep"
+    | "bulkText"
+    | "currentMapPoints"
+  >,
+): boolean {
+  return writePersistedTreasure({
+    grade: state.grade,
+    members: state.members,
+    route: state.route,
+    isManualSort: state.isManualSort,
+    activeStep: state.activeStep,
+    bulkText: state.bulkText,
+    currentMapPoints: state.currentMapPoints,
+  });
+}
+
+function persistNext(
+  state: AppState,
+  overrides: Partial<Pick<AppState, "grade" | "members" | "route" | "isManualSort" | "activeStep" | "bulkText" | "currentMapPoints">> = {},
+): boolean {
+  return persistState({ ...state, ...overrides });
 }
 
 function samePoint(left: RouteStep, right: UserItem): boolean {
@@ -129,12 +162,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   grade: initialTreasure.grade,
   setGrade: (grade) => {
     const state = get();
-    if (!persist(grade, state.members)) return;
+    if (!persistNext(state, { grade })) return;
     set({ grade, mapData: null, isLoading: true });
   },
   setGradeWithReset: (grade) => {
     const members = emptyMembers();
-    if (!persist(grade, members)) return;
+    const state = get();
+    if (!persistNext(state, {
+      grade,
+      members,
+      route: [],
+      isManualSort: false,
+      activeStep: 0,
+      bulkText: "",
+      currentMapPoints: {},
+    })) return;
     set({
       grade,
       mapData: null,
@@ -161,20 +203,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     const draftMemberNames = [...state.draftMemberNames];
     members[memberNo] = item;
     draftMemberNames[memberNo] = "";
-    if (!persist(state.grade, members)) return;
     if (state.isManualSort) {
+      const route = updateManualRoute(
+        state.route,
+        members,
+        state.mapData,
+        item.memberNo,
+      );
+      if (!persistNext(state, { members, route })) return;
       set({
         members,
         draftMemberNames,
-        route: updateManualRoute(
-          state.route,
-          members,
-          state.mapData,
-          item.memberNo,
-        ),
+        route,
       });
       return;
     }
+    if (!persistNext(state, { members })) return;
     set({ members, draftMemberNames });
     get().recalcRoute();
   },
@@ -184,15 +228,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     const draftMemberNames = [...state.draftMemberNames];
     members[memberNo] = null;
     draftMemberNames[memberNo] = "";
-    if (!persist(state.grade, members)) return;
     if (state.isManualSort) {
+      const route = updateManualRoute(state.route, members, state.mapData);
+      if (!persistNext(state, { members, route })) return;
       set({
         members,
         draftMemberNames,
-        route: updateManualRoute(state.route, members, state.mapData),
+        route,
       });
       return;
     }
+    if (!persistNext(state, { members })) return;
     set({ members, draftMemberNames });
     get().recalcRoute();
   },
@@ -210,7 +256,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   clearMembers: () => {
     const state = get();
     const members = emptyMembers();
-    if (!persist(state.grade, members)) return;
+    if (!persistNext(state, {
+      members,
+      route: [],
+      isManualSort: false,
+      activeStep: 0,
+      currentMapPoints: {},
+    })) return;
     set({
       members,
       draftMemberNames: members.map(() => ""),
@@ -222,7 +274,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   clearAllData: () => {
     const state = get();
     const members = emptyMembers();
-    if (!persist(state.grade, members)) return;
+    if (!persistNext(state, {
+      members,
+      route: [],
+      isManualSort: false,
+      activeStep: 0,
+      bulkText: "",
+      currentMapPoints: {},
+    })) return;
     set({
       members,
       draftMemberNames: members.map(() => ""),
@@ -232,20 +291,29 @@ export const useAppStore = create<AppState>((set, get) => ({
       activeStep: 0,
     });
   },
-  route: [],
-  isManualSort: false,
+  route: initialRoute,
+  isManualSort: initialManualSort,
   setRoute: (steps) => {
     const state = get();
     const normalized = steps.map((step, index) => ({
       ...step,
       orderNo: index + 1,
     }));
-    if (!persist(state.grade, state.members)) return;
+    if (!persistNext(state, { route: normalized, isManualSort: true })) return;
     set({ route: normalized, isManualSort: true });
   },
-  setManualSort: (value) => set({ isManualSort: value }),
-  activeStep: 0,
-  setActiveStep: (value) => set({ activeStep: value }),
+  setManualSort: (value) => {
+    const state = get();
+    if (!persistNext(state, { isManualSort: value })) return;
+    set({ isManualSort: value });
+  },
+  activeStep: initialActiveStep,
+  setActiveStep: (value) => {
+    if (!Number.isInteger(value) || value < 0) return;
+    const state = get();
+    if (!persistNext(state, { activeStep: value })) return;
+    set({ activeStep: value });
+  },
   completeStep: (index) => {
     const state = get();
     const route = state.route.map((step, routeIndex) =>
@@ -254,22 +322,34 @@ export const useAppStore = create<AppState>((set, get) => ({
     const nextActive = route.findIndex(
       (step, routeIndex) => routeIndex > index && !step.isCompleted,
     );
-    if (!persist(state.grade, state.members)) return;
-    set({ route, activeStep: nextActive >= 0 ? nextActive : index });
+    const nextActiveStep = nextActive >= 0 ? nextActive : index;
+    const completedStep = route[index];
+    if (!completedStep) return;
+    const currentMapPoints = {
+      ...state.currentMapPoints,
+      [completedStep.mapNo]: completedStep.point,
+    };
+    if (!persistNext(state, { route, activeStep: nextActiveStep, currentMapPoints })) return;
+    set({ route, activeStep: nextActiveStep, currentMapPoints });
   },
   uncompleteStep: (index) => {
     const state = get();
     const route = state.route.map((step, routeIndex) =>
       routeIndex === index ? { ...step, isCompleted: false } : step,
     );
-    if (!persist(state.grade, state.members)) return;
+    if (!persistNext(state, { route, activeStep: index })) return;
     set({ route, activeStep: index });
   },
-  bulkText: "",
-  setBulkText: (text) => set({ bulkText: text }),
+  bulkText: initialBulkText,
+  setBulkText: (text) => {
+    const state = get();
+    if (!persistNext(state, { bulkText: text })) return;
+    set({ bulkText: text });
+  },
   modalMemberNo: null,
   openModal: (memberNo) => set({ modalMemberNo: memberNo }),
   closeModal: () => set({ modalMemberNo: null }),
+  currentMapPoints: initialCurrentMapPoints,
   recalcRoute: () => {
     const state = get();
     if (!state.mapData) return;
@@ -277,7 +357,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       (member): member is UserItem => member !== null,
     );
     if (activeMembers.length === 0) {
-      set({ route: [], isManualSort: false, activeStep: 0 });
+      const next = { route: [] as RouteStep[], isManualSort: false, activeStep: 0 };
+      if (!persistNext(state, next)) return;
+      set(next);
       return;
     }
     const result = calcShortestRoute(
@@ -291,8 +373,14 @@ export const useAppStore = create<AppState>((set, get) => ({
       })),
       state.mapData.mapData,
     );
+    const nextRoute = toRouteSteps(result.orderedSteps);
+    if (!persistNext(state, {
+      route: nextRoute,
+      isManualSort: false,
+      activeStep: 0,
+    })) return;
     set({
-      route: toRouteSteps(result.orderedSteps),
+      route: nextRoute,
       isManualSort: false,
       activeStep: 0,
     });

@@ -1,5 +1,6 @@
 import {
   readPersistedTreasure,
+  writePersistedTreasure,
   STORAGE_KEY_LEGACY_SESSIONS,
   STORAGE_KEY_TREASURE_SESSION,
 } from "../../src/persistence/storage";
@@ -36,6 +37,47 @@ class LocalStorageMock {
 describe("Treasure persistence boundary", () => {
   beforeEach(() => {
     vi.stubGlobal("localStorage", new LocalStorageMock());
+  });
+
+  it("完全な session snapshot を保存・復元する", () => {
+    const point = {
+      pointNo: 1,
+      division: "P" as const,
+      block: "",
+      posX: 100,
+      posY: 200,
+      posZ: 0,
+      posT: 0,
+      time: 0,
+      pointName: "P1",
+    };
+    const snapshot = {
+      grade: DEFAULT_GRADE,
+      members: Array(FULL_PARTY).fill(null),
+      route: [
+        {
+          orderNo: 1,
+          memberNo: 0,
+          mapNo: 1,
+          mapName: "Map",
+          mapNameShort: "M",
+          memberName: "Alice",
+          point,
+          isCompleted: true,
+        },
+      ],
+      isManualSort: true,
+      activeStep: 0,
+      bulkText: "input",
+      currentMapPoints: { "1": point },
+    };
+
+    expect(writePersistedTreasure(snapshot)).toBe(true);
+    expect(readPersistedTreasure()).toEqual({
+      snapshot,
+      restoreFailure: false,
+    });
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY_TREASURE_SESSION) ?? "null").schemaVersion).toBe(2);
   });
 
   it("新しい Treasure key を旧統合 key より優先する", () => {

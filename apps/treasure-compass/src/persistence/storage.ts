@@ -4,7 +4,7 @@ import {
   STORAGE_KEY_GRADE,
   STORAGE_KEY_MEMBERS,
 } from "@/constants";
-import type { Grade, UserItem } from "@/types";
+import type { Grade, Point, RouteStep, UserItem } from "@/types";
 
 export const STORAGE_KEY_TREASURE_SESSION =
   "treasure-compass:treasure-session:v2";
@@ -13,6 +13,11 @@ export const STORAGE_KEY_LEGACY_SESSIONS = "treasure-compass:sessions:v1";
 export interface PersistedTreasureSession {
   grade: Grade;
   members: (UserItem | null)[];
+  route?: RouteStep[];
+  isManualSort?: boolean;
+  activeStep?: number;
+  bulkText?: string;
+  currentMapPoints?: Record<string, Point>;
 }
 
 export interface ReadTreasureResult {
@@ -70,6 +75,36 @@ function isValidMember(value: unknown): value is UserItem | null {
   );
 }
 
+function isValidPoint(value: unknown): value is Point {
+  return (
+    isRecord(value) &&
+    Number.isInteger(value.pointNo) &&
+    (value.division === "P" || value.division === "T" || value.division === "R" || value.division === "Z") &&
+    typeof value.block === "string" &&
+    Number.isFinite(value.posX) &&
+    Number.isFinite(value.posY) &&
+    Number.isFinite(value.posZ) &&
+    Number.isFinite(value.posT) &&
+    Number.isFinite(value.time) &&
+    typeof value.pointName === "string"
+  );
+}
+
+function isValidRouteStep(value: unknown): value is RouteStep {
+  return (
+    isRecord(value) &&
+    Number.isInteger(value.orderNo) &&
+    Number.isInteger(value.memberNo) &&
+    Number.isInteger(value.mapNo) &&
+    typeof value.mapName === "string" &&
+    typeof value.mapNameShort === "string" &&
+    typeof value.memberName === "string" &&
+    isValidPoint(value.point) &&
+    (value.teleportPoint === undefined || isValidPoint(value.teleportPoint)) &&
+    typeof value.isCompleted === "boolean"
+  );
+}
+
 function parseTreasure(value: unknown): PersistedTreasureSession | null {
   if (
     !isRecord(value) ||
@@ -83,14 +118,43 @@ function parseTreasure(value: unknown): PersistedTreasureSession | null {
   ) {
     return null;
   }
-  return { grade: value.grade, members: value.members };
+  const snapshot: PersistedTreasureSession = {
+    grade: value.grade,
+    members: value.members,
+  };
+  if (value.route !== undefined) {
+    const route = value.route;
+    const isManualSort = value.isManualSort;
+    const activeStep = value.activeStep;
+    const bulkText = value.bulkText;
+    const currentMapPoints = value.currentMapPoints;
+    if (
+      !Array.isArray(route) ||
+      !route.every(isValidRouteStep) ||
+      typeof isManualSort !== "boolean" ||
+      typeof activeStep !== "number" ||
+      !Number.isInteger(activeStep) ||
+      activeStep < 0 ||
+      typeof bulkText !== "string" ||
+      !isRecord(currentMapPoints) ||
+      !Object.values(currentMapPoints).every(isValidPoint)
+    ) {
+      return null;
+    }
+    snapshot.route = route;
+    snapshot.isManualSort = isManualSort;
+    snapshot.activeStep = activeStep;
+    snapshot.bulkText = bulkText;
+    snapshot.currentMapPoints = currentMapPoints as Record<string, Point>;
+  }
+  return snapshot;
 }
 
 function parseCurrentSession(value: unknown): PersistedTreasureSession | null {
   if (
     !isRecord(value) ||
     !hasExactKeys(value, ["schemaVersion", "sessionRevision", "state"]) ||
-    value.schemaVersion !== 1 ||
+    (value.schemaVersion !== 1 && value.schemaVersion !== 2) ||
     typeof value.sessionRevision !== "number" ||
     !Number.isInteger(value.sessionRevision) ||
     value.sessionRevision < 1
@@ -203,10 +267,16 @@ export function writePersistedTreasure(
   const currentStorage = storage();
   if (!currentStorage) return false;
   try {
+    const hasFullSnapshot =
+      snapshot.route !== undefined &&
+      snapshot.isManualSort !== undefined &&
+      snapshot.activeStep !== undefined &&
+      snapshot.bulkText !== undefined &&
+      snapshot.currentMapPoints !== undefined;
     currentStorage.setItem(
       STORAGE_KEY_TREASURE_SESSION,
       JSON.stringify({
-        schemaVersion: 1,
+        schemaVersion: hasFullSnapshot ? 2 : 1,
         sessionRevision: 1,
         state: snapshot,
       }),
