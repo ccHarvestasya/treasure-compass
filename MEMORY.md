@@ -108,6 +108,7 @@
 - 承認済み Specification / Design に対する正式な `implementation-review-007` を改訂した。登録・保存・進捗・基本経路、Treasure masterのstable point IDとlegacy移行表を適合確認し、判定は `READY`。
 - Treasureの実装検証は unit test 64件、lint、Treasure/Mob両buildまで継続的に通過している。
 - 2026-09-12 に、Treasureの経路計算不能境界を実装した。対象マップに有効なエーテライトがない場合は推測経路を返さず、既存経路を維持して理由をRouteProgressへ表示する。unit testは65件。
+- 2026-09-12 に、Treasure runtimeをmaster-data直結へ移行した。`public/json/g8.json`等の旧形式JSON、旧生成スクリプト、未参照`favicon.svg`は削除し、Treasure地点は`treasure-master.v1.json`、エーテライトと地図情報は`map-master.v1.json`を正本とする。
 
 ## Historical Decisions
 
