@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "dataRevision": "2026-09-12.2",
+  "dataRevision": "2026-09-12.3",
   "expansions": [
     {
       "id": "expansion-unconfirmed",
       "name": "拡張区分未確認",
       "order": 1,
       "sourceIds": [
-        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570",
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d",
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a",
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58",
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-001",
+        "source-002",
+        "source-003",
+        "source-004",
+        "source-005"
       ]
     }
   ],
   "maps": [
     {
-      "id": "legacy-g8-map-1",
+      "id": "map-001",
       "name": "クルザス西部高地",
       "shortName": "クル西部",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+        "source-001"
       ],
       "bounds": {
         "minX": 1,
@@ -37,33 +37,33 @@
       },
       "aetherytes": [
         {
-          "id": "g8-map-1-point-8",
+          "id": "aetheryte-001",
           "name": "ファルコンネスト",
           "x": 32,
           "y": 36.7,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         },
         {
-          "id": "g8-map-1-point-9",
+          "id": "aetheryte-002",
           "name": "テイルフェザー→西部高地",
           "x": 6,
           "y": 9.7,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g8-map-2",
+      "id": "map-002",
       "name": "高地ドラヴァニア",
       "shortName": "高地ドラ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+        "source-001"
       ],
       "bounds": {
         "minX": 1,
@@ -77,33 +77,33 @@
       },
       "aetherytes": [
         {
-          "id": "g8-map-2-point-10",
+          "id": "aetheryte-003",
           "name": "テイルフェザー",
           "x": 33.2,
           "y": 23.1,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         },
         {
-          "id": "g8-map-2-point-11",
+          "id": "aetheryte-004",
           "name": "不浄の三塔",
           "x": 16.4,
           "y": 23.1,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g8-map-3",
+      "id": "map-003",
       "name": "ドラヴァニア雲海",
       "shortName": "ドラ雲海",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+        "source-001"
       ],
       "bounds": {
         "minX": 1,
@@ -117,33 +117,33 @@
       },
       "aetherytes": [
         {
-          "id": "g8-map-3-point-10",
+          "id": "aetheryte-005",
           "name": "モグモグホーム",
           "x": 27.7,
           "y": 34.4,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         },
         {
-          "id": "g8-map-3-point-11",
+          "id": "aetheryte-006",
           "name": "白亜の宮殿",
           "x": 10.8,
           "y": 28.8,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g8-map-4",
+      "id": "map-004",
       "name": "アバラシア雲海",
       "shortName": "アバ雲海",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+        "source-001"
       ],
       "bounds": {
         "minX": 1,
@@ -157,33 +157,33 @@
       },
       "aetherytes": [
         {
-          "id": "g8-map-4-point-11",
+          "id": "aetheryte-007",
           "name": "キャンプ･クラウドトップ",
           "x": 10.2,
           "y": 33.4,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         },
         {
-          "id": "g8-map-4-point-12",
+          "id": "aetheryte-008",
           "name": "オク･ズンド",
           "x": 10.3,
           "y": 14.2,
           "sourceIds": [
-            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+            "source-001"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g10-map-1",
+      "id": "map-005",
       "name": "ギラバニア辺境地帯",
       "shortName": "辺境",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+        "source-002"
       ],
       "bounds": {
         "minX": 1,
@@ -197,42 +197,42 @@
       },
       "aetherytes": [
         {
-          "id": "g10-map-1-point-9",
+          "id": "aetheryte-009",
           "name": "カストルム･オリエンス",
           "x": 8.8,
           "y": 11.3,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-1-point-10",
+          "id": "aetheryte-010",
           "name": "ピーリングストーンズ",
           "x": 29.7,
           "y": 26.4,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-1-point-11",
+          "id": "aetheryte-011",
           "name": "ラールガーズリーチ",
           "x": 30,
           "y": 10.8,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g10-map-2",
+      "id": "map-006",
       "name": "ギラバニア山岳地帯",
       "shortName": "山岳",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+        "source-002"
       ],
       "bounds": {
         "minX": 1,
@@ -246,42 +246,42 @@
       },
       "aetherytes": [
         {
-          "id": "g10-map-2-point-9",
+          "id": "aetheryte-012",
           "name": "アラガーナ",
           "x": 23.8,
           "y": 6.5,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-2-point-10",
+          "id": "aetheryte-013",
           "name": "アラギリ",
           "x": 16,
           "y": 36.4,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-2-point-11",
+          "id": "aetheryte-014",
           "name": "ラールガーズリーチ",
           "x": 8.5,
           "y": 5.6,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g10-map-3",
+      "id": "map-007",
       "name": "ギラバニア湖畔地帯",
       "shortName": "湖畔",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+        "source-002"
       ],
       "bounds": {
         "minX": 1,
@@ -295,33 +295,33 @@
       },
       "aetherytes": [
         {
-          "id": "g10-map-3-point-9",
+          "id": "aetheryte-015",
           "name": "ポルタ･プレトリア",
           "x": 8.3,
           "y": 21.1,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-3-point-10",
+          "id": "aetheryte-016",
           "name": "アラミガン･クォーター",
           "x": 33.6,
           "y": 34.6,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g10-map-4",
+      "id": "map-008",
       "name": "紅玉海",
       "shortName": "紅玉海",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+        "source-002"
       ],
       "bounds": {
         "minX": 1,
@@ -335,60 +335,60 @@
       },
       "aetherytes": [
         {
-          "id": "g10-map-4-point-9",
+          "id": "aetheryte-017",
           "name": "碧のタマミズ",
           "x": 28.7,
           "y": 16.1,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-4-point-10",
+          "id": "aetheryte-018",
           "name": "オノコロ島",
           "x": 23.2,
           "y": 9.7,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-4-point-11",
+          "id": "aetheryte-019",
           "name": "クガネ",
           "x": 38.3,
           "y": 38.4,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-4-point-12",
+          "id": "aetheryte-020",
           "name": "アジム(再開の市)",
           "x": 6.8,
           "y": 4.3,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-4-point-13",
+          "id": "aetheryte-021",
           "name": "ヤンサ(ナマイ村)",
           "x": 5.3,
           "y": 15.9,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g10-map-5",
+      "id": "map-009",
       "name": "ヤンサ",
       "shortName": "ヤンサ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+        "source-002"
       ],
       "bounds": {
         "minX": 1,
@@ -402,42 +402,42 @@
       },
       "aetherytes": [
         {
-          "id": "g10-map-5-point-10",
+          "id": "aetheryte-022",
           "name": "ナマイ村",
           "x": 30,
           "y": 19.6,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-5-point-11",
+          "id": "aetheryte-023",
           "name": "烈士庵",
           "x": 26.3,
           "y": 13.4,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-5-point-12",
+          "id": "aetheryte-024",
           "name": "町人地",
           "x": 11.7,
           "y": 32.2,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g10-map-6",
+      "id": "map-010",
       "name": "アジムステップ",
       "shortName": "アジム",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+        "source-002"
       ],
       "bounds": {
         "minX": 1,
@@ -451,42 +451,42 @@
       },
       "aetherytes": [
         {
-          "id": "g10-map-6-point-9",
+          "id": "aetheryte-025",
           "name": "再開の市",
           "x": 32.6,
           "y": 28.3,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-6-point-10",
+          "id": "aetheryte-026",
           "name": "明けの王座",
           "x": 23,
           "y": 22.1,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         },
         {
-          "id": "g10-map-6-point-11",
+          "id": "aetheryte-027",
           "name": "ドーロ･イロー",
           "x": 6.3,
           "y": 23.8,
           "sourceIds": [
-            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+            "source-002"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g12-map-1",
+      "id": "map-011",
       "name": "レイクランド",
       "shortName": "レイク",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+        "source-003"
       ],
       "bounds": {
         "minX": 1,
@@ -500,42 +500,42 @@
       },
       "aetherytes": [
         {
-          "id": "g12-map-1-point-9",
+          "id": "aetheryte-028",
           "name": "ジョッブ砦",
           "x": 36.5,
           "y": 20.9,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-1-point-10",
+          "id": "aetheryte-029",
           "name": "オスタル厳命城",
           "x": 6.8,
           "y": 16.8,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-1-point-11",
+          "id": "aetheryte-030",
           "name": "クリスタリウム",
           "x": 37.9,
           "y": 29.6,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g12-map-2",
+      "id": "map-012",
       "name": "コルシア島",
       "shortName": "コルシア",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+        "source-003"
       ],
       "bounds": {
         "minX": 1,
@@ -549,42 +549,42 @@
       },
       "aetherytes": [
         {
-          "id": "g12-map-2-point-9",
+          "id": "aetheryte-031",
           "name": "スティルタイド",
           "x": 34.7,
           "y": 27.2,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-2-point-10",
+          "id": "aetheryte-032",
           "name": "ライト村",
           "x": 17,
           "y": 29.2,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-2-point-11",
+          "id": "aetheryte-033",
           "name": "トメラの村",
           "x": 12.9,
           "y": 8.9,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g12-map-3",
+      "id": "map-013",
       "name": "アム・アレーン",
       "shortName": "アムアレーン",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+        "source-003"
       ],
       "bounds": {
         "minX": 1,
@@ -598,42 +598,42 @@
       },
       "aetherytes": [
         {
-          "id": "g12-map-3-point-9",
+          "id": "aetheryte-034",
           "name": "モルド・スーク",
           "x": 26.4,
           "y": 17.1,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-3-point-10",
+          "id": "aetheryte-035",
           "name": "旅立ちの宿",
           "x": 29.5,
           "y": 27.6,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-3-point-11",
+          "id": "aetheryte-036",
           "name": "トゥワイン",
           "x": 11.1,
           "y": 17.2,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g12-map-4",
+      "id": "map-014",
       "name": "イル・メグ",
       "shortName": "イルメグ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+        "source-003"
       ],
       "bounds": {
         "minX": 1,
@@ -647,42 +647,42 @@
       },
       "aetherytes": [
         {
-          "id": "g12-map-4-point-9",
+          "id": "aetheryte-037",
           "name": "リダ・ラーン",
           "x": 14.5,
           "y": 31.7,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-4-point-10",
+          "id": "aetheryte-038",
           "name": "プラ・エンニ茸窟",
           "x": 20,
           "y": 4.3,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-4-point-11",
+          "id": "aetheryte-039",
           "name": "ヴォレクドルフ",
           "x": 29.1,
           "y": 7.7,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g12-map-5",
+      "id": "map-015",
       "name": "ラケティカ大森林",
       "shortName": "ラケティカ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+        "source-003"
       ],
       "bounds": {
         "minX": 1,
@@ -696,33 +696,33 @@
       },
       "aetherytes": [
         {
-          "id": "g12-map-5-point-9",
+          "id": "aetheryte-040",
           "name": "スリザーバウ",
           "x": 19.4,
           "y": 27.4,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-5-point-10",
+          "id": "aetheryte-041",
           "name": "ファノヴの里",
           "x": 29,
           "y": 17.5,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g12-map-6",
+      "id": "map-016",
       "name": "テンペスト",
       "shortName": "テンペスト",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+        "source-003"
       ],
       "bounds": {
         "minX": 1,
@@ -736,33 +736,33 @@
       },
       "aetherytes": [
         {
-          "id": "g12-map-6-point-9",
+          "id": "aetheryte-042",
           "name": "オンドの潮溜まり",
           "x": 32.6,
           "y": 17.4,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         },
         {
-          "id": "g12-map-6-point-10",
+          "id": "aetheryte-043",
           "name": "マカレンサス広場",
           "x": 18.5,
           "y": 25.8,
           "sourceIds": [
-            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+            "source-003"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g14-map-1",
+      "id": "map-017",
       "name": "ラヴィリンソス",
       "shortName": "ラヴィリンソス",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+        "source-004"
       ],
       "bounds": {
         "minX": 1,
@@ -776,42 +776,42 @@
       },
       "aetherytes": [
         {
-          "id": "g14-map-1-point-9",
+          "id": "aetheryte-044",
           "name": "アルケイオン保管院",
           "x": 30.3,
           "y": 11.9,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-1-point-10",
+          "id": "aetheryte-045",
           "name": "リトルシャーレアン",
           "x": 21.6,
           "y": 20.5,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-1-point-11",
+          "id": "aetheryte-046",
           "name": "アポリア本部",
           "x": 6.8,
           "y": 27.5,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g14-map-2",
+      "id": "map-018",
       "name": "サベネア島",
       "shortName": "サベネア島",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+        "source-004"
       ],
       "bounds": {
         "minX": 1,
@@ -825,51 +825,51 @@
       },
       "aetherytes": [
         {
-          "id": "g14-map-2-point-9",
+          "id": "aetheryte-047",
           "name": "イェドリマン",
           "x": 25.3,
           "y": 34,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-2-point-10",
+          "id": "aetheryte-048",
           "name": "デミールの遺烈郷",
           "x": 10.9,
           "y": 22.2,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-2-point-11",
+          "id": "aetheryte-049",
           "name": "パーラカの里",
           "x": 29.5,
           "y": 16.5,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-2-point-12",
+          "id": "aetheryte-050",
           "name": "トラーナ関門",
           "x": 31.8,
           "y": 8.9,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g14-map-3",
+      "id": "map-019",
       "name": "ガレマルド",
       "shortName": "ガレマルド",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+        "source-004"
       ],
       "bounds": {
         "minX": 1,
@@ -883,33 +883,33 @@
       },
       "aetherytes": [
         {
-          "id": "g14-map-3-point-9",
+          "id": "aetheryte-051",
           "name": "キャンプ・ブロークングラス",
           "x": 13.3,
           "y": 31,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-3-point-10",
+          "id": "aetheryte-052",
           "name": "テルティウム駅",
           "x": 31.8,
           "y": 17.9,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g14-map-4",
+      "id": "map-020",
       "name": "嘆きの海",
       "shortName": "嘆きの海",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+        "source-004"
       ],
       "bounds": {
         "minX": 1,
@@ -923,33 +923,33 @@
       },
       "aetherytes": [
         {
-          "id": "g14-map-4-point-9",
+          "id": "aetheryte-053",
           "name": "涙の入江",
           "x": 10.1,
           "y": 34.4,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-4-point-10",
+          "id": "aetheryte-054",
           "name": "ベストウェイ・バロー",
           "x": 21.4,
           "y": 11.2,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g14-map-5",
+      "id": "map-021",
       "name": "ウルティマ・トゥーレ",
       "shortName": "ウルティマ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+        "source-004"
       ],
       "bounds": {
         "minX": 1,
@@ -963,42 +963,42 @@
       },
       "aetherytes": [
         {
-          "id": "g14-map-5-point-9",
+          "id": "aetheryte-055",
           "name": "リア・ターラ",
           "x": 10.5,
           "y": 26.8,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-5-point-10",
+          "id": "aetheryte-056",
           "name": "イーアの里",
           "x": 22.6,
           "y": 8.3,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-5-point-11",
+          "id": "aetheryte-057",
           "name": "オミクロンベース",
           "x": 31.2,
           "y": 28.1,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g14-map-6",
+      "id": "map-022",
       "name": "エルピス",
       "shortName": "エルピス",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+        "source-004"
       ],
       "bounds": {
         "minX": 1,
@@ -1012,42 +1012,42 @@
       },
       "aetherytes": [
         {
-          "id": "g14-map-6-point-9",
+          "id": "aetheryte-058",
           "name": "十二節の園",
           "x": 8.8,
           "y": 32.3,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-6-point-10",
+          "id": "aetheryte-059",
           "name": "アナグノリシス天測園",
           "x": 24.6,
           "y": 24,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         },
         {
-          "id": "g14-map-6-point-11",
+          "id": "aetheryte-060",
           "name": "ポイエテーン・オイコス",
           "x": 11,
           "y": 17.7,
           "sourceIds": [
-            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+            "source-004"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g17-map-1",
+      "id": "map-023",
       "name": "オルコ・パチャ",
       "shortName": "オルコ・パチャ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-005"
       ],
       "bounds": {
         "minX": 1,
@@ -1061,33 +1061,33 @@
       },
       "aetherytes": [
         {
-          "id": "g17-map-1-point-1",
+          "id": "aetheryte-061",
           "name": "ウォーラーの残響",
           "x": 30.7,
           "y": 34.1,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-1-point-2",
+          "id": "aetheryte-062",
           "name": "ワチュン・ペロ",
           "x": 28.1,
           "y": 13.1,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g17-map-2",
+      "id": "map-024",
       "name": "コザマル・カ",
       "shortName": "コザマル・カ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-005"
       ],
       "bounds": {
         "minX": 1,
@@ -1101,51 +1101,51 @@
       },
       "aetherytes": [
         {
-          "id": "g17-map-2-point-1",
+          "id": "aetheryte-063",
           "name": "オック・ハヌ",
           "x": 18,
           "y": 11.8,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-2-point-2",
+          "id": "aetheryte-064",
           "name": "アースンシャイア",
           "x": 11.9,
           "y": 27.7,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-2-point-3",
+          "id": "aetheryte-065",
           "name": "朋友の灯火",
           "x": 32.3,
           "y": 25.5,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-2-point-4",
+          "id": "aetheryte-066",
           "name": "ポガ停船所",
           "x": 37.2,
           "y": 16.8,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g17-map-3",
+      "id": "map-025",
       "name": "ヤクテル樹海",
       "shortName": "ヤクテル樹海",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-005"
       ],
       "bounds": {
         "minX": 1,
@@ -1159,33 +1159,33 @@
       },
       "aetherytes": [
         {
-          "id": "g17-map-3-point-1",
+          "id": "aetheryte-067",
           "name": "イクブラーシャ",
           "x": 13.5,
           "y": 12.8,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-3-point-2",
+          "id": "aetheryte-068",
           "name": "マムーク",
           "x": 35.9,
           "y": 32,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g17-map-4",
+      "id": "map-026",
       "name": "シャーローニ荒野",
       "shortName": "シャーローニ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-005"
       ],
       "bounds": {
         "minX": 1,
@@ -1199,42 +1199,42 @@
       },
       "aetherytes": [
         {
-          "id": "g17-map-4-point-1",
+          "id": "aetheryte-069",
           "name": "フーサタイ宿場町",
           "x": 29.2,
           "y": 30.8,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-4-point-2",
+          "id": "aetheryte-070",
           "name": "シェシェネ青燐泉",
           "x": 15.6,
           "y": 19.1,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-4-point-3",
+          "id": "aetheryte-071",
           "name": "メワヘイゾーン",
           "x": 27.7,
           "y": 10.1,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g17-map-5",
+      "id": "map-027",
       "name": "ヘリテージファウンド",
       "shortName": "ヘリテージ",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-005"
       ],
       "bounds": {
         "minX": 1,
@@ -1248,42 +1248,42 @@
       },
       "aetherytes": [
         {
-          "id": "g17-map-5-point-1",
+          "id": "aetheryte-072",
           "name": "ヤースラニ駅",
           "x": 31.7,
           "y": 25.6,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-5-point-2",
+          "id": "aetheryte-073",
           "name": "アウトスカーツ",
           "x": 17,
           "y": 9.7,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-5-point-3",
+          "id": "aetheryte-074",
           "name": "エレクトロープ採石場",
           "x": 17,
           "y": 23.8,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         }
       ]
     },
     {
-      "id": "legacy-g17-map-6",
+      "id": "map-028",
       "name": "リビング・メモリー",
       "shortName": "リビング",
       "aliases": [],
       "expansionId": "expansion-unconfirmed",
       "sourceIds": [
-        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+        "source-005"
       ],
       "bounds": {
         "minX": 1,
@@ -1297,30 +1297,30 @@
       },
       "aetherytes": [
         {
-          "id": "g17-map-6-point-1",
+          "id": "aetheryte-075",
           "name": "レイノード・メモリス",
           "x": 21.4,
           "y": 37.4,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-6-point-2",
+          "id": "aetheryte-076",
           "name": "レイノード・ファイア",
           "x": 34.6,
           "y": 15.7,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         },
         {
-          "id": "g17-map-6-point-3",
+          "id": "aetheryte-077",
           "name": "レイノード・ウィンド",
           "x": 16.3,
           "y": 13.5,
           "sourceIds": [
-            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+            "source-005"
           ]
         }
       ]
@@ -1329,31 +1329,31 @@
   "travelEdges": [],
   "sources": [
     {
-      "id": "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570",
+      "id": "source-001",
       "label": "legacy Treasure JSON g8",
       "reference": "apps/treasure-compass/public/json/g8.json (SHA-256: bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570)",
       "verifiedAt": "2026-09-12"
     },
     {
-      "id": "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d",
+      "id": "source-002",
       "label": "legacy Treasure JSON g10",
       "reference": "apps/treasure-compass/public/json/g10.json (SHA-256: 2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d)",
       "verifiedAt": "2026-09-12"
     },
     {
-      "id": "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a",
+      "id": "source-003",
       "label": "legacy Treasure JSON g12",
       "reference": "apps/treasure-compass/public/json/g12.json (SHA-256: 7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a)",
       "verifiedAt": "2026-09-12"
     },
     {
-      "id": "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58",
+      "id": "source-004",
       "label": "legacy Treasure JSON g14",
       "reference": "apps/treasure-compass/public/json/g14.json (SHA-256: dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58)",
       "verifiedAt": "2026-09-12"
     },
     {
-      "id": "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3",
+      "id": "source-005",
       "label": "legacy Treasure JSON g17",
       "reference": "apps/treasure-compass/public/json/g17.json (SHA-256: 6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3)",
       "verifiedAt": "2026-09-12"

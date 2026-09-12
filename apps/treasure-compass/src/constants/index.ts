@@ -69,6 +69,18 @@ export const GRADE_JSON_MAP: Record<number, string> = Object.fromEntries(
   GRADE_CONFIG.map((c) => [c.grade, c.jsonFile]),
 );
 
+/**
+ * 現行のlegacy入力（grade/mapNo）を、共通map masterの安定IDへ対応付ける。
+ * map masterのIDはgradeや旧JSON名を含めず、masterのdataRevisionとともに管理する。
+ */
+export const MAP_MASTER_IDS_BY_GRADE: Readonly<Record<number, readonly string[]>> = {
+  8: ['map-001', 'map-002', 'map-003', 'map-004'],
+  10: ['map-005', 'map-006', 'map-007', 'map-008', 'map-009', 'map-010'],
+  12: ['map-011', 'map-012', 'map-013', 'map-014', 'map-015', 'map-016'],
+  14: ['map-017', 'map-018', 'map-019', 'map-020', 'map-021', 'map-022'],
+  17: ['map-023', 'map-024', 'map-025', 'map-026', 'map-027', 'map-028'],
+};
+
 export const DEFAULT_MEMBER_NAME = "";
 
 export const POINT_COLORS = {

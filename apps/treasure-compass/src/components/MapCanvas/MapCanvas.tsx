@@ -3,7 +3,7 @@ import mapMasterJson from '@treasure-compass/master-data/data/map-master.v1.json
 import { validateMapMaster, type MapRecord } from '@treasure-compass/master-data';
 import { useAppStore } from '@/store/useAppStore';
 import { AetheryteOverlay } from '@/components/AetheryteOverlay/AetheryteOverlay';
-import { CANVAS_SIZE, POINT_COLORS } from '@/constants';
+import { CANVAS_SIZE, MAP_MASTER_IDS_BY_GRADE, POINT_COLORS } from '@/constants';
 import type { RouteStep, Point } from '@/types';
 
 const mapMasterValidation = validateMapMaster(mapMasterJson);
@@ -13,10 +13,8 @@ if (!mapMasterValidation.usable || !mapMasterValidation.data) {
 const mapMaster = mapMasterValidation.data;
 
 function resolveMapMasterRecord(grade: number, mapNo: number): MapRecord | null {
-  return (
-    mapMaster.maps.find((map) => map.id === `legacy-g${grade}-map-${mapNo}`) ??
-    null
-  );
+  const mapId = MAP_MASTER_IDS_BY_GRADE[grade]?.[mapNo - 1];
+  return mapId ? (mapMaster.maps.find((map) => map.id === mapId) ?? null) : null;
 }
 
 function getScale(mapSize: number): number {
