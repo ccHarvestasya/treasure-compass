@@ -1,0 +1,2645 @@
+{
+  "schemaVersion": 1,
+  "reportType": "legacy-treasure-inventory",
+  "reportStatus": "inventory-only",
+  "purpose": "設定対象のlegacy Treasure JSONを機械的に棚卸しし、後続の共通map master検討と採用判定に照合可能な証跡を提供する。",
+  "runtimeAdoption": {
+    "adoptedByRuntime": false,
+    "statement": "このファイルは棚卸し証跡であり、アプリ runtime が自動採用するデータではない。"
+  },
+  "generatedFrom": {
+    "configuredInputs": [
+      {
+        "dataset": "g8",
+        "path": "apps/treasure-compass/public/json/g8.json",
+        "contentSha256": "bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+      },
+      {
+        "dataset": "g10",
+        "path": "apps/treasure-compass/public/json/g10.json",
+        "contentSha256": "2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      },
+      {
+        "dataset": "g12",
+        "path": "apps/treasure-compass/public/json/g12.json",
+        "contentSha256": "7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      },
+      {
+        "dataset": "g14",
+        "path": "apps/treasure-compass/public/json/g14.json",
+        "contentSha256": "dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      },
+      {
+        "dataset": "g17",
+        "path": "apps/treasure-compass/public/json/g17.json",
+        "contentSha256": "6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      }
+    ],
+    "excludedInputs": [
+      {
+        "dataset": "g11",
+        "path": "apps/treasure-compass/public/json/g11.json",
+        "contentSha256": "3f542b85e936df28bb0e9b9060d4b977354e7c3668cd43dae39437dbea4e19b3",
+        "reason": "GRADE_CONFIGの設定対象外"
+      }
+    ],
+    "missingConfiguredInputs": []
+  },
+  "configuredInputs": [
+    "g8",
+    "g10",
+    "g12",
+    "g14",
+    "g17"
+  ],
+  "missingConfiguredInputs": [],
+  "excludedInputs": [
+    "g11"
+  ],
+  "totals": {
+    "mapCount": 28,
+    "pointCount": 305,
+    "divisionCounts": {
+      "P": 227,
+      "T": 77,
+      "R": 1,
+      "Z": 0
+    }
+  },
+  "fieldTreatment": {
+    "retainedForInventory": [
+      "mapSize",
+      "mapData[].mapNo",
+      "mapData[].mapName",
+      "mapData[].mapNameShort",
+      "mapData[].point[].pointNo",
+      "mapData[].point[].division",
+      "mapData[].point[].posX",
+      "mapData[].point[].posY",
+      "mapData[].point[].pointName"
+    ],
+    "droppedFields": [
+      "block",
+      "posZ",
+      "posT",
+      "time"
+    ],
+    "droppedFieldsMeaning": "既存legacy reportの定義に従い、block、posZ、posT、timeは後続master検討へ持ち込まない。",
+    "canonicalCoordinate": {
+      "formula": "x=posX/10、y=posY/10",
+      "appliesTo": "recordsに記録したT/R/Z全件。P候補はdataset/mapの件数と既存reportのdispositionで集計する。"
+    }
+  },
+  "recordCoverage": {
+    "detailedRecords": "T/R/Z",
+    "summarizedRecords": "P",
+    "statement": "全ポイント件数とPの件数はdataset/mapのsummaryで保持し、個別照合が必要なT/R/Zだけをrecordsへ展開してレポートを過大化させない。"
+  },
+  "datasets": [
+    {
+      "dataset": "g8",
+      "status": "inventoried",
+      "inputPath": "apps/treasure-compass/public/json/g8.json",
+      "inputSha256": "bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570",
+      "mapSize": 431,
+      "bounds": {
+        "minX": 1,
+        "maxX": 44.1,
+        "minY": 1,
+        "maxY": 44.1
+      },
+      "boundsBasis": "mapSizeから算出。minX/minY=1、maxX/maxY=1+mapSize/10。",
+      "summary": {
+        "mapCount": 4,
+        "pointCount": 43,
+        "divisionCounts": {
+          "P": 35,
+          "T": 8,
+          "R": 0,
+          "Z": 0
+        },
+        "dispositionCounts": {
+          "treasure-candidate": 35,
+          "aetheryte-candidate": 8,
+          "excluded": 0
+        }
+      },
+      "maps": [
+        {
+          "legacyMapKey": "g8/map-1",
+          "mapNo": 1,
+          "mapName": "クルザス西部高地",
+          "mapNameShort": "クル西部",
+          "mapSize": 431,
+          "pointCount": 9,
+          "divisionCounts": {
+            "P": 7,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g8/map-2",
+          "mapNo": 2,
+          "mapName": "高地ドラヴァニア",
+          "mapNameShort": "高地ドラ",
+          "mapSize": 431,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 9,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g8/map-3",
+          "mapNo": 3,
+          "mapName": "ドラヴァニア雲海",
+          "mapNameShort": "ドラ雲海",
+          "mapSize": 431,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 9,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g8/map-4",
+          "mapNo": 4,
+          "mapName": "アバラシア雲海",
+          "mapNameShort": "アバ雲海",
+          "mapSize": 431,
+          "pointCount": 12,
+          "divisionCounts": {
+            "P": 10,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        }
+      ],
+      "records": [
+        {
+          "legacyRecordKey": "g8/map-1/point-8",
+          "dataset": "g8",
+          "mapNo": 1,
+          "mapName": "クルザス西部高地",
+          "mapNameShort": "クル西部",
+          "pointNo": 8,
+          "division": "T",
+          "pointName": "ファルコンネスト",
+          "legacyCoordinate": {
+            "posX": 320,
+            "posY": 367
+          },
+          "canonicalCoordinate": {
+            "x": 32,
+            "y": 36.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-1/point-9",
+          "dataset": "g8",
+          "mapNo": 1,
+          "mapName": "クルザス西部高地",
+          "mapNameShort": "クル西部",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "テイルフェザー→西部高地",
+          "legacyCoordinate": {
+            "posX": 60,
+            "posY": 97
+          },
+          "canonicalCoordinate": {
+            "x": 6,
+            "y": 9.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-2/point-10",
+          "dataset": "g8",
+          "mapNo": 2,
+          "mapName": "高地ドラヴァニア",
+          "mapNameShort": "高地ドラ",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "テイルフェザー",
+          "legacyCoordinate": {
+            "posX": 332,
+            "posY": 231
+          },
+          "canonicalCoordinate": {
+            "x": 33.2,
+            "y": 23.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-2/point-11",
+          "dataset": "g8",
+          "mapNo": 2,
+          "mapName": "高地ドラヴァニア",
+          "mapNameShort": "高地ドラ",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "不浄の三塔",
+          "legacyCoordinate": {
+            "posX": 164,
+            "posY": 231
+          },
+          "canonicalCoordinate": {
+            "x": 16.4,
+            "y": 23.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-3/point-10",
+          "dataset": "g8",
+          "mapNo": 3,
+          "mapName": "ドラヴァニア雲海",
+          "mapNameShort": "ドラ雲海",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "モグモグホーム",
+          "legacyCoordinate": {
+            "posX": 277,
+            "posY": 344
+          },
+          "canonicalCoordinate": {
+            "x": 27.7,
+            "y": 34.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-3/point-11",
+          "dataset": "g8",
+          "mapNo": 3,
+          "mapName": "ドラヴァニア雲海",
+          "mapNameShort": "ドラ雲海",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "白亜の宮殿",
+          "legacyCoordinate": {
+            "posX": 108,
+            "posY": 288
+          },
+          "canonicalCoordinate": {
+            "x": 10.8,
+            "y": 28.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-4/point-11",
+          "dataset": "g8",
+          "mapNo": 4,
+          "mapName": "アバラシア雲海",
+          "mapNameShort": "アバ雲海",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "キャンプ･クラウドトップ",
+          "legacyCoordinate": {
+            "posX": 102,
+            "posY": 334
+          },
+          "canonicalCoordinate": {
+            "x": 10.2,
+            "y": 33.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g8/map-4/point-12",
+          "dataset": "g8",
+          "mapNo": 4,
+          "mapName": "アバラシア雲海",
+          "mapNameShort": "アバ雲海",
+          "pointNo": 12,
+          "division": "T",
+          "pointName": "オク･ズンド",
+          "legacyCoordinate": {
+            "posX": 103,
+            "posY": 142
+          },
+          "canonicalCoordinate": {
+            "x": 10.3,
+            "y": 14.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "g10",
+      "status": "inventoried",
+      "inputPath": "apps/treasure-compass/public/json/g10.json",
+      "inputSha256": "2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d",
+      "mapSize": 409,
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "boundsBasis": "mapSizeから算出。minX/minY=1、maxX/maxY=1+mapSize/10。",
+      "summary": {
+        "mapCount": 6,
+        "pointCount": 68,
+        "divisionCounts": {
+          "P": 48,
+          "T": 19,
+          "R": 1,
+          "Z": 0
+        },
+        "dispositionCounts": {
+          "treasure-candidate": 48,
+          "aetheryte-candidate": 19,
+          "excluded": 1
+        }
+      },
+      "maps": [
+        {
+          "legacyMapKey": "g10/map-1",
+          "mapNo": 1,
+          "mapName": "ギラバニア辺境地帯",
+          "mapNameShort": "辺境",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g10/map-2",
+          "mapNo": 2,
+          "mapName": "ギラバニア山岳地帯",
+          "mapNameShort": "山岳",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g10/map-3",
+          "mapNo": 3,
+          "mapName": "ギラバニア湖畔地帯",
+          "mapNameShort": "湖畔",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g10/map-4",
+          "mapNo": 4,
+          "mapName": "紅玉海",
+          "mapNameShort": "紅玉海",
+          "mapSize": 409,
+          "pointCount": 13,
+          "divisionCounts": {
+            "P": 8,
+            "T": 5,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g10/map-5",
+          "mapNo": 5,
+          "mapName": "ヤンサ",
+          "mapNameShort": "ヤンサ",
+          "mapSize": 409,
+          "pointCount": 12,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 1,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g10/map-6",
+          "mapNo": 6,
+          "mapName": "アジムステップ",
+          "mapNameShort": "アジム",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        }
+      ],
+      "records": [
+        {
+          "legacyRecordKey": "g10/map-1/point-9",
+          "dataset": "g10",
+          "mapNo": 1,
+          "mapName": "ギラバニア辺境地帯",
+          "mapNameShort": "辺境",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "カストルム･オリエンス",
+          "legacyCoordinate": {
+            "posX": 88,
+            "posY": 113
+          },
+          "canonicalCoordinate": {
+            "x": 8.8,
+            "y": 11.3
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-1/point-10",
+          "dataset": "g10",
+          "mapNo": 1,
+          "mapName": "ギラバニア辺境地帯",
+          "mapNameShort": "辺境",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "ピーリングストーンズ",
+          "legacyCoordinate": {
+            "posX": 297,
+            "posY": 264
+          },
+          "canonicalCoordinate": {
+            "x": 29.7,
+            "y": 26.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-1/point-11",
+          "dataset": "g10",
+          "mapNo": 1,
+          "mapName": "ギラバニア辺境地帯",
+          "mapNameShort": "辺境",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "ラールガーズリーチ",
+          "legacyCoordinate": {
+            "posX": 300,
+            "posY": 108
+          },
+          "canonicalCoordinate": {
+            "x": 30,
+            "y": 10.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-2/point-9",
+          "dataset": "g10",
+          "mapNo": 2,
+          "mapName": "ギラバニア山岳地帯",
+          "mapNameShort": "山岳",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "アラガーナ",
+          "legacyCoordinate": {
+            "posX": 238,
+            "posY": 65
+          },
+          "canonicalCoordinate": {
+            "x": 23.8,
+            "y": 6.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-2/point-10",
+          "dataset": "g10",
+          "mapNo": 2,
+          "mapName": "ギラバニア山岳地帯",
+          "mapNameShort": "山岳",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "アラギリ",
+          "legacyCoordinate": {
+            "posX": 160,
+            "posY": 364
+          },
+          "canonicalCoordinate": {
+            "x": 16,
+            "y": 36.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-2/point-11",
+          "dataset": "g10",
+          "mapNo": 2,
+          "mapName": "ギラバニア山岳地帯",
+          "mapNameShort": "山岳",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "ラールガーズリーチ",
+          "legacyCoordinate": {
+            "posX": 85,
+            "posY": 56
+          },
+          "canonicalCoordinate": {
+            "x": 8.5,
+            "y": 5.6
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-3/point-9",
+          "dataset": "g10",
+          "mapNo": 3,
+          "mapName": "ギラバニア湖畔地帯",
+          "mapNameShort": "湖畔",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "ポルタ･プレトリア",
+          "legacyCoordinate": {
+            "posX": 83,
+            "posY": 211
+          },
+          "canonicalCoordinate": {
+            "x": 8.3,
+            "y": 21.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-3/point-10",
+          "dataset": "g10",
+          "mapNo": 3,
+          "mapName": "ギラバニア湖畔地帯",
+          "mapNameShort": "湖畔",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "アラミガン･クォーター",
+          "legacyCoordinate": {
+            "posX": 336,
+            "posY": 346
+          },
+          "canonicalCoordinate": {
+            "x": 33.6,
+            "y": 34.6
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-4/point-9",
+          "dataset": "g10",
+          "mapNo": 4,
+          "mapName": "紅玉海",
+          "mapNameShort": "紅玉海",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "碧のタマミズ",
+          "legacyCoordinate": {
+            "posX": 287,
+            "posY": 161
+          },
+          "canonicalCoordinate": {
+            "x": 28.7,
+            "y": 16.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-4/point-10",
+          "dataset": "g10",
+          "mapNo": 4,
+          "mapName": "紅玉海",
+          "mapNameShort": "紅玉海",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "オノコロ島",
+          "legacyCoordinate": {
+            "posX": 232,
+            "posY": 97
+          },
+          "canonicalCoordinate": {
+            "x": 23.2,
+            "y": 9.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-4/point-11",
+          "dataset": "g10",
+          "mapNo": 4,
+          "mapName": "紅玉海",
+          "mapNameShort": "紅玉海",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "クガネ",
+          "legacyCoordinate": {
+            "posX": 383,
+            "posY": 384
+          },
+          "canonicalCoordinate": {
+            "x": 38.3,
+            "y": 38.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-4/point-12",
+          "dataset": "g10",
+          "mapNo": 4,
+          "mapName": "紅玉海",
+          "mapNameShort": "紅玉海",
+          "pointNo": 12,
+          "division": "T",
+          "pointName": "アジム(再開の市)",
+          "legacyCoordinate": {
+            "posX": 68,
+            "posY": 43
+          },
+          "canonicalCoordinate": {
+            "x": 6.8,
+            "y": 4.3
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-4/point-13",
+          "dataset": "g10",
+          "mapNo": 4,
+          "mapName": "紅玉海",
+          "mapNameShort": "紅玉海",
+          "pointNo": 13,
+          "division": "T",
+          "pointName": "ヤンサ(ナマイ村)",
+          "legacyCoordinate": {
+            "posX": 53,
+            "posY": 159
+          },
+          "canonicalCoordinate": {
+            "x": 5.3,
+            "y": 15.9
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-5/point-9",
+          "dataset": "g10",
+          "mapNo": 5,
+          "mapName": "ヤンサ",
+          "mapNameShort": "ヤンサ",
+          "pointNo": 9,
+          "division": "R",
+          "pointName": "中継点A",
+          "legacyCoordinate": {
+            "posX": 0,
+            "posY": 0
+          },
+          "canonicalCoordinate": {
+            "x": 0,
+            "y": 0
+          },
+          "disposition": "excluded",
+          "reason": "unsupported-division",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-5/point-10",
+          "dataset": "g10",
+          "mapNo": 5,
+          "mapName": "ヤンサ",
+          "mapNameShort": "ヤンサ",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "ナマイ村",
+          "legacyCoordinate": {
+            "posX": 300,
+            "posY": 196
+          },
+          "canonicalCoordinate": {
+            "x": 30,
+            "y": 19.6
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-5/point-11",
+          "dataset": "g10",
+          "mapNo": 5,
+          "mapName": "ヤンサ",
+          "mapNameShort": "ヤンサ",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "烈士庵",
+          "legacyCoordinate": {
+            "posX": 263,
+            "posY": 134
+          },
+          "canonicalCoordinate": {
+            "x": 26.3,
+            "y": 13.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-5/point-12",
+          "dataset": "g10",
+          "mapNo": 5,
+          "mapName": "ヤンサ",
+          "mapNameShort": "ヤンサ",
+          "pointNo": 12,
+          "division": "T",
+          "pointName": "町人地",
+          "legacyCoordinate": {
+            "posX": 117,
+            "posY": 322
+          },
+          "canonicalCoordinate": {
+            "x": 11.7,
+            "y": 32.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-6/point-9",
+          "dataset": "g10",
+          "mapNo": 6,
+          "mapName": "アジムステップ",
+          "mapNameShort": "アジム",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "再開の市",
+          "legacyCoordinate": {
+            "posX": 326,
+            "posY": 283
+          },
+          "canonicalCoordinate": {
+            "x": 32.6,
+            "y": 28.3
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-6/point-10",
+          "dataset": "g10",
+          "mapNo": 6,
+          "mapName": "アジムステップ",
+          "mapNameShort": "アジム",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "明けの王座",
+          "legacyCoordinate": {
+            "posX": 230,
+            "posY": 221
+          },
+          "canonicalCoordinate": {
+            "x": 23,
+            "y": 22.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g10/map-6/point-11",
+          "dataset": "g10",
+          "mapNo": 6,
+          "mapName": "アジムステップ",
+          "mapNameShort": "アジム",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "ドーロ･イロー",
+          "legacyCoordinate": {
+            "posX": 63,
+            "posY": 238
+          },
+          "canonicalCoordinate": {
+            "x": 6.3,
+            "y": 23.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "g12",
+      "status": "inventoried",
+      "inputPath": "apps/treasure-compass/public/json/g12.json",
+      "inputSha256": "7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a",
+      "mapSize": 409,
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "boundsBasis": "mapSizeから算出。minX/minY=1、maxX/maxY=1+mapSize/10。",
+      "summary": {
+        "mapCount": 6,
+        "pointCount": 64,
+        "divisionCounts": {
+          "P": 48,
+          "T": 16,
+          "R": 0,
+          "Z": 0
+        },
+        "dispositionCounts": {
+          "treasure-candidate": 48,
+          "aetheryte-candidate": 16,
+          "excluded": 0
+        }
+      },
+      "maps": [
+        {
+          "legacyMapKey": "g12/map-1",
+          "mapNo": 1,
+          "mapName": "レイクランド",
+          "mapNameShort": "レイク",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g12/map-2",
+          "mapNo": 2,
+          "mapName": "コルシア島",
+          "mapNameShort": "コルシア",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g12/map-3",
+          "mapNo": 3,
+          "mapName": "アム・アレーン",
+          "mapNameShort": "アムアレーン",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g12/map-4",
+          "mapNo": 4,
+          "mapName": "イル・メグ",
+          "mapNameShort": "イルメグ",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g12/map-5",
+          "mapNo": 5,
+          "mapName": "ラケティカ大森林",
+          "mapNameShort": "ラケティカ",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g12/map-6",
+          "mapNo": 6,
+          "mapName": "テンペスト",
+          "mapNameShort": "テンペスト",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        }
+      ],
+      "records": [
+        {
+          "legacyRecordKey": "g12/map-1/point-9",
+          "dataset": "g12",
+          "mapNo": 1,
+          "mapName": "レイクランド",
+          "mapNameShort": "レイク",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "ジョッブ砦",
+          "legacyCoordinate": {
+            "posX": 365,
+            "posY": 209
+          },
+          "canonicalCoordinate": {
+            "x": 36.5,
+            "y": 20.9
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-1/point-10",
+          "dataset": "g12",
+          "mapNo": 1,
+          "mapName": "レイクランド",
+          "mapNameShort": "レイク",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "オスタル厳命城",
+          "legacyCoordinate": {
+            "posX": 68,
+            "posY": 168
+          },
+          "canonicalCoordinate": {
+            "x": 6.8,
+            "y": 16.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-1/point-11",
+          "dataset": "g12",
+          "mapNo": 1,
+          "mapName": "レイクランド",
+          "mapNameShort": "レイク",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "クリスタリウム",
+          "legacyCoordinate": {
+            "posX": 379,
+            "posY": 296
+          },
+          "canonicalCoordinate": {
+            "x": 37.9,
+            "y": 29.6
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-2/point-9",
+          "dataset": "g12",
+          "mapNo": 2,
+          "mapName": "コルシア島",
+          "mapNameShort": "コルシア",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "スティルタイド",
+          "legacyCoordinate": {
+            "posX": 347,
+            "posY": 272
+          },
+          "canonicalCoordinate": {
+            "x": 34.7,
+            "y": 27.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-2/point-10",
+          "dataset": "g12",
+          "mapNo": 2,
+          "mapName": "コルシア島",
+          "mapNameShort": "コルシア",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "ライト村",
+          "legacyCoordinate": {
+            "posX": 170,
+            "posY": 292
+          },
+          "canonicalCoordinate": {
+            "x": 17,
+            "y": 29.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-2/point-11",
+          "dataset": "g12",
+          "mapNo": 2,
+          "mapName": "コルシア島",
+          "mapNameShort": "コルシア",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "トメラの村",
+          "legacyCoordinate": {
+            "posX": 129,
+            "posY": 89
+          },
+          "canonicalCoordinate": {
+            "x": 12.9,
+            "y": 8.9
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-3/point-9",
+          "dataset": "g12",
+          "mapNo": 3,
+          "mapName": "アム・アレーン",
+          "mapNameShort": "アムアレーン",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "モルド・スーク",
+          "legacyCoordinate": {
+            "posX": 264,
+            "posY": 171
+          },
+          "canonicalCoordinate": {
+            "x": 26.4,
+            "y": 17.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-3/point-10",
+          "dataset": "g12",
+          "mapNo": 3,
+          "mapName": "アム・アレーン",
+          "mapNameShort": "アムアレーン",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "旅立ちの宿",
+          "legacyCoordinate": {
+            "posX": 295,
+            "posY": 276
+          },
+          "canonicalCoordinate": {
+            "x": 29.5,
+            "y": 27.6
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-3/point-11",
+          "dataset": "g12",
+          "mapNo": 3,
+          "mapName": "アム・アレーン",
+          "mapNameShort": "アムアレーン",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "トゥワイン",
+          "legacyCoordinate": {
+            "posX": 111,
+            "posY": 172
+          },
+          "canonicalCoordinate": {
+            "x": 11.1,
+            "y": 17.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-4/point-9",
+          "dataset": "g12",
+          "mapNo": 4,
+          "mapName": "イル・メグ",
+          "mapNameShort": "イルメグ",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "リダ・ラーン",
+          "legacyCoordinate": {
+            "posX": 145,
+            "posY": 317
+          },
+          "canonicalCoordinate": {
+            "x": 14.5,
+            "y": 31.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-4/point-10",
+          "dataset": "g12",
+          "mapNo": 4,
+          "mapName": "イル・メグ",
+          "mapNameShort": "イルメグ",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "プラ・エンニ茸窟",
+          "legacyCoordinate": {
+            "posX": 200,
+            "posY": 43
+          },
+          "canonicalCoordinate": {
+            "x": 20,
+            "y": 4.3
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-4/point-11",
+          "dataset": "g12",
+          "mapNo": 4,
+          "mapName": "イル・メグ",
+          "mapNameShort": "イルメグ",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "ヴォレクドルフ",
+          "legacyCoordinate": {
+            "posX": 291,
+            "posY": 77
+          },
+          "canonicalCoordinate": {
+            "x": 29.1,
+            "y": 7.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-5/point-9",
+          "dataset": "g12",
+          "mapNo": 5,
+          "mapName": "ラケティカ大森林",
+          "mapNameShort": "ラケティカ",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "スリザーバウ",
+          "legacyCoordinate": {
+            "posX": 194,
+            "posY": 274
+          },
+          "canonicalCoordinate": {
+            "x": 19.4,
+            "y": 27.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-5/point-10",
+          "dataset": "g12",
+          "mapNo": 5,
+          "mapName": "ラケティカ大森林",
+          "mapNameShort": "ラケティカ",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "ファノヴの里",
+          "legacyCoordinate": {
+            "posX": 290,
+            "posY": 175
+          },
+          "canonicalCoordinate": {
+            "x": 29,
+            "y": 17.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-6/point-9",
+          "dataset": "g12",
+          "mapNo": 6,
+          "mapName": "テンペスト",
+          "mapNameShort": "テンペスト",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "オンドの潮溜まり",
+          "legacyCoordinate": {
+            "posX": 326,
+            "posY": 174
+          },
+          "canonicalCoordinate": {
+            "x": 32.6,
+            "y": 17.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g12/map-6/point-10",
+          "dataset": "g12",
+          "mapNo": 6,
+          "mapName": "テンペスト",
+          "mapNameShort": "テンペスト",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "マカレンサス広場",
+          "legacyCoordinate": {
+            "posX": 185,
+            "posY": 258
+          },
+          "canonicalCoordinate": {
+            "x": 18.5,
+            "y": 25.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "g14",
+      "status": "inventoried",
+      "inputPath": "apps/treasure-compass/public/json/g14.json",
+      "inputSha256": "dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58",
+      "mapSize": 409,
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "boundsBasis": "mapSizeから算出。minX/minY=1、maxX/maxY=1+mapSize/10。",
+      "summary": {
+        "mapCount": 6,
+        "pointCount": 65,
+        "divisionCounts": {
+          "P": 48,
+          "T": 17,
+          "R": 0,
+          "Z": 0
+        },
+        "dispositionCounts": {
+          "treasure-candidate": 48,
+          "aetheryte-candidate": 17,
+          "excluded": 0
+        }
+      },
+      "maps": [
+        {
+          "legacyMapKey": "g14/map-1",
+          "mapNo": 1,
+          "mapName": "ラヴィリンソス",
+          "mapNameShort": "ラヴィリンソス",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g14/map-2",
+          "mapNo": 2,
+          "mapName": "サベネア島",
+          "mapNameShort": "サベネア島",
+          "mapSize": 409,
+          "pointCount": 12,
+          "divisionCounts": {
+            "P": 8,
+            "T": 4,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g14/map-3",
+          "mapNo": 3,
+          "mapName": "ガレマルド",
+          "mapNameShort": "ガレマルド",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g14/map-4",
+          "mapNo": 4,
+          "mapName": "嘆きの海",
+          "mapNameShort": "嘆きの海",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g14/map-5",
+          "mapNo": 5,
+          "mapName": "ウルティマ・トゥーレ",
+          "mapNameShort": "ウルティマ",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g14/map-6",
+          "mapNo": 6,
+          "mapName": "エルピス",
+          "mapNameShort": "エルピス",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        }
+      ],
+      "records": [
+        {
+          "legacyRecordKey": "g14/map-1/point-9",
+          "dataset": "g14",
+          "mapNo": 1,
+          "mapName": "ラヴィリンソス",
+          "mapNameShort": "ラヴィリンソス",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "アルケイオン保管院",
+          "legacyCoordinate": {
+            "posX": 303,
+            "posY": 119
+          },
+          "canonicalCoordinate": {
+            "x": 30.3,
+            "y": 11.9
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-1/point-10",
+          "dataset": "g14",
+          "mapNo": 1,
+          "mapName": "ラヴィリンソス",
+          "mapNameShort": "ラヴィリンソス",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "リトルシャーレアン",
+          "legacyCoordinate": {
+            "posX": 216,
+            "posY": 205
+          },
+          "canonicalCoordinate": {
+            "x": 21.6,
+            "y": 20.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-1/point-11",
+          "dataset": "g14",
+          "mapNo": 1,
+          "mapName": "ラヴィリンソス",
+          "mapNameShort": "ラヴィリンソス",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "アポリア本部",
+          "legacyCoordinate": {
+            "posX": 68,
+            "posY": 275
+          },
+          "canonicalCoordinate": {
+            "x": 6.8,
+            "y": 27.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-2/point-9",
+          "dataset": "g14",
+          "mapNo": 2,
+          "mapName": "サベネア島",
+          "mapNameShort": "サベネア島",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "イェドリマン",
+          "legacyCoordinate": {
+            "posX": 253,
+            "posY": 340
+          },
+          "canonicalCoordinate": {
+            "x": 25.3,
+            "y": 34
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-2/point-10",
+          "dataset": "g14",
+          "mapNo": 2,
+          "mapName": "サベネア島",
+          "mapNameShort": "サベネア島",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "デミールの遺烈郷",
+          "legacyCoordinate": {
+            "posX": 109,
+            "posY": 222
+          },
+          "canonicalCoordinate": {
+            "x": 10.9,
+            "y": 22.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-2/point-11",
+          "dataset": "g14",
+          "mapNo": 2,
+          "mapName": "サベネア島",
+          "mapNameShort": "サベネア島",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "パーラカの里",
+          "legacyCoordinate": {
+            "posX": 295,
+            "posY": 165
+          },
+          "canonicalCoordinate": {
+            "x": 29.5,
+            "y": 16.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-2/point-12",
+          "dataset": "g14",
+          "mapNo": 2,
+          "mapName": "サベネア島",
+          "mapNameShort": "サベネア島",
+          "pointNo": 12,
+          "division": "T",
+          "pointName": "トラーナ関門",
+          "legacyCoordinate": {
+            "posX": 318,
+            "posY": 89
+          },
+          "canonicalCoordinate": {
+            "x": 31.8,
+            "y": 8.9
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-3/point-9",
+          "dataset": "g14",
+          "mapNo": 3,
+          "mapName": "ガレマルド",
+          "mapNameShort": "ガレマルド",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "キャンプ・ブロークングラス",
+          "legacyCoordinate": {
+            "posX": 133,
+            "posY": 310
+          },
+          "canonicalCoordinate": {
+            "x": 13.3,
+            "y": 31
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-3/point-10",
+          "dataset": "g14",
+          "mapNo": 3,
+          "mapName": "ガレマルド",
+          "mapNameShort": "ガレマルド",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "テルティウム駅",
+          "legacyCoordinate": {
+            "posX": 318,
+            "posY": 179
+          },
+          "canonicalCoordinate": {
+            "x": 31.8,
+            "y": 17.9
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-4/point-9",
+          "dataset": "g14",
+          "mapNo": 4,
+          "mapName": "嘆きの海",
+          "mapNameShort": "嘆きの海",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "涙の入江",
+          "legacyCoordinate": {
+            "posX": 101,
+            "posY": 344
+          },
+          "canonicalCoordinate": {
+            "x": 10.1,
+            "y": 34.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-4/point-10",
+          "dataset": "g14",
+          "mapNo": 4,
+          "mapName": "嘆きの海",
+          "mapNameShort": "嘆きの海",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "ベストウェイ・バロー",
+          "legacyCoordinate": {
+            "posX": 214,
+            "posY": 112
+          },
+          "canonicalCoordinate": {
+            "x": 21.4,
+            "y": 11.2
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-5/point-9",
+          "dataset": "g14",
+          "mapNo": 5,
+          "mapName": "ウルティマ・トゥーレ",
+          "mapNameShort": "ウルティマ",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "リア・ターラ",
+          "legacyCoordinate": {
+            "posX": 105,
+            "posY": 268
+          },
+          "canonicalCoordinate": {
+            "x": 10.5,
+            "y": 26.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-5/point-10",
+          "dataset": "g14",
+          "mapNo": 5,
+          "mapName": "ウルティマ・トゥーレ",
+          "mapNameShort": "ウルティマ",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "イーアの里",
+          "legacyCoordinate": {
+            "posX": 226,
+            "posY": 83
+          },
+          "canonicalCoordinate": {
+            "x": 22.6,
+            "y": 8.3
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-5/point-11",
+          "dataset": "g14",
+          "mapNo": 5,
+          "mapName": "ウルティマ・トゥーレ",
+          "mapNameShort": "ウルティマ",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "オミクロンベース",
+          "legacyCoordinate": {
+            "posX": 312,
+            "posY": 281
+          },
+          "canonicalCoordinate": {
+            "x": 31.2,
+            "y": 28.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-6/point-9",
+          "dataset": "g14",
+          "mapNo": 6,
+          "mapName": "エルピス",
+          "mapNameShort": "エルピス",
+          "pointNo": 9,
+          "division": "T",
+          "pointName": "十二節の園",
+          "legacyCoordinate": {
+            "posX": 88,
+            "posY": 323
+          },
+          "canonicalCoordinate": {
+            "x": 8.8,
+            "y": 32.3
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-6/point-10",
+          "dataset": "g14",
+          "mapNo": 6,
+          "mapName": "エルピス",
+          "mapNameShort": "エルピス",
+          "pointNo": 10,
+          "division": "T",
+          "pointName": "アナグノリシス天測園",
+          "legacyCoordinate": {
+            "posX": 246,
+            "posY": 240
+          },
+          "canonicalCoordinate": {
+            "x": 24.6,
+            "y": 24
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g14/map-6/point-11",
+          "dataset": "g14",
+          "mapNo": 6,
+          "mapName": "エルピス",
+          "mapNameShort": "エルピス",
+          "pointNo": 11,
+          "division": "T",
+          "pointName": "ポイエテーン・オイコス",
+          "legacyCoordinate": {
+            "posX": 110,
+            "posY": 177
+          },
+          "canonicalCoordinate": {
+            "x": 11,
+            "y": 17.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "g17",
+      "status": "inventoried",
+      "inputPath": "apps/treasure-compass/public/json/g17.json",
+      "inputSha256": "6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3",
+      "mapSize": 409,
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "boundsBasis": "mapSizeから算出。minX/minY=1、maxX/maxY=1+mapSize/10。",
+      "summary": {
+        "mapCount": 6,
+        "pointCount": 65,
+        "divisionCounts": {
+          "P": 48,
+          "T": 17,
+          "R": 0,
+          "Z": 0
+        },
+        "dispositionCounts": {
+          "treasure-candidate": 48,
+          "aetheryte-candidate": 17,
+          "excluded": 0
+        }
+      },
+      "maps": [
+        {
+          "legacyMapKey": "g17/map-1",
+          "mapNo": 1,
+          "mapName": "オルコ・パチャ",
+          "mapNameShort": "オルコ・パチャ",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g17/map-2",
+          "mapNo": 2,
+          "mapName": "コザマル・カ",
+          "mapNameShort": "コザマル・カ",
+          "mapSize": 409,
+          "pointCount": 12,
+          "divisionCounts": {
+            "P": 8,
+            "T": 4,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g17/map-3",
+          "mapNo": 3,
+          "mapName": "ヤクテル樹海",
+          "mapNameShort": "ヤクテル樹海",
+          "mapSize": 409,
+          "pointCount": 10,
+          "divisionCounts": {
+            "P": 8,
+            "T": 2,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g17/map-4",
+          "mapNo": 4,
+          "mapName": "シャーローニ荒野",
+          "mapNameShort": "シャーローニ",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g17/map-5",
+          "mapNo": 5,
+          "mapName": "ヘリテージファウンド",
+          "mapNameShort": "ヘリテージ",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        },
+        {
+          "legacyMapKey": "g17/map-6",
+          "mapNo": 6,
+          "mapName": "リビング・メモリー",
+          "mapNameShort": "リビング",
+          "mapSize": 409,
+          "pointCount": 11,
+          "divisionCounts": {
+            "P": 8,
+            "T": 3,
+            "R": 0,
+            "Z": 0
+          }
+        }
+      ],
+      "records": [
+        {
+          "legacyRecordKey": "g17/map-1/point-1",
+          "dataset": "g17",
+          "mapNo": 1,
+          "mapName": "オルコ・パチャ",
+          "mapNameShort": "オルコ・パチャ",
+          "pointNo": 1,
+          "division": "T",
+          "pointName": "ウォーラーの残響",
+          "legacyCoordinate": {
+            "posX": 307,
+            "posY": 341
+          },
+          "canonicalCoordinate": {
+            "x": 30.7,
+            "y": 34.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-1/point-2",
+          "dataset": "g17",
+          "mapNo": 1,
+          "mapName": "オルコ・パチャ",
+          "mapNameShort": "オルコ・パチャ",
+          "pointNo": 2,
+          "division": "T",
+          "pointName": "ワチュン・ペロ",
+          "legacyCoordinate": {
+            "posX": 281,
+            "posY": 131
+          },
+          "canonicalCoordinate": {
+            "x": 28.1,
+            "y": 13.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-2/point-1",
+          "dataset": "g17",
+          "mapNo": 2,
+          "mapName": "コザマル・カ",
+          "mapNameShort": "コザマル・カ",
+          "pointNo": 1,
+          "division": "T",
+          "pointName": "オック・ハヌ",
+          "legacyCoordinate": {
+            "posX": 180,
+            "posY": 118
+          },
+          "canonicalCoordinate": {
+            "x": 18,
+            "y": 11.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-2/point-2",
+          "dataset": "g17",
+          "mapNo": 2,
+          "mapName": "コザマル・カ",
+          "mapNameShort": "コザマル・カ",
+          "pointNo": 2,
+          "division": "T",
+          "pointName": "アースンシャイア",
+          "legacyCoordinate": {
+            "posX": 119,
+            "posY": 277
+          },
+          "canonicalCoordinate": {
+            "x": 11.9,
+            "y": 27.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-2/point-3",
+          "dataset": "g17",
+          "mapNo": 2,
+          "mapName": "コザマル・カ",
+          "mapNameShort": "コザマル・カ",
+          "pointNo": 3,
+          "division": "T",
+          "pointName": "朋友の灯火",
+          "legacyCoordinate": {
+            "posX": 323,
+            "posY": 255
+          },
+          "canonicalCoordinate": {
+            "x": 32.3,
+            "y": 25.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-2/point-4",
+          "dataset": "g17",
+          "mapNo": 2,
+          "mapName": "コザマル・カ",
+          "mapNameShort": "コザマル・カ",
+          "pointNo": 4,
+          "division": "T",
+          "pointName": "ポガ停船所",
+          "legacyCoordinate": {
+            "posX": 372,
+            "posY": 168
+          },
+          "canonicalCoordinate": {
+            "x": 37.2,
+            "y": 16.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-3/point-1",
+          "dataset": "g17",
+          "mapNo": 3,
+          "mapName": "ヤクテル樹海",
+          "mapNameShort": "ヤクテル樹海",
+          "pointNo": 1,
+          "division": "T",
+          "pointName": "イクブラーシャ",
+          "legacyCoordinate": {
+            "posX": 135,
+            "posY": 128
+          },
+          "canonicalCoordinate": {
+            "x": 13.5,
+            "y": 12.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-3/point-2",
+          "dataset": "g17",
+          "mapNo": 3,
+          "mapName": "ヤクテル樹海",
+          "mapNameShort": "ヤクテル樹海",
+          "pointNo": 2,
+          "division": "T",
+          "pointName": "マムーク",
+          "legacyCoordinate": {
+            "posX": 359,
+            "posY": 320
+          },
+          "canonicalCoordinate": {
+            "x": 35.9,
+            "y": 32
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-4/point-1",
+          "dataset": "g17",
+          "mapNo": 4,
+          "mapName": "シャーローニ荒野",
+          "mapNameShort": "シャーローニ",
+          "pointNo": 1,
+          "division": "T",
+          "pointName": "フーサタイ宿場町",
+          "legacyCoordinate": {
+            "posX": 292,
+            "posY": 308
+          },
+          "canonicalCoordinate": {
+            "x": 29.2,
+            "y": 30.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-4/point-2",
+          "dataset": "g17",
+          "mapNo": 4,
+          "mapName": "シャーローニ荒野",
+          "mapNameShort": "シャーローニ",
+          "pointNo": 2,
+          "division": "T",
+          "pointName": "シェシェネ青燐泉",
+          "legacyCoordinate": {
+            "posX": 156,
+            "posY": 191
+          },
+          "canonicalCoordinate": {
+            "x": 15.6,
+            "y": 19.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-4/point-3",
+          "dataset": "g17",
+          "mapNo": 4,
+          "mapName": "シャーローニ荒野",
+          "mapNameShort": "シャーローニ",
+          "pointNo": 3,
+          "division": "T",
+          "pointName": "メワヘイゾーン",
+          "legacyCoordinate": {
+            "posX": 277,
+            "posY": 101
+          },
+          "canonicalCoordinate": {
+            "x": 27.7,
+            "y": 10.1
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-5/point-1",
+          "dataset": "g17",
+          "mapNo": 5,
+          "mapName": "ヘリテージファウンド",
+          "mapNameShort": "ヘリテージ",
+          "pointNo": 1,
+          "division": "T",
+          "pointName": "ヤースラニ駅",
+          "legacyCoordinate": {
+            "posX": 317,
+            "posY": 256
+          },
+          "canonicalCoordinate": {
+            "x": 31.7,
+            "y": 25.6
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-5/point-2",
+          "dataset": "g17",
+          "mapNo": 5,
+          "mapName": "ヘリテージファウンド",
+          "mapNameShort": "ヘリテージ",
+          "pointNo": 2,
+          "division": "T",
+          "pointName": "アウトスカーツ",
+          "legacyCoordinate": {
+            "posX": 170,
+            "posY": 97
+          },
+          "canonicalCoordinate": {
+            "x": 17,
+            "y": 9.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-5/point-3",
+          "dataset": "g17",
+          "mapNo": 5,
+          "mapName": "ヘリテージファウンド",
+          "mapNameShort": "ヘリテージ",
+          "pointNo": 3,
+          "division": "T",
+          "pointName": "エレクトロープ採石場",
+          "legacyCoordinate": {
+            "posX": 170,
+            "posY": 238
+          },
+          "canonicalCoordinate": {
+            "x": 17,
+            "y": 23.8
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-6/point-1",
+          "dataset": "g17",
+          "mapNo": 6,
+          "mapName": "リビング・メモリー",
+          "mapNameShort": "リビング",
+          "pointNo": 1,
+          "division": "T",
+          "pointName": "レイノード・メモリス",
+          "legacyCoordinate": {
+            "posX": 214,
+            "posY": 374
+          },
+          "canonicalCoordinate": {
+            "x": 21.4,
+            "y": 37.4
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-6/point-2",
+          "dataset": "g17",
+          "mapNo": 6,
+          "mapName": "リビング・メモリー",
+          "mapNameShort": "リビング",
+          "pointNo": 2,
+          "division": "T",
+          "pointName": "レイノード・ファイア",
+          "legacyCoordinate": {
+            "posX": 346,
+            "posY": 157
+          },
+          "canonicalCoordinate": {
+            "x": 34.6,
+            "y": 15.7
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        },
+        {
+          "legacyRecordKey": "g17/map-6/point-3",
+          "dataset": "g17",
+          "mapNo": 6,
+          "mapName": "リビング・メモリー",
+          "mapNameShort": "リビング",
+          "pointNo": 3,
+          "division": "T",
+          "pointName": "レイノード・ウィンド",
+          "legacyCoordinate": {
+            "posX": 163,
+            "posY": 135
+          },
+          "canonicalCoordinate": {
+            "x": 16.3,
+            "y": 13.5
+          },
+          "disposition": "aetheryte-candidate",
+          "droppedFields": [
+            "block",
+            "posZ",
+            "posT",
+            "time"
+          ]
+        }
+      ]
+    }
+  ],
+  "exclusions": {
+    "excludedDatasetDetails": [
+      {
+        "dataset": "g11",
+        "path": "apps/treasure-compass/public/json/g11.json",
+        "contentSha256": "3f542b85e936df28bb0e9b9060d4b977354e7c3668cd43dae39437dbea4e19b3",
+        "reason": "GRADE_CONFIGの設定対象外。今回の棚卸しのconfigured inputではない。"
+      }
+    ],
+    "excludedDivisionPolicy": {
+      "R": "現ユーザー判断により使用しない。共通map master候補、表示、参照、経路計算へ採用しない。",
+      "Z": "今回の既存JSONではレコード未確認。将来の採用を推測しない。"
+    },
+    "excludedRecordKeys": [
+      "g10/map-5/point-9"
+    ]
+  },
+  "adoption": {
+    "candidateDivisions": [
+      "T"
+    ],
+    "excludedDivisions": [
+      "R",
+      "Z"
+    ],
+    "stableIdStatus": "not-assigned",
+    "mapIdentityStatus": "not-reviewed",
+    "imageAdoptionStatus": "not-reviewed",
+    "sourceLicenseStatus": "not-reviewed",
+    "statement": "Tは次工程の共通map master候補として記録するが、今回このレポートでmaster採用、画像採用、source/license承認を行わない。"
+  },
+  "adoptionBlockedBy": [
+    "stable-id-map",
+    "map-identity-review",
+    "source-review",
+    "license-review"
+  ]
+}
