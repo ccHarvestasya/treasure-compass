@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { MapRecord } from "@treasure-compass/master-data";
+import aetheryteImageUrl from "../../../../../packages/master-data/assets/maps/aetheryte.png";
 import {
   layoutAetherytes,
   type LayoutViewport,
@@ -44,7 +45,7 @@ export function AetheryteOverlay({ map }: AetheryteOverlayProps) {
       {layout?.icons.map((icon) => (
         <img
           key={icon.id}
-          src="/img/aetheryte.png"
+          src={aetheryteImageUrl}
           alt=""
           className="pointer-events-none absolute size-[35px] max-w-none -translate-x-1/2 -translate-y-1/2"
           style={{ left: icon.anchor.x, top: icon.anchor.y }}
