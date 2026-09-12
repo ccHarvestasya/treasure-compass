@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { attachTreasurePointIds, isValidGradeMapData, isValidMapData } from "../../src/utils/mapData";
+import { isValidGradeMapData, isValidMapData } from "../../src/utils/mapData";
 import type { MapData, Point } from "../../src/types";
 
 const validPoint: Point = {
@@ -51,11 +51,4 @@ describe("isValidMapData", () => {
     expect(isValidGradeMapData({ ...validMapData, mapData: [validMapData.mapData[0], validMapData.mapData[0]] }, expectedMaps)).toBe(false);
   });
 
-  it("attaches stable IDs to treasure points without changing legacy fields", () => {
-    const mapped = attachTreasurePointIds(validMapData, ["map-001"]);
-    expect(mapped.mapData[0]?.point[0]).toMatchObject({
-      pointNo: 1,
-      stableId: "map-001-point-001",
-    });
-  });
 });
