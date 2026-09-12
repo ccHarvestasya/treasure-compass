@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "dataRevision": "2026-09-12.1",
+  "dataRevision": "2026-09-12.2",
   "expansions": [
     {
       "id": "expansion-unconfirmed",
@@ -32,7 +32,7 @@
         "maxY": 44.1
       },
       "image": {
-        "asset": "img/map_g8_1.png",
+        "asset": "img/map_3_1.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -72,7 +72,7 @@
         "maxY": 44.1
       },
       "image": {
-        "asset": "img/map_g8_2.png",
+        "asset": "img/map_3_2.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -112,7 +112,7 @@
         "maxY": 44.1
       },
       "image": {
-        "asset": "img/map_g8_3.png",
+        "asset": "img/map_3_3.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -152,7 +152,7 @@
         "maxY": 44.1
       },
       "image": {
-        "asset": "img/map_g8_4.png",
+        "asset": "img/map_3_4.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -192,7 +192,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g10_1.png",
+        "asset": "img/map_4_1.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -241,7 +241,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g10_2.png",
+        "asset": "img/map_4_2.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -290,7 +290,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g10_3.png",
+        "asset": "img/map_4_3.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -330,7 +330,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g10_4.png",
+        "asset": "img/map_4_4.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -397,7 +397,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g10_5.png",
+        "asset": "img/map_4_5.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -446,7 +446,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g10_6.png",
+        "asset": "img/map_4_6.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -495,7 +495,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g12_1.png",
+        "asset": "img/map_5_1.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -544,7 +544,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g12_2.png",
+        "asset": "img/map_5_2.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -593,7 +593,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g12_3.png",
+        "asset": "img/map_5_3.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -642,7 +642,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g12_4.png",
+        "asset": "img/map_5_4.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -691,7 +691,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g12_5.png",
+        "asset": "img/map_5_5.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -731,7 +731,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g12_6.png",
+        "asset": "img/map_5_6.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -771,7 +771,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g14_1.png",
+        "asset": "img/map_6_1.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -820,7 +820,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g14_2.png",
+        "asset": "img/map_6_2.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -878,7 +878,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g14_3.png",
+        "asset": "img/map_6_3.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -918,7 +918,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g14_4.png",
+        "asset": "img/map_6_4.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -958,7 +958,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g14_5.png",
+        "asset": "img/map_6_5.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1007,7 +1007,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g14_6.png",
+        "asset": "img/map_6_6.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1056,7 +1056,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g17_1.png",
+        "asset": "img/map_7_1.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1096,7 +1096,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g17_2.png",
+        "asset": "img/map_7_2.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1154,7 +1154,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g17_3.png",
+        "asset": "img/map_7_3.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1194,7 +1194,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g17_4.png",
+        "asset": "img/map_7_4.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1243,7 +1243,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g17_5.png",
+        "asset": "img/map_7_5.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
@@ -1292,7 +1292,7 @@
         "maxY": 41.9
       },
       "image": {
-        "asset": "img/map_g17_6.png",
+        "asset": "img/map_7_6.png",
         "licenseId": "license-ffxiv-third-party-unreviewed"
       },
       "aetherytes": [
