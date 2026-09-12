@@ -12,6 +12,16 @@ if (!mapMasterValidation.usable || !mapMasterValidation.data) {
 }
 const mapMaster = mapMasterValidation.data;
 
+const mapImageAssets = import.meta.glob(
+  '../../../../../packages/master-data/assets/maps/*.png',
+  { eager: true, import: 'default', query: '?url' },
+) as Record<string, string>;
+
+function resolveMapImageUrl(asset: string): string | null {
+  const key = `../../../../../packages/master-data/assets/${asset}`;
+  return mapImageAssets[key] ?? null;
+}
+
 function resolveMapMasterRecord(grade: number, mapNo: number): MapRecord | null {
   const mapId = MAP_MASTER_IDS_BY_GRADE[grade]?.[mapNo - 1];
   return mapId ? (mapMaster.maps.find((map) => map.id === mapId) ?? null) : null;
@@ -193,7 +203,11 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
       imageRef.current = null;
       return;
     }
-    const src = `/${currentMapMaster.image.asset.replace(/^\/+/, '')}`;
+    const src = resolveMapImageUrl(currentMapMaster.image.asset);
+    if (!src) {
+      imageRef.current = null;
+      return;
+    }
     let cancelled = false;
 
     const img = new Image();
