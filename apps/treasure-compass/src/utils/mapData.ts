@@ -20,7 +20,29 @@ function isPoint(value: unknown): value is Point {
     isFiniteNumber(point.posT) &&
     isFiniteNumber(point.time) &&
     typeof point.pointName === "string"
+    && (point.stableId === undefined || typeof point.stableId === "string")
   );
+}
+
+export function attachTreasurePointIds(
+  value: MapData,
+  mapIds: readonly string[],
+): MapData {
+  const mapIdByNo = new Map(mapIds.map((mapId, index) => [index + 1, mapId]));
+  return {
+    ...value,
+    mapData: value.mapData.map((map) => {
+      const mapId = mapIdByNo.get(map.mapNo);
+      return {
+        ...map,
+        point: map.point.map((point) =>
+          point.division === "P" && mapId
+            ? { ...point, stableId: `${mapId}-point-${String(point.pointNo).padStart(3, "0")}` }
+            : point,
+        ),
+      };
+    }),
+  };
 }
 
 function isMapDataItem(value: unknown): value is MapDataItem {

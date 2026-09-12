@@ -1,0 +1,1595 @@
+{
+  "schemaVersion": 1,
+  "dataRevision": "2026-09-12.1",
+  "mappings": [
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 1,
+      "pointId": "map-001-point-001"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 2,
+      "pointId": "map-001-point-002"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 3,
+      "pointId": "map-001-point-003"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 4,
+      "pointId": "map-001-point-004"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 5,
+      "pointId": "map-001-point-005"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 6,
+      "pointId": "map-001-point-006"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 1,
+      "pointNo": 7,
+      "pointId": "map-001-point-007"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 1,
+      "pointId": "map-002-point-001"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 2,
+      "pointId": "map-002-point-002"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 3,
+      "pointId": "map-002-point-003"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 4,
+      "pointId": "map-002-point-004"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 5,
+      "pointId": "map-002-point-005"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 6,
+      "pointId": "map-002-point-006"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 7,
+      "pointId": "map-002-point-007"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 8,
+      "pointId": "map-002-point-008"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 2,
+      "pointNo": 9,
+      "pointId": "map-002-point-009"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 1,
+      "pointId": "map-003-point-001"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 2,
+      "pointId": "map-003-point-002"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 3,
+      "pointId": "map-003-point-003"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 4,
+      "pointId": "map-003-point-004"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 5,
+      "pointId": "map-003-point-005"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 6,
+      "pointId": "map-003-point-006"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 7,
+      "pointId": "map-003-point-007"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 8,
+      "pointId": "map-003-point-008"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 3,
+      "pointNo": 9,
+      "pointId": "map-003-point-009"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 1,
+      "pointId": "map-004-point-001"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 2,
+      "pointId": "map-004-point-002"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 3,
+      "pointId": "map-004-point-003"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 4,
+      "pointId": "map-004-point-004"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 5,
+      "pointId": "map-004-point-005"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 6,
+      "pointId": "map-004-point-006"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 7,
+      "pointId": "map-004-point-007"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 8,
+      "pointId": "map-004-point-008"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 9,
+      "pointId": "map-004-point-009"
+    },
+    {
+      "dataset": "g8",
+      "grade": 8,
+      "mapNo": 4,
+      "pointNo": 10,
+      "pointId": "map-004-point-010"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 1,
+      "pointId": "map-005-point-001"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 2,
+      "pointId": "map-005-point-002"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 3,
+      "pointId": "map-005-point-003"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 4,
+      "pointId": "map-005-point-004"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 5,
+      "pointId": "map-005-point-005"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 6,
+      "pointId": "map-005-point-006"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 7,
+      "pointId": "map-005-point-007"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 1,
+      "pointNo": 8,
+      "pointId": "map-005-point-008"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 1,
+      "pointId": "map-006-point-001"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 2,
+      "pointId": "map-006-point-002"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 3,
+      "pointId": "map-006-point-003"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 4,
+      "pointId": "map-006-point-004"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 5,
+      "pointId": "map-006-point-005"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 6,
+      "pointId": "map-006-point-006"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 7,
+      "pointId": "map-006-point-007"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 2,
+      "pointNo": 8,
+      "pointId": "map-006-point-008"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 1,
+      "pointId": "map-007-point-001"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 2,
+      "pointId": "map-007-point-002"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 3,
+      "pointId": "map-007-point-003"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 4,
+      "pointId": "map-007-point-004"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 5,
+      "pointId": "map-007-point-005"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 6,
+      "pointId": "map-007-point-006"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 7,
+      "pointId": "map-007-point-007"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 3,
+      "pointNo": 8,
+      "pointId": "map-007-point-008"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 1,
+      "pointId": "map-008-point-001"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 2,
+      "pointId": "map-008-point-002"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 3,
+      "pointId": "map-008-point-003"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 4,
+      "pointId": "map-008-point-004"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 5,
+      "pointId": "map-008-point-005"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 6,
+      "pointId": "map-008-point-006"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 7,
+      "pointId": "map-008-point-007"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 4,
+      "pointNo": 8,
+      "pointId": "map-008-point-008"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 1,
+      "pointId": "map-009-point-001"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 2,
+      "pointId": "map-009-point-002"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 3,
+      "pointId": "map-009-point-003"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 4,
+      "pointId": "map-009-point-004"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 5,
+      "pointId": "map-009-point-005"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 6,
+      "pointId": "map-009-point-006"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 7,
+      "pointId": "map-009-point-007"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 5,
+      "pointNo": 8,
+      "pointId": "map-009-point-008"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 1,
+      "pointId": "map-010-point-001"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 2,
+      "pointId": "map-010-point-002"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 3,
+      "pointId": "map-010-point-003"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 4,
+      "pointId": "map-010-point-004"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 5,
+      "pointId": "map-010-point-005"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 6,
+      "pointId": "map-010-point-006"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 7,
+      "pointId": "map-010-point-007"
+    },
+    {
+      "dataset": "g10",
+      "grade": 10,
+      "mapNo": 6,
+      "pointNo": 8,
+      "pointId": "map-010-point-008"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 1,
+      "pointId": "map-011-point-001"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 2,
+      "pointId": "map-011-point-002"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 3,
+      "pointId": "map-011-point-003"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 4,
+      "pointId": "map-011-point-004"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 5,
+      "pointId": "map-011-point-005"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 6,
+      "pointId": "map-011-point-006"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 7,
+      "pointId": "map-011-point-007"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 1,
+      "pointNo": 8,
+      "pointId": "map-011-point-008"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 1,
+      "pointId": "map-012-point-001"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 2,
+      "pointId": "map-012-point-002"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 3,
+      "pointId": "map-012-point-003"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 4,
+      "pointId": "map-012-point-004"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 5,
+      "pointId": "map-012-point-005"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 6,
+      "pointId": "map-012-point-006"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 7,
+      "pointId": "map-012-point-007"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 2,
+      "pointNo": 8,
+      "pointId": "map-012-point-008"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 1,
+      "pointId": "map-013-point-001"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 2,
+      "pointId": "map-013-point-002"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 3,
+      "pointId": "map-013-point-003"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 4,
+      "pointId": "map-013-point-004"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 5,
+      "pointId": "map-013-point-005"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 6,
+      "pointId": "map-013-point-006"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 7,
+      "pointId": "map-013-point-007"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 3,
+      "pointNo": 8,
+      "pointId": "map-013-point-008"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 1,
+      "pointId": "map-014-point-001"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 2,
+      "pointId": "map-014-point-002"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 3,
+      "pointId": "map-014-point-003"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 4,
+      "pointId": "map-014-point-004"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 5,
+      "pointId": "map-014-point-005"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 6,
+      "pointId": "map-014-point-006"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 7,
+      "pointId": "map-014-point-007"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 4,
+      "pointNo": 8,
+      "pointId": "map-014-point-008"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 1,
+      "pointId": "map-015-point-001"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 2,
+      "pointId": "map-015-point-002"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 3,
+      "pointId": "map-015-point-003"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 4,
+      "pointId": "map-015-point-004"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 5,
+      "pointId": "map-015-point-005"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 6,
+      "pointId": "map-015-point-006"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 7,
+      "pointId": "map-015-point-007"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 5,
+      "pointNo": 8,
+      "pointId": "map-015-point-008"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 1,
+      "pointId": "map-016-point-001"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 2,
+      "pointId": "map-016-point-002"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 3,
+      "pointId": "map-016-point-003"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 4,
+      "pointId": "map-016-point-004"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 5,
+      "pointId": "map-016-point-005"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 6,
+      "pointId": "map-016-point-006"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 7,
+      "pointId": "map-016-point-007"
+    },
+    {
+      "dataset": "g12",
+      "grade": 12,
+      "mapNo": 6,
+      "pointNo": 8,
+      "pointId": "map-016-point-008"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 1,
+      "pointId": "map-017-point-001"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 2,
+      "pointId": "map-017-point-002"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 3,
+      "pointId": "map-017-point-003"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 4,
+      "pointId": "map-017-point-004"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 5,
+      "pointId": "map-017-point-005"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 6,
+      "pointId": "map-017-point-006"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 7,
+      "pointId": "map-017-point-007"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 1,
+      "pointNo": 8,
+      "pointId": "map-017-point-008"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 1,
+      "pointId": "map-018-point-001"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 2,
+      "pointId": "map-018-point-002"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 3,
+      "pointId": "map-018-point-003"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 4,
+      "pointId": "map-018-point-004"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 5,
+      "pointId": "map-018-point-005"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 6,
+      "pointId": "map-018-point-006"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 7,
+      "pointId": "map-018-point-007"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 2,
+      "pointNo": 8,
+      "pointId": "map-018-point-008"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 1,
+      "pointId": "map-019-point-001"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 2,
+      "pointId": "map-019-point-002"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 3,
+      "pointId": "map-019-point-003"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 4,
+      "pointId": "map-019-point-004"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 5,
+      "pointId": "map-019-point-005"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 6,
+      "pointId": "map-019-point-006"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 7,
+      "pointId": "map-019-point-007"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 3,
+      "pointNo": 8,
+      "pointId": "map-019-point-008"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 1,
+      "pointId": "map-020-point-001"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 2,
+      "pointId": "map-020-point-002"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 3,
+      "pointId": "map-020-point-003"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 4,
+      "pointId": "map-020-point-004"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 5,
+      "pointId": "map-020-point-005"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 6,
+      "pointId": "map-020-point-006"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 7,
+      "pointId": "map-020-point-007"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 4,
+      "pointNo": 8,
+      "pointId": "map-020-point-008"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 1,
+      "pointId": "map-021-point-001"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 2,
+      "pointId": "map-021-point-002"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 3,
+      "pointId": "map-021-point-003"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 4,
+      "pointId": "map-021-point-004"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 5,
+      "pointId": "map-021-point-005"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 6,
+      "pointId": "map-021-point-006"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 7,
+      "pointId": "map-021-point-007"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 5,
+      "pointNo": 8,
+      "pointId": "map-021-point-008"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 1,
+      "pointId": "map-022-point-001"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 2,
+      "pointId": "map-022-point-002"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 3,
+      "pointId": "map-022-point-003"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 4,
+      "pointId": "map-022-point-004"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 5,
+      "pointId": "map-022-point-005"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 6,
+      "pointId": "map-022-point-006"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 7,
+      "pointId": "map-022-point-007"
+    },
+    {
+      "dataset": "g14",
+      "grade": 14,
+      "mapNo": 6,
+      "pointNo": 8,
+      "pointId": "map-022-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 3,
+      "pointId": "map-023-point-003"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 4,
+      "pointId": "map-023-point-004"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 5,
+      "pointId": "map-023-point-005"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 6,
+      "pointId": "map-023-point-006"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 7,
+      "pointId": "map-023-point-007"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 8,
+      "pointId": "map-023-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 9,
+      "pointId": "map-023-point-009"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 1,
+      "pointNo": 10,
+      "pointId": "map-023-point-010"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 5,
+      "pointId": "map-024-point-005"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 6,
+      "pointId": "map-024-point-006"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 7,
+      "pointId": "map-024-point-007"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 8,
+      "pointId": "map-024-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 9,
+      "pointId": "map-024-point-009"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 10,
+      "pointId": "map-024-point-010"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 11,
+      "pointId": "map-024-point-011"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 2,
+      "pointNo": 12,
+      "pointId": "map-024-point-012"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 3,
+      "pointId": "map-025-point-003"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 4,
+      "pointId": "map-025-point-004"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 5,
+      "pointId": "map-025-point-005"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 6,
+      "pointId": "map-025-point-006"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 7,
+      "pointId": "map-025-point-007"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 8,
+      "pointId": "map-025-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 9,
+      "pointId": "map-025-point-009"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 3,
+      "pointNo": 10,
+      "pointId": "map-025-point-010"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 4,
+      "pointId": "map-026-point-004"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 5,
+      "pointId": "map-026-point-005"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 6,
+      "pointId": "map-026-point-006"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 7,
+      "pointId": "map-026-point-007"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 8,
+      "pointId": "map-026-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 9,
+      "pointId": "map-026-point-009"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 10,
+      "pointId": "map-026-point-010"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 4,
+      "pointNo": 11,
+      "pointId": "map-026-point-011"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 4,
+      "pointId": "map-027-point-004"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 5,
+      "pointId": "map-027-point-005"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 6,
+      "pointId": "map-027-point-006"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 7,
+      "pointId": "map-027-point-007"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 8,
+      "pointId": "map-027-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 9,
+      "pointId": "map-027-point-009"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 10,
+      "pointId": "map-027-point-010"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 5,
+      "pointNo": 11,
+      "pointId": "map-027-point-011"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 4,
+      "pointId": "map-028-point-004"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 5,
+      "pointId": "map-028-point-005"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 6,
+      "pointId": "map-028-point-006"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 7,
+      "pointId": "map-028-point-007"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 8,
+      "pointId": "map-028-point-008"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 9,
+      "pointId": "map-028-point-009"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 10,
+      "pointId": "map-028-point-010"
+    },
+    {
+      "dataset": "g17",
+      "grade": 17,
+      "mapNo": 6,
+      "pointNo": 11,
+      "pointId": "map-028-point-011"
+    }
+  ]
+}

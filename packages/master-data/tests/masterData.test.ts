@@ -6,6 +6,8 @@ import {
   validateTreasureMaster,
 } from "../src/index.ts";
 import type { MapMasterV1 } from "../src/types.ts";
+import treasureMasterJson from "../data/treasure-master.v1.json";
+import mapMasterJson from "../data/map-master.v1.json";
 
 const validMapInput = {
   schemaVersion: 1,
@@ -53,6 +55,26 @@ function validatedMap(): MapMasterV1 {
 }
 
 describe("master-data validator", () => {
+  it("生成済みTreasure masterは全P地点をstable IDで検証できる", () => {
+    const mapResult = validateMapMaster(mapMasterJson);
+    if (!mapResult.data) throw new Error("map master fixture is invalid");
+    const result = validateTreasureMaster(treasureMasterJson, mapResult.data);
+
+    expect(result.usable).toBe(true);
+    expect(result.data?.gradeSets.map((set) => set.points.length)).toEqual([
+      35,
+      48,
+      48,
+      48,
+      48,
+    ]);
+    expect(
+      result.data?.gradeSets.flatMap((set) => set.points).every(({ id }) =>
+        /^map-\d{3}-point-\d{3}$/.test(id),
+      ),
+    ).toBe(true);
+  });
+
   it("未知 schema と未知 root field はファイル全体を利用不可にする", () => {
     expect(
       validateMapMaster({ ...validMapInput, schemaVersion: 2 }).usable,

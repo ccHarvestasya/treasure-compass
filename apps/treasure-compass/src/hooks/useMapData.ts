@@ -2,12 +2,16 @@ import { useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { GRADE_JSON_MAP } from '@/constants';
 import { MAP_MASTER_IDS_BY_GRADE } from '@/constants';
-import { isValidGradeMapData } from '@/utils/mapData';
+import { attachTreasurePointIds, isValidGradeMapData } from '@/utils/mapData';
 import mapMasterJson from '@treasure-compass/master-data/data/map-master.v1.json';
-import { validateMapMaster } from '@treasure-compass/master-data';
+import { validateMapMaster, validateTreasureMaster } from '@treasure-compass/master-data';
+import treasureMasterJson from '@treasure-compass/master-data/data/treasure-master.v1.json';
 
 const mapMasterValidation = validateMapMaster(mapMasterJson);
 const mapMaster = mapMasterValidation.data;
+const treasureMasterValidation = mapMaster
+  ? validateTreasureMaster(treasureMasterJson, mapMaster)
+  : null;
 
 /**
  * グレードに応じたJSONとマップ画像を非同期ロードするフック
@@ -43,10 +47,18 @@ export function useMapData() {
             };
           },
         );
-        if (!mapMaster || !isValidGradeMapData(data, expectedMaps)) {
+        if (
+          !mapMaster ||
+          !treasureMasterValidation?.usable ||
+          !isValidGradeMapData(data, expectedMaps)
+        ) {
           throw new Error('Invalid map data');
         }
-        setMapData(data);
+        const stableData = attachTreasurePointIds(
+          data,
+          MAP_MASTER_IDS_BY_GRADE[grade] ?? [],
+        );
+        setMapData(stableData);
         setIsLoading(false);
         recalcRoute();
       })

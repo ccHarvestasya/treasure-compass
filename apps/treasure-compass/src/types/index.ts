@@ -4,6 +4,7 @@ export type Grade = number;
 export type PointDivision = "P" | "T" | "R" | "Z";
 
 export interface Point {
+  stableId?: string;
   pointNo: number;
   division: PointDivision;
   block: string;

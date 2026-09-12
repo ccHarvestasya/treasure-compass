@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { isValidGradeMapData, isValidMapData } from "../../src/utils/mapData";
+import { attachTreasurePointIds, isValidGradeMapData, isValidMapData } from "../../src/utils/mapData";
+import type { MapData, Point } from "../../src/types";
 
-const validPoint = {
+const validPoint: Point = {
   pointNo: 1,
   division: "P",
   block: "",
@@ -13,7 +14,7 @@ const validPoint = {
   pointName: "宝箱",
 };
 
-const validMapData = {
+const validMapData: MapData = {
   mapSize: 100,
   mapData: [{
     region: "地域",
@@ -48,5 +49,13 @@ describe("isValidMapData", () => {
     expect(isValidGradeMapData({ ...validMapData, mapData: [{ ...validMapData.mapData[0], mapNo: 3 }] }, expectedMaps)).toBe(false);
     expect(isValidGradeMapData({ ...validMapData, mapData: [{ ...validMapData.mapData[0], mapName: "別地図" }] }, expectedMaps)).toBe(false);
     expect(isValidGradeMapData({ ...validMapData, mapData: [validMapData.mapData[0], validMapData.mapData[0]] }, expectedMaps)).toBe(false);
+  });
+
+  it("attaches stable IDs to treasure points without changing legacy fields", () => {
+    const mapped = attachTreasurePointIds(validMapData, ["map-001"]);
+    expect(mapped.mapData[0]?.point[0]).toMatchObject({
+      pointNo: 1,
+      stableId: "map-001-point-001",
+    });
   });
 });
