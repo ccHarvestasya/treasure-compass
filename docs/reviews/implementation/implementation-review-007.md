@@ -4,10 +4,10 @@
 
 - 対象工程: Implementation / Test
 - 確認日: 2026-09-12
-- 対象 revision: `d976af5`
+- 対象 revision: `45bdb05`
 - 対象アプリ: Treasure Compass
-- 対象成果物: 登録、一括入力、経路、進捗、保存・復元、マップJSON検証、master-data画像・map参照、unit test、build
-- 除外: Mob Compassの機能、未承認masterデータの作成、料金・ロード時間の推測投入、ブラウザ実機E2E
+- 対象成果物: 登録、一括入力、経路、進捗、保存・復元、マップJSON検証、Treasure master・legacy移行表、master-data画像・map参照、unit test、build
+- 除外: Mob Compassの機能、料金・ロード時間の推測投入、ブラウザ実機E2E
 
 ## 2. 使用した根拠
 
@@ -34,26 +34,19 @@
 ### 3.3 master-data参照
 
 - g8 / g10 / g12 / g14 / g17について、legacy JSONのmapNo・名称と共通map masterの対応表が全件一致することを確認した。
+- Treasure master v1はlegacy P地点227件をstable ID（`map stable ID + pointNo`）で収録し、legacy dataset/mapNo/pointNoとの一意移行表を備える。runtimeは既存map JSONのP地点へ同じstable IDを付与し、legacyフィールドを保持する。
 - 地図画像とエーテライト画像は`packages/master-data/assets/`配下を参照する。
 
 ## 4. 検証証拠
 
 - `pnpm lint`: PASS
-- `pnpm test`: PASS（12 files、62 tests）
+- `pnpm test`: PASS（12 files、64 tests）
 - `pnpm run build`: PASS（Treasure / Mob）
 - `git diff --check`: PASS
 
 ## 5. Findings
 
-正式なCRITICAL / HIGH / MEDIUM / LOW findingはない。
-
-現行実装に残る経路上の不足は、未承認のmasterデータを実装で補完しないための工程境界として、以下の上流フィードバックへ分類する。
-
-### Upstream Feedback: Treasure master準備
-
-- stableなTreasure point ID、point source、legacy pointからの一意移行表が未承認である。
-- 現行実装はlegacy `mapNo` / `pointNo` projectionを使用しており、Design §9のstable visit referenceへ移行していない。
-- 解消条件: stable point master、出典、移行対応表の承認。
+正式なCRITICAL / HIGH / MEDIUM / LOW findingはない。前回のUpstream Feedback（Treasure master準備）は、stable point ID・source・legacy移行表の追加とvalidator/testで解消した。
 
 ## 6. 未検証範囲
 
@@ -64,6 +57,6 @@
 
 ## 7. 判定と引継ぎ
 
-`REVISE IMPLEMENTATION`
+`READY`
 
-現行の登録・保存・進捗・基本経路は検証済みだが、正式Treasure masterのstable point IDとlegacy移行対応表がないため、Treasure全体を仕様適合済みとは判定できない。データ準備gateの承認後、stable ID移行、正式route planner、計算不能診断を再レビュー対象とする。料金・ロード時間はTreasure v1の評価対象外であり、完了条件に含めない。
+Treasureの登録・保存・進捗・経路、master-dataのstable point IDとlegacy移行表、検証およびbuildを確認した。料金・ロード時間はTreasure v1の評価対象外であり、完了条件に含めない。ブラウザ実機確認と計算不能理由の専用表示は未検証範囲として後続確認へ引き継ぐ。
