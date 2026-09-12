@@ -100,6 +100,7 @@
 - Treasure の新 key への初回移行、旧データの非破壊、移行後の旧 key 削除は第一段階として実装済み。ただし現在の新 record はグレードとメンバー projection だけを保持するため、master identity、stable reference、順序、完了、現在地点を含む正式 snapshot へ拡張する必要がある。
 - Mob master は新規準備が必要であり、正式名、別名、rank、map、全候補地点、出典を確認しなければならない。旧試作が要求する `/json/mobs.json` は存在せず、移行元として扱わない。
 - map 間のテレポ料金と比較可能なロード時間は、現行 JSON の未使用 `time` から推測せず、検証済み情報源から準備する必要がある。
+- Treasureの経路評価について、ユーザー判断により料金は扱わず、legacy JSONのTレコードにある`time`を「エーテライトから最初の宝箱地点までの移動負荷」として距離とは別に加算する。保存済み現在地点から再開する場合はエーテライト経由ではないため`time`を加算しない。この判断は正式Specification / Designの料金・ロード時間Pareto記載と整合しないため、文書更新後に実装へ引き継ぐ。
 - 現行 Treasure JSON のうち設定から参照される `g8`、`g10`、`g12`、`g14`、`g17` だけを移行候補とする。未使用 `g11`、用途不明 field、`division=R/Z` は自動移行せず、変換 report と stable ID 対応を承認する必要がある。
 - master data preparation gate は未完了。Mob の正式 master、map / Treasure stable ID、テレポ料金、比較可能なロード時間、情報 source、画像 license を確認するまで production master を追加しない。
 - `Gxx` から置き換える具体的なバージョン値と対応表は確定済み（G8 → 3.x、G10 → 4.x、G12 → 5.x、G14 → 6.x、G17 → 7.x、G18 → 7.x）。正式文書・UI・README・master label の表示更新は未実施。
