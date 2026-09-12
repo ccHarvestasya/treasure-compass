@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isValidMapData } from "../../src/utils/mapData";
+import { isValidGradeMapData, isValidMapData } from "../../src/utils/mapData";
 
 const validPoint = {
   pointNo: 1,
@@ -40,5 +40,11 @@ describe("isValidMapData", () => {
     expect(isValidMapData({ ...validMapData, mapSize: 0 })).toBe(false);
     expect(isValidMapData({ ...validMapData, mapData: [] })).toBe(true);
     expect(isValidMapData(null)).toBe(false);
+  });
+
+  it("rejects map numbers outside the grade master mapping or duplicates", () => {
+    expect(isValidGradeMapData(validMapData, [1, 2])).toBe(true);
+    expect(isValidGradeMapData({ ...validMapData, mapData: [{ ...validMapData.mapData[0], mapNo: 3 }] }, [1, 2])).toBe(false);
+    expect(isValidGradeMapData({ ...validMapData, mapData: [validMapData.mapData[0], validMapData.mapData[0]] }, [1, 2])).toBe(false);
   });
 });

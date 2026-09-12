@@ -46,3 +46,16 @@ export function isValidMapData(value: unknown): value is MapData {
     data.mapData.every(isMapDataItem)
   );
 }
+
+export function isValidGradeMapData(
+  value: unknown,
+  expectedMapNos: readonly number[],
+): value is MapData {
+  if (!isValidMapData(value)) return false;
+  const expected = new Set(expectedMapNos);
+  const mapNos = value.mapData.map((map) => map.mapNo);
+  return (
+    mapNos.every((mapNo) => expected.has(mapNo)) &&
+    new Set(mapNos).size === mapNos.length
+  );
+}
