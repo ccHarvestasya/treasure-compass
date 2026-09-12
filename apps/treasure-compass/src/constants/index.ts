@@ -26,27 +26,27 @@ export interface GradeConfig {
 export const GRADE_CONFIG: GradeConfig[] = [
   {
     grade: 8,
-    label: "G8",
+    label: "3.x",
     jsonFile: "/json/g8.json",
   },
   {
     grade: 10,
-    label: "G10",
+    label: "4.x",
     jsonFile: "/json/g10.json",
   },
   {
     grade: 12,
-    label: "G12",
+    label: "5.x",
     jsonFile: "/json/g12.json",
   },
   {
     grade: 14,
-    label: "G14/G15",
+    label: "6.x",
     jsonFile: "/json/g14.json",
   },
   {
     grade: 17,
-    label: "G17/G18",
+    label: "7.x",
     jsonFile: "/json/g17.json",
   },
   // 新グレード追加時は、対応するバージョン管理済み master data も追加する。
