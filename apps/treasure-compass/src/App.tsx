@@ -25,11 +25,26 @@ import { toast, Toaster } from "sonner";
 function AppContent() {
   useMapData();
   const isLoading = useAppStore((state) => state.isLoading);
+  const mapDataError = useAppStore((state) => state.mapDataError);
   const grade = useAppStore((state) => state.grade);
   const clearAllData = useAppStore((state) => state.clearAllData);
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
 
   if (isLoading) return <LoadingScreen />;
+
+  if (mapDataError) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+        <div className="max-w-md rounded-xl border border-red-900/60 bg-slate-900 p-6 text-center">
+          <h1 className="text-sm font-semibold text-red-300">読み込みエラー</h1>
+          <p className="mt-3 text-sm text-slate-300">{mapDataError}</p>
+          <Button className="mt-5 bg-sky-600 hover:bg-sky-500" onClick={() => window.location.reload()}>
+            再試行
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">

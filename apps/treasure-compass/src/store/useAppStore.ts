@@ -29,6 +29,8 @@ interface AppState {
   setGradeWithReset: (grade: Grade) => void;
   mapData: MapData | null;
   setMapData: (data: MapData | null) => void;
+  mapDataError: string | null;
+  setMapDataError: (message: string | null) => void;
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
   members: (UserItem | null)[];
@@ -195,9 +197,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   mapData: null,
   setMapData: (data) => {
-    set({ mapData: data });
+    set({ mapData: data, ...(data ? { mapDataError: null } : {}) });
     get().recalcRoute();
   },
+  mapDataError: null,
+  setMapDataError: (message) => set({ mapDataError: message }),
   isLoading: true,
   setIsLoading: (value) => set({ isLoading: value }),
   members: initialTreasure.members,

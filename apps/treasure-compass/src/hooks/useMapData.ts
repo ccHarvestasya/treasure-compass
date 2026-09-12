@@ -8,17 +8,22 @@ import { GRADE_JSON_MAP } from '@/constants';
 export function useMapData() {
   const grade = useAppStore(s => s.grade);
   const setMapData = useAppStore(s => s.setMapData);
+  const setMapDataError = useAppStore(s => s.setMapDataError);
   const setIsLoading = useAppStore(s => s.setIsLoading);
   const recalcRoute = useAppStore(s => s.recalcRoute);
 
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
+    setMapDataError(null);
     setMapData(null);
 
     const url = GRADE_JSON_MAP[grade];
     fetch(url)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then(data => {
         if (cancelled) return;
         setMapData(data);
@@ -27,10 +32,10 @@ export function useMapData() {
       })
       .catch(() => {
         if (cancelled) return;
-        console.error(`Failed to load map data: ${url}`);
+        setMapDataError('マップデータを読み込めませんでした。時間をおいて再試行してください。');
         setIsLoading(false);
       });
 
     return () => { cancelled = true; };
-  }, [grade, setMapData, setIsLoading, recalcRoute]);
+  }, [grade, setMapData, setMapDataError, setIsLoading, recalcRoute]);
 }

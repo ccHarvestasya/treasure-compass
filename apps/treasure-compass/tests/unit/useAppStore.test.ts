@@ -82,6 +82,7 @@ beforeEach(() => {
   const state = useAppStore.getState();
   state.setGradeWithReset(DEFAULT_GRADE);
   state.setMapData(null);
+  state.setMapDataError(null);
   state.setBulkText("");
   state.setManualSort(false);
   state.setActiveStep(0);
@@ -136,6 +137,20 @@ const mapData: MapData = {
 };
 
 describe("useAppStore", () => {
+  it("exposes map data load errors without changing the session", () => {
+    const s = useAppStore.getState();
+    s.setMember(
+      0,
+      makeMember(0, "Alice", 1, "Living Memory", "Memory", 1, 100, 100),
+    );
+
+    s.setMapDataError("読み込みに失敗しました");
+
+    const next = useAppStore.getState();
+    expect(next.mapDataError).toBe("読み込みに失敗しました");
+    expect(next.members[0]?.memberName).toBe("Alice");
+  });
+
   it("replaces bulk members and recalculates a fresh route atomically", () => {
     const s = useAppStore.getState();
     s.setMapData(mapData);
