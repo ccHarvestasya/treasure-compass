@@ -107,6 +107,7 @@
 - ローカライズは将来を見据え、データ構造だけ多言語対応可能にする。初期提供は日本語のみとし、Treasure のマップ名・町名・一括登録照合、Mob の正式名・別名・検索語の翻訳や UI 翻訳は現時点のスコープに含めない。
 - 承認済み Specification / Design に対する正式な `implementation-review-007` を改訂した。登録・保存・進捗・基本経路、Treasure masterのstable point IDとlegacy移行表を適合確認し、判定は `READY`。
 - Treasureの実装検証は unit test 64件、lint、Treasure/Mob両buildまで継続的に通過している。
+- 2026-09-12 に、Treasureの経路計算不能境界を実装した。対象マップに有効なエーテライトがない場合は推測経路を返さず、既存経路を維持して理由をRouteProgressへ表示する。unit testは65件。
 
 ## Historical Decisions
 
