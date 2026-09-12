@@ -86,7 +86,7 @@
 ## Current State
 
 - 正式文書は Concept、Requirements、Specification、Design まで存在する。現行上流の最終レビューは [Concept Review 005](docs/reviews/concept/concept-review-005.md)、[Requirements Review 007](docs/reviews/requirements/requirements-review-007.md)、[Specification Review 007](docs/reviews/specification/specification-review-007.md) で `READY`。Design Revision 004 は [Design Review 004](docs/reviews/design/design-review-004.md) で `READY`（Critical 0 / Major 0 / Minor 0）となり、DR-005〜DR-008 はすべて解消済みである。
-- 現在のブランチは `maintenance/add-mob-compass`。Treasure と Mob の実装・unit test はリポジトリに存在するが、`docs/reviews/implementation/` の実装レビュー成果物はまだない。正式契約への実装適合は未レビューである。
+- 現在のブランチは `maintenance/add-mob-compass`。Treasure と Mob の実装・unit test があり、Treasure実装レビュー007は `READY`（2026-09-12、stable point master・legacy移行表を含む）。Mob entryはplaceholderで、正式契約への実装適合は未レビューである。
 - 現在のリポジトリ実体は React / TypeScript / Vite、Zustand、Tailwind を用いるブラウザアプリで、静的地図・地点データと browser localStorage を扱う。
 - 2026-09-12 に Treasure の保存境界の第一段階を実装した。Treasure は `treasure-compass:treasure-session:v2` を優先して読み書きし、旧 `treasure-compass:sessions:v1` と旧 separate keys は有効な Treasure 部分だけを一度移行してから削除する。Treasure の書き込みで旧 Mob 部分を再保存しないこと、移行失敗時に旧保存を変更しないことを unit test で確認済みである。現段階の新 record は既存 UI の grade / member projection のみで、Design が定める master identity、stable point reference、route / progress 全体の snapshot には未到達である。
 - 2026-09-12 に Treasure の手動巡回順維持を実装した。route step に `memberNo` を持たせ、手動順序中の地点変更は同じ位置で置換し、新規登録は末尾へ追加、削除は対象だけを外して残りの相対順序を維持する。自動順序中の既存再計算挙動は変更していない。unit test で変更・追加・削除を確認済みである。
@@ -102,11 +102,11 @@
 - map 間のテレポ料金・ロード時間・legacy JSONの`time`は、Treasureの順序評価に使用しない。
 - Treasure地点のstable ID移行では、legacyの同一マップ内`pointNo`を移行キーとして、`map stable ID + pointNo`形式のstable point IDを採用する（例: `map-001-point-001`）。ユーザー承認済みの移行判断であり、座標や配列位置から実行時にIDを生成する方針ではない。
 - 現行 Treasure JSON のうち設定から参照される `g8`、`g10`、`g12`、`g14`、`g17` だけを移行候補とする。未使用 `g11`、用途不明 field、`division=R/Z` は自動移行せず、変換 report と stable ID 対応を承認する必要がある。
-- master data preparation gate は未完了。Mob の正式 master、map / Treasure stable ID、情報 source、画像 license を確認するまで production master を追加しない。
+- master data preparation gate は部分完了。Treasure master v1とlegacy移行表を追加し、stable IDとsourceをvalidator/testで確認済み。Mob の正式 master、情報 source、画像 license は未確認のため production masterへ追加しない。
 - `Gxx` から置き換える具体的なバージョン値と対応表は確定済み（G8 → 3.x、G10 → 4.x、G12 → 5.x、G14 → 6.x、G17 → 7.x、G18 → 7.x）。正式文書・UI・README・master label の表示更新は未実施。
 - ローカライズは将来を見据え、データ構造だけ多言語対応可能にする。初期提供は日本語のみとし、Treasure のマップ名・町名・一括登録照合、Mob の正式名・別名・検索語の翻訳や UI 翻訳は現時点のスコープに含めない。
-- 承認済み Specification / Design に対する正式な `implementation-review-007` を作成・改訂した。登録・保存・進捗・基本経路は適合確認済みだが、stable point masterとlegacy移行対応表の未承認により判定は `REVISE IMPLEMENTATION` としている。
-- Treasure の実装検証は unit test 62件、lint、Treasure/Mob両buildまで継続的に通過している。
+- 承認済み Specification / Design に対する正式な `implementation-review-007` を改訂した。登録・保存・進捗・基本経路、Treasure masterのstable point IDとlegacy移行表を適合確認し、判定は `READY`。
+- Treasureの実装検証は unit test 64件、lint、Treasure/Mob両buildまで継続的に通過している。
 
 ## Historical Decisions
 
