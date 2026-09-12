@@ -49,13 +49,20 @@ export function isValidMapData(value: unknown): value is MapData {
 
 export function isValidGradeMapData(
   value: unknown,
-  expectedMapNos: readonly number[],
+  expectedMaps: readonly { mapNo: number; mapName: string; mapNameShort: string }[],
 ): value is MapData {
   if (!isValidMapData(value)) return false;
-  const expected = new Set(expectedMapNos);
+  const expected = new Map(expectedMaps.map((map) => [map.mapNo, map]));
   const mapNos = value.mapData.map((map) => map.mapNo);
   return (
-    mapNos.every((mapNo) => expected.has(mapNo)) &&
+    value.mapData.every((map) => {
+      const expectedMap = expected.get(map.mapNo);
+      return (
+        expectedMap !== undefined &&
+        map.mapName === expectedMap.mapName &&
+        map.mapNameShort === expectedMap.mapNameShort
+      );
+    }) &&
     new Set(mapNos).size === mapNos.length
   );
 }

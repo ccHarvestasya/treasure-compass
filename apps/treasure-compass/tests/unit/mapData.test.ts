@@ -43,8 +43,10 @@ describe("isValidMapData", () => {
   });
 
   it("rejects map numbers outside the grade master mapping or duplicates", () => {
-    expect(isValidGradeMapData(validMapData, [1, 2])).toBe(true);
-    expect(isValidGradeMapData({ ...validMapData, mapData: [{ ...validMapData.mapData[0], mapNo: 3 }] }, [1, 2])).toBe(false);
-    expect(isValidGradeMapData({ ...validMapData, mapData: [validMapData.mapData[0], validMapData.mapData[0]] }, [1, 2])).toBe(false);
+    const expectedMaps = [{ mapNo: 1, mapName: "地図", mapNameShort: "地図" }, { mapNo: 2, mapName: "別地図", mapNameShort: "別" }];
+    expect(isValidGradeMapData(validMapData, expectedMaps)).toBe(true);
+    expect(isValidGradeMapData({ ...validMapData, mapData: [{ ...validMapData.mapData[0], mapNo: 3 }] }, expectedMaps)).toBe(false);
+    expect(isValidGradeMapData({ ...validMapData, mapData: [{ ...validMapData.mapData[0], mapName: "別地図" }] }, expectedMaps)).toBe(false);
+    expect(isValidGradeMapData({ ...validMapData, mapData: [validMapData.mapData[0], validMapData.mapData[0]] }, expectedMaps)).toBe(false);
   });
 });
