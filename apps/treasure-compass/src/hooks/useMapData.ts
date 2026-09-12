@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { GRADE_JSON_MAP } from '@/constants';
 import { MAP_MASTER_IDS_BY_GRADE } from '@/constants';
-import { attachTreasurePointIds, isValidGradeMapData } from '@/utils/mapData';
+import { buildTreasureMapData, isValidGradeMapData } from '@/utils/mapData';
 import mapMasterJson from '@treasure-compass/master-data/data/map-master.v1.json';
 import { validateMapMaster, validateTreasureMaster } from '@treasure-compass/master-data';
 import treasureMasterJson from '@treasure-compass/master-data/data/treasure-master.v1.json';
@@ -14,7 +13,7 @@ const treasureMasterValidation = mapMaster
   : null;
 
 /**
- * グレードに応じたJSONとマップ画像を非同期ロードするフック
+ * 検証済みmaster-dataからグレード別のMapDataを構築するフック
  */
 export function useMapData() {
   const grade = useAppStore(s => s.grade);
@@ -29,13 +28,7 @@ export function useMapData() {
     setMapDataError(null);
     setMapData(null);
 
-    const url = GRADE_JSON_MAP[grade];
-    fetch(url)
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then(data => {
+    Promise.resolve().then(() => {
         if (cancelled) return;
         const expectedMaps = (MAP_MASTER_IDS_BY_GRADE[grade] ?? []).map(
           (mapId, index) => {
@@ -47,18 +40,13 @@ export function useMapData() {
             };
           },
         );
-        if (
-          !mapMaster ||
-          !treasureMasterValidation?.usable ||
-          !isValidGradeMapData(data, expectedMaps)
-        ) {
+        const data = mapMaster && treasureMasterValidation?.data
+          ? buildTreasureMapData(mapMaster, treasureMasterValidation.data, grade, MAP_MASTER_IDS_BY_GRADE[grade] ?? [])
+          : null;
+        if (!data || !isValidGradeMapData(data, expectedMaps)) {
           throw new Error('Invalid map data');
         }
-        const stableData = attachTreasurePointIds(
-          data,
-          MAP_MASTER_IDS_BY_GRADE[grade] ?? [],
-        );
-        setMapData(stableData);
+        setMapData(data);
         setIsLoading(false);
         recalcRoute();
       })

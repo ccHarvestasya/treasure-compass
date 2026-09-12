@@ -15,39 +15,32 @@ export const STORAGE_KEY_MEMBERS = "treasure-compass:members";
 /**
  * グレード設定テーブル。
  * 新グレードを追加するにはここに1行追加するだけです。
- *   jsonFile   : public/json/ 以下のファイルパス
  */
 export interface GradeConfig {
   grade: Grade;
   label: string;
-  jsonFile: string;
 }
 
 export const GRADE_CONFIG: GradeConfig[] = [
   {
     grade: 8,
     label: "3.x",
-    jsonFile: "/json/g8.json",
   },
   {
     grade: 10,
     label: "4.x",
-    jsonFile: "/json/g10.json",
   },
   {
     grade: 12,
     label: "5.x",
-    jsonFile: "/json/g12.json",
   },
   {
     grade: 14,
     label: "6.x",
-    jsonFile: "/json/g14.json",
   },
   {
     grade: 17,
     label: "7.x",
-    jsonFile: "/json/g17.json",
   },
   // 新グレード追加時は、対応するバージョン管理済み master data も追加する。
 ];
@@ -64,9 +57,6 @@ export function getGradeConfig(grade: Grade): GradeConfig {
 // 後方互換のため既存のRecord形式アクセサを維持
 export const GRADE_LABELS: Record<number, string> = Object.fromEntries(
   GRADE_CONFIG.map((c) => [c.grade, c.label]),
-);
-export const GRADE_JSON_MAP: Record<number, string> = Object.fromEntries(
-  GRADE_CONFIG.map((c) => [c.grade, c.jsonFile]),
 );
 
 /**
