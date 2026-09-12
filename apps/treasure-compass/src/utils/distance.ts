@@ -1,13 +1,9 @@
 import type { Point, MapDataItem, RouteStep } from '@/types';
-import { TELEPORT_TIME_COST } from '@/constants';
-
-/** 2点間の3D距離（テレポートタイムコスト込み） */
+/** 2点間のゲーム内 X/Y 二次元距離 */
 function calcDistance(a: Point, b: Point): number {
   const dx = b.posX - a.posX;
   const dy = b.posY - a.posY;
-  const dz = b.posZ - a.posZ;
-  const teleportCost = b.division === 'T' ? TELEPORT_TIME_COST : 0;
-  return Math.sqrt(dx * dx + dy * dy + dz * dz) + teleportCost;
+  return Math.hypot(dx, dy);
 }
 
 /** 配列の順列をすべて生成 */
@@ -71,7 +67,6 @@ export function calcShortestRoute(
   for (const mapOrder of permutations(mapNos)) {
     let totalDist = 0;
     const steps: ShortestRouteResult['orderedSteps'] = [];
-    let prevPoint: Point | null = null;
 
     for (const mapNo of mapOrder) {
       const group = mapGroups.get(mapNo)!;
@@ -87,10 +82,7 @@ export function calcShortestRoute(
         for (const memberOrder of permutations(group)) {
           let dist = 0;
           let cur = startPoint;
-          if (teleportPoint && cur) {
-            dist += calcDistance(cur, teleportPoint);
-            cur = teleportPoint;
-          }
+          if (teleportPoint) cur = teleportPoint;
           for (const m of memberOrder) {
             if (cur) dist += calcDistance(cur, m.mapPoint);
             cur = m.mapPoint;
@@ -117,19 +109,14 @@ export function calcShortestRoute(
         }
       };
 
-      // テレポートなし(前マップ最後の地点から直接)
-      tryFromStart(prevPoint);
-
-      // テレポートあり（各Tポイントから）
+      // 各マップはエーテライトを起点とする。T がない場合のみ起点なし。
       for (const tp of teleportPoints) {
-        tryFromStart(prevPoint, tp);
+        tryFromStart(null, tp);
       }
+      if (teleportPoints.length === 0) tryFromStart(null);
 
       totalDist += bestMapDist;
       steps.push(...bestMapSteps);
-      if (bestMapSteps.length > 0) {
-        prevPoint = bestMapSteps[bestMapSteps.length - 1].point;
-      }
     }
 
     if (totalDist < bestDistance) {
