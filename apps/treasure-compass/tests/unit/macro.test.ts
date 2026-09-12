@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Point, RouteStep } from "../../src/types";
 import {
-  generateLineOrder,
   generateMultiLineMacro,
   generateOneLineMacro,
 } from "../../src/utils/macro";
@@ -64,11 +63,4 @@ describe("macro utils", () => {
     );
   });
 
-  it("generateLineOrder returns empty string for empty array", () => {
-    expect(generateLineOrder([])).toBe("");
-  });
-
-  it("generateLineOrder formats route for line order field", () => {
-    expect(generateLineOrder(steps)).toBe("1.Alice(Memory) → 2.Bob(Ruby)");
-  });
 });

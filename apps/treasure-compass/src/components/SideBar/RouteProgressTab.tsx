@@ -18,7 +18,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useAppStore } from '@/store/useAppStore';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { generateOneLineMacro, generateMultiLineMacro, generateLineOrder } from '@/utils/macro';
+import { generateOneLineMacro, generateMultiLineMacro } from '@/utils/macro';
 import { toast } from 'sonner';
 import { Check, Copy, ChevronRight, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -126,7 +126,6 @@ export function RouteProgressTab() {
 
   const oneLineMacro = generateOneLineMacro(route);
   const multiLineMacro = generateMultiLineMacro(route);
-  const lineOrder = generateLineOrder(route);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -192,22 +191,6 @@ export function RouteProgressTab() {
           </div>
         </SortableContext>
       </DndContext>
-
-      {/* 行順 */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between">
-          <label className="text-xs text-slate-400">行順</label>
-          <button onClick={() => copyToClipboard(lineOrder, '行順')} className="text-slate-500 hover:text-slate-300 transition-colors">
-            <Copy className="size-3.5" />
-          </button>
-        </div>
-        <div
-          className="text-xs text-slate-300 bg-slate-900 rounded-md p-2 border border-slate-700 leading-relaxed cursor-pointer hover:bg-slate-800 transition-colors"
-          onClick={() => copyToClipboard(lineOrder, '行順')}
-        >
-          {lineOrder}
-        </div>
-      </div>
 
       {/* 1行マクロ */}
       <div className="space-y-1">

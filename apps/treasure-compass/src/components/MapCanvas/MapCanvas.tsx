@@ -50,6 +50,11 @@ function drawRoute(
   ctx.setLineDash([6, 3]);
 
   steps.forEach((step, i) => {
+    if (i === 0 && step.teleportPoint) {
+      ctx.moveTo(toCanvas(step.teleportPoint.posX, scale), toCanvas(step.teleportPoint.posY, scale));
+      ctx.lineTo(toCanvas(step.point.posX, scale), toCanvas(step.point.posY, scale));
+      return;
+    }
     const x = toCanvas(step.point.posX, scale);
     const y = toCanvas(step.point.posY, scale);
     if (i === 0) ctx.moveTo(x, y);
@@ -117,7 +122,7 @@ function drawAllPoints(
   points: Point[],
   scale: number,
 ) {
-  for (const p of points) {
+  for (const p of [...points].reverse()) {
     if (p.division !== 'P') continue;
     const x = toCanvas(p.posX, scale);
     const y = toCanvas(p.posY, scale);

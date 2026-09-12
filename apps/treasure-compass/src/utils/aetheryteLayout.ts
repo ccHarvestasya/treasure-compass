@@ -61,7 +61,7 @@ export interface AetheryteLayout {
 }
 
 const LABEL_HEIGHT = 24;
-const LABEL_GAP = 4;
+const LABEL_GAP = 22;
 const MAX_LABELS = 8;
 
 function compareCodePoints(left: string, right: string): number {
@@ -82,7 +82,7 @@ export function normalizeAetheryteName(name: string): string {
 }
 
 export function getAetheryteLabelWidth(name: string): number {
-  return 8 * Array.from(normalizeAetheryteName(name)).length + 16;
+  return 8 * Array.from(normalizeAetheryteName(name)).length + 24;
 }
 
 export function projectCanonicalCoordinate(

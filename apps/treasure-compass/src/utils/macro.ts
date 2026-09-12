@@ -22,13 +22,3 @@ export function generateMultiLineMacro(steps: RouteStep[]): string {
     })
     .join('\n');
 }
-
-/**
- * 行順フィールド用: "1.名前 マップ, 2.名前 マップ, ..." 
- */
-export function generateLineOrder(steps: RouteStep[]): string {
-  if (steps.length === 0) return '';
-  return steps
-    .map((s, i) => `${i + 1}.${s.memberName}(${s.mapNameShort})`)
-    .join(' → ');
-}

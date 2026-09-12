@@ -12,12 +12,12 @@ const bounds = { minX: 0, maxX: 100, minY: 0, maxY: 100 };
 describe("aetheryteLayout", () => {
   it("NFC後のcode point数でラベル幅を計算する", () => {
     expect(getAetheryteLabelWidth("か\u3099"))
-      .toBe(24);
+      .toBe(32);
     expect(getAetheryteLabelWidth("町"))
-      .toBe(24);
+      .toBe(32);
   });
 
-  it("8方向をNからNWの順で4px間隔に配置する", () => {
+  it("8方向をNからNWの順でアイコンと離して配置する", () => {
     const candidates = createAetheryteLabelCandidates(
       { x: 50, y: 50 },
       24,
@@ -33,14 +33,14 @@ describe("aetheryteLayout", () => {
       "W",
       "NW",
     ]);
-    expect(candidates[0]).toMatchObject({ left: 38, top: 22, width: 24, height: 24 });
-    expect(candidates[1]).toMatchObject({ left: 54, top: 22 });
-    expect(candidates[2]).toMatchObject({ left: 54, top: 38 });
-    expect(candidates[3]).toMatchObject({ left: 54, top: 54 });
-    expect(candidates[4]).toMatchObject({ left: 38, top: 54 });
-    expect(candidates[5]).toMatchObject({ left: 22, top: 54 });
-    expect(candidates[6]).toMatchObject({ left: 22, top: 38 });
-    expect(candidates[7]).toMatchObject({ left: 22, top: 22 });
+    expect(candidates[0]).toMatchObject({ left: 38, top: 4, width: 24, height: 24 });
+    expect(candidates[1]).toMatchObject({ left: 72, top: 4 });
+    expect(candidates[2]).toMatchObject({ left: 72, top: 38 });
+    expect(candidates[3]).toMatchObject({ left: 72, top: 72 });
+    expect(candidates[4]).toMatchObject({ left: 38, top: 72 });
+    expect(candidates[5]).toMatchObject({ left: 4, top: 72 });
+    expect(candidates[6]).toMatchObject({ left: 4, top: 38 });
+    expect(candidates[7]).toMatchObject({ left: 4, top: 4 });
   });
 
   it("矩形の辺接触は衝突とせず、正の面積だけを衝突とする", () => {
@@ -69,7 +69,7 @@ describe("aetheryteLayout", () => {
       { width: 100, height: 100 },
     );
     expect(layout.labels).toHaveLength(1);
-    expect(layout.labels[0]?.direction).toBe("SE");
+    expect(layout.labels[0]?.direction).toBe("S");
   });
 
   it("ラベルは最大8件で、安定IDの表示を優先する", () => {
@@ -87,13 +87,13 @@ describe("aetheryteLayout", () => {
 
     const tie = layoutAetherytes(
       [
-        { id: "b", name: "町", x: 0, y: 0 },
-        { id: "a", name: "町", x: 0, y: 0 },
+        { id: "b", name: "町", x: 50, y: 50 },
+        { id: "a", name: "町", x: 50, y: 50 },
       ],
       bounds,
-      { width: 30, height: 30 },
+      { width: 100, height: 100 },
     );
-    expect(tie.labels.map((label) => label.id)).toEqual(["a"]);
+    expect(tie.labels[0]?.id).toBe("a");
   });
 
   it("配置不能でもアイコンは全件返し、ラベルだけを省略する", () => {
