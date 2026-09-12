@@ -60,6 +60,24 @@ describe("Treasure persistence boundary", () => {
     expect(readPersistedTreasure().snapshot?.members[0]?.memberName).toBe("");
   });
 
+  it("重複したメンバースロットを復元しない", () => {
+    const snapshot = {
+      grade: DEFAULT_GRADE,
+      members: [
+        { memberNo: 0, memberName: "A", mapNo: 1, mapName: "Map", mapNameShort: "M", mapPoint: {
+          pointNo: 1, division: "P" as const, block: "", posX: 100, posY: 200, posZ: 0, posT: 0, time: 0, pointName: "P1",
+        } },
+        { memberNo: 0, memberName: "B", mapNo: 1, mapName: "Map", mapNameShort: "M", mapPoint: {
+          pointNo: 2, division: "P" as const, block: "", posX: 110, posY: 210, posZ: 0, posT: 0, time: 0, pointName: "P2",
+        } },
+        ...Array(FULL_PARTY - 2).fill(null),
+      ],
+    };
+
+    expect(writePersistedTreasure(snapshot)).toBe(true);
+    expect(readPersistedTreasure().restoreFailure).toBe(true);
+  });
+
   it("完全な session snapshot を保存・復元する", () => {
     const point = {
       pointNo: 1,

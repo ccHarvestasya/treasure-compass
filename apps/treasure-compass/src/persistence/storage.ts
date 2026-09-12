@@ -42,13 +42,19 @@ function isGrade(value: unknown): value is Grade {
   return typeof value === "number" && GRADES.includes(value);
 }
 
+function isInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value);
+}
+
 function isValidMember(value: unknown): value is UserItem | null {
   if (value === null) return true;
   if (
     !isRecord(value) ||
-    !Number.isInteger(value.memberNo) ||
+    !isInteger(value.memberNo) ||
+    value.memberNo < 0 ||
+    value.memberNo >= FULL_PARTY ||
     typeof value.memberName !== "string" ||
-    !Number.isInteger(value.mapNo) ||
+    !isInteger(value.mapNo) ||
     typeof value.mapName !== "string" ||
     value.mapName.trim().length === 0 ||
     typeof value.mapNameShort !== "string" ||
@@ -77,7 +83,7 @@ function isValidMember(value: unknown): value is UserItem | null {
 function isValidPoint(value: unknown): value is Point {
   return (
     isRecord(value) &&
-    Number.isInteger(value.pointNo) &&
+    isInteger(value.pointNo) &&
     (value.division === "P" || value.division === "T" || value.division === "R" || value.division === "Z") &&
     typeof value.block === "string" &&
     Number.isFinite(value.posX) &&
@@ -92,9 +98,12 @@ function isValidPoint(value: unknown): value is Point {
 function isValidRouteStep(value: unknown): value is RouteStep {
   return (
     isRecord(value) &&
-    Number.isInteger(value.orderNo) &&
-    Number.isInteger(value.memberNo) &&
-    Number.isInteger(value.mapNo) &&
+    isInteger(value.orderNo) &&
+    value.orderNo > 0 &&
+    isInteger(value.memberNo) &&
+    value.memberNo >= 0 &&
+    value.memberNo < FULL_PARTY &&
+    isInteger(value.mapNo) &&
     typeof value.mapName === "string" &&
     typeof value.mapNameShort === "string" &&
     typeof value.memberName === "string" &&
@@ -117,6 +126,10 @@ function parseTreasure(value: unknown): PersistedTreasureSession | null {
   ) {
     return null;
   }
+  const memberNos = value.members
+    .filter((member): member is UserItem => member !== null)
+    .map((member) => member.memberNo);
+  if (new Set(memberNos).size !== memberNos.length) return null;
   const snapshot: PersistedTreasureSession = {
     grade: value.grade,
     members: value.members,
@@ -130,6 +143,7 @@ function parseTreasure(value: unknown): PersistedTreasureSession | null {
     if (
       !Array.isArray(route) ||
       !route.every(isValidRouteStep) ||
+      new Set(route.map((step) => step.orderNo)).size !== route.length ||
       typeof isManualSort !== "boolean" ||
       typeof activeStep !== "number" ||
       !Number.isInteger(activeStep) ||
