@@ -33,4 +33,15 @@ describe("Treasure route distance", () => {
     expect(result.totalDistance).toBe(50);
     expect(result.orderedSteps[0]?.teleportPoint).toBeUndefined();
   });
+
+  it("同距離の経路は安定キーで決定する", () => {
+    const result = calcShortestRoute(
+      [
+        { memberNo: 1, memberName: "B", mapNo: 1, mapName: "Map", mapNameShort: "M", mapPoint: point(2, "P", 150, 100) },
+        { memberNo: 0, memberName: "A", mapNo: 1, mapName: "Map", mapNameShort: "M", mapPoint: point(1, "P", 50, 100) },
+      ],
+      [map],
+    );
+    expect(result.orderedSteps.map((step) => step.memberNo)).toEqual([0, 1]);
+  });
 });

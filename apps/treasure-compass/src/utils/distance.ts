@@ -19,6 +19,22 @@ function permutations<T>(arr: T[]): T[][] {
   return result;
 }
 
+function routeTieKey(
+  steps: Array<{ mapNo: number; memberNo: number; point: Point }>,
+): string {
+  return steps
+    .map((step) =>
+      [step.mapNo, step.point.posX, step.point.posY, step.memberNo, step.point.pointNo].join(":"),
+    )
+    .join("|");
+}
+
+function memberTieKey(
+  members: Array<{ memberNo: number }>,
+): string {
+  return members.map((member) => String(member.memberNo).padStart(4, "0")).join(",");
+}
+
 /** 最短経路の計算結果 */
 export interface ShortestRouteResult {
   orderedSteps: Array<{
@@ -89,7 +105,11 @@ export function calcShortestRoute(
             if (cur) dist += calcDistance(cur, m.mapPoint);
             cur = m.mapPoint;
           }
-          if (dist < bestMapDist) {
+          if (
+            dist < bestMapDist ||
+            (dist === bestMapDist &&
+              memberTieKey(memberOrder) < memberTieKey(bestMapSteps))
+          ) {
             bestMapDist = dist;
             bestMapSteps = memberOrder.map(m => ({
               memberNo: m.memberNo,
@@ -125,7 +145,10 @@ export function calcShortestRoute(
       steps.push(...bestMapSteps);
     }
 
-    if (totalDist < bestDistance) {
+    if (
+      totalDist < bestDistance ||
+      (totalDist === bestDistance && routeTieKey(steps) < routeTieKey(bestSteps))
+    ) {
       bestDistance = totalDist;
       bestSteps = steps;
     }
