@@ -24,6 +24,17 @@
 - 地図画像は `packages/master-data/assets/maps/`、エーテライト案内アイコンは `packages/master-data/assets/icons/` に集約し、地図メタデータ・画像・出典／利用条件を同じ master-data 管理単位で扱う。各アプリへは build 時に必要な検証済み画像だけを配信する。
 - `@treasure-compass/master-data` の `./legacy-report` export は実行時機能ではない。legacy JSON の移行・棚卸しが完了するまで `src/legacy-report.ts`、テスト、棚卸しreportは内部資料として保持し、公開前にパッケージexportを削除する。
 - Treasure Compass は現在運用中であり、外部仕様を大きく変更する必要はない。Mob Compass は新規作成であり、UI は未確定である。
+- Treasure の一括入力と手動入力は、利用環境の違いに対応する同格の正式な登録経路とする。手動入力は、チャットログを容易にコピーできないゲーム機等の利用者が地図を登録するための手段であり、補助機能として扱わない。
+- Treasure の手動登録は `memberName + treasure location` を1件の登録単位とし、メンバー名を必須とする。「1人目」「2人目」等の匿名スロットで代替しない。現行 Specification の空名を既定名で表示できる契約と現行実装は、この決定に合わせた正式文書更新後に見直す必要がある。
+- Treasure をバージョン単位で分類する UI では、`G8`、`G10` 等のグレードをバージョンと二重に選択・表示しない。
+- Treasure の登録・順序確認・進行は一つの継続画面で扱い、準備中／巡回中という厳密な画面モードや保存状態を設けない。登録済みの `memberName + treasure location` を、音楽プレイヤーのプレイリストに相当する一つの巡回リストとして表示し、同じ画面から再生（巡回開始）・次へ・戻るを操作する。
+- Treasure のプレイヤー操作における「次へ」は、現在の Treasure を完了にし、巡回リストの次の Treasure へ再生位置を進める一操作とする。
+- Treasure のプレイヤー操作における「戻る」は、直前の「次へ」による完了を取り消し、一つ前の Treasure を未完了へ戻して現在位置にする。繰り返すことで巡回順に沿って一件ずつ巻き戻せる。
+- Treasure の一つの巡回リストには、異なる FFXIV 拡張シリーズ（3.x〜7.x）の Treasure を混在できるようにする。バージョンは巡回全体を切り替えるトップレベル選択として扱わず、各登録項目が対応するバージョン／地点参照を持つ。手動登録では候補地点を絞り込むために使用する。
+- Treasure の一括入力では、チャット行のマップ名と座標から各 Treasure のバージョンと地点を一意に解決できる場合だけ自動登録する。複数バージョンの候補に一致する曖昧な行は推測採用せず、利用者が対象を選択できるようにする。一括入力全体へ事前のバージョン選択は要求しない。
+- Treasure のプレイヤー操作における「再生」は、選択中の Treasure があればその項目を現在位置にし、未選択なら巡回リスト先頭の未完了 Treasure を現在位置にする。対応する地図と巡回案内を前面に表示するが、再生中／一時停止中という新しい domain 状態や保存状態は設けない。完了済み項目を選択した場合の扱いは未決定である。
+- Treasure の一括入力は、既存の巡回リストを全置換せず統合する。新しいメンバーの Treasure は追加し、既存メンバーの新しい地点は、一人につき同時に一つの現在 Treasure という既存契約に従って同じ登録項目を更新する。メンバー名の正確な同一性判定は Specification で定める。
+- Treasure の継続画面では巡回プレイリスト、現在位置、プレイヤー操作を主表示とする。一括入力と手動入力は、主画面から必要時に開いて同じ巡回リストへ登録する同格の入口とし、登録後は主画面へ戻る。現行の「一括入力／手動入力／巡回経路」という三つのトップレベルタブは使用しない。
 - Treasure Compass と Mob Compass は同一アプリ内の製品切替ではなく、別アプリに分ける。同じリポジトリ内で管理し、Treasure と Mob を別エントリ・別 URL としてビルド・公開する。リポジトリ自体は分割しない。地図表示、地点選択、経路描画などの基本機能は共有してよいが、画面、入力フロー、周回状態、保存、消去はアプリごとに分離する。
 - 既存 Treasure の localStorage を初回移行できるよう、v1 の Treasure entry は運用中 Treasure と同じ browser origin に配備する。具体的な URL や path は固定しない。異なる origin へ移す場合は、旧保存へ到達できる別の移行設計を事前に追加する。
 - Treasure Compass と Mob Compass はどちらもスマートフォン表示へ対応し、小さい画面でも対象登録、地図上の地点選択、巡回経路の確認、完了・取消、モード切替、クリアを利用できるようにする。スマートフォンは縦向きを主対象とし、横向きでも主要操作が不能にならないようにする。
@@ -85,7 +96,7 @@
 
 ## Current State
 
-- 正式文書は Concept、Requirements、Specification、Design まで存在する。現行上流の最終レビューは [Concept Review 005](docs/reviews/concept/concept-review-005.md)、[Requirements Review 007](docs/reviews/requirements/requirements-review-007.md)、[Specification Review 007](docs/reviews/specification/specification-review-007.md) で `READY`。Design Revision 004 は [Design Review 004](docs/reviews/design/design-review-004.md) で `READY`（Critical 0 / Major 0 / Minor 0）となり、DR-005〜DR-008 はすべて解消済みである。
+- 正式文書は Concept、Requirements、Specification、Design まで存在する。現行上流の最終レビューは [Concept Review 005](docs/reviews/concept/concept-review-005.md)、[Requirements Review 011](docs/reviews/requirements/requirements-review-011.md)、[Specification Review 013](docs/reviews/specification/specification-review-013.md) で `READY`。Design Revision 004 は [Design Review 004](docs/reviews/design/design-review-004.md) で `READY`（Critical 0 / Major 0 / Minor 0）だが、新しい Treasure UI 方針をまだ反映していない。
 - 現在のブランチは `maintenance/add-mob-compass`。Treasure と Mob の実装・unit test があり、Treasure実装レビュー007は `READY`（2026-09-12、stable point master・legacy移行表を含む）。Mob entryはplaceholderで、正式契約への実装適合は未レビューである。
 - 現在のリポジトリ実体は React / TypeScript / Vite、Zustand、Tailwind を用いるブラウザアプリで、静的地図・地点データと browser localStorage を扱う。
 - 2026-09-12 に Treasure の保存境界の第一段階を実装した。Treasure は `treasure-compass:treasure-session:v2` を優先して読み書きし、旧 `treasure-compass:sessions:v1` と旧 separate keys は有効な Treasure 部分だけを一度移行してから削除する。Treasure の書き込みで旧 Mob 部分を再保存しないこと、移行失敗時に旧保存を変更しないことを unit test で確認済みである。現段階の新 record は既存 UI の grade / member projection のみで、Design が定める master identity、stable point reference、route / progress 全体の snapshot には未到達である。
@@ -94,6 +105,7 @@
 
 ## Open Issues
 
+- Treasure の新しい UI 方針は Requirements と Specification へ反映済みで、Requirements Review 011 と Specification Review 013 はともに `READY`（Critical 0 / Major 0 / Minor 0）。Specification では一括入力のメンバー同一性・曖昧行の選択、リスト選択と現在対象、再生・次へ・戻る、個別完了取消、現行 v3 と既存保存の認識・移行契約まで確定した。次は Design、Implementation の順に反映する。
 - Treasure の `clearAllData` は現在 Treasure 専用 key だけを書き換えるようになった。ただし、Treasure の全 session snapshot と Mob ソロ／パーティの独立 persistence はまだ未実装であり、最終的な全消去契約までの統合が必要である。
 - 二つの build entry は存在するが、Mob entry は placeholder UI のままである。Treasure は旧 route store を使用しているため、共有 map 基盤、Treasure／Mob ソロ／Mob パーティの各 session root、Mob preference の独立保存へ移行する必要がある。
 - Treasure の手動順序について、登録・地点変更・削除時の相対順序維持は実装済み。明示的な「経路自動計算」による自動順序への復帰、完了・取消・現在地点を含む正式 snapshot 保存は引き続き未実装である。
