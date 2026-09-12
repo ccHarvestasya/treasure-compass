@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "dataRevision": "2026-09-12.3",
+  "dataRevision": "2026-09-12.4",
   "expansions": [
     {
       "id": "expansion-unconfirmed",
@@ -1326,7 +1326,6 @@
       ]
     }
   ],
-  "travelEdges": [],
   "sources": [
     {
       "id": "source-001",

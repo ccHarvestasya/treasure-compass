@@ -459,7 +459,6 @@ export function validateMapMaster(
   if (
     !Array.isArray(input.expansions) ||
     !Array.isArray(input.maps) ||
-    !Array.isArray(input.travelEdges) ||
     !Array.isArray(input.sources) ||
     !Array.isArray(input.licenses)
   ) {
@@ -555,23 +554,23 @@ export function validateMapMaster(
   const retainedAetheryteIds = new Set(
     maps.flatMap(({ aetherytes }) => aetherytes.map(({ id }) => id)),
   );
-  const travelEdges = parseTravelEdges(input.travelEdges, diagnostics).filter(
-    (edge) => {
-      const valid =
-        mapIds.has(edge.fromMapId) &&
-        retainedAetheryteIds.has(edge.toAetheryteId) &&
-        hasKnownSources(edge.sourceIds, sourceIds);
-      if (!valid)
-        error(
-          diagnostics,
-          "map.travelEdges",
-          "invalid-reference",
-          "travel edge の参照が不正です。",
-        );
-      return valid;
-    },
-  );
-
+  const travelEdges =
+    "travelEdges" in input
+      ? parseTravelEdges(input.travelEdges, diagnostics).filter((edge) => {
+          const valid =
+            mapIds.has(edge.fromMapId) &&
+            retainedAetheryteIds.has(edge.toAetheryteId) &&
+            hasKnownSources(edge.sourceIds, sourceIds);
+          if (!valid)
+            error(
+              diagnostics,
+              "map.travelEdges",
+              "invalid-reference",
+              "travel edge の参照が不正です。",
+            );
+          return valid;
+        })
+      : [];
   return {
     usable: true,
     data: {
@@ -579,6 +578,7 @@ export function validateMapMaster(
       dataRevision: input.dataRevision,
       expansions,
       maps,
+      // 入力では省略可能。旧データとの互換時だけ検証し、現行データでは空配列となる。
       travelEdges,
       sources,
       licenses,

@@ -74,6 +74,16 @@ describe("master-data validator", () => {
     ).toBe(false);
   });
 
+  it("travelEdgesを省略したmap masterを空配列として利用できる", () => {
+    const withoutTravelEdges = Object.fromEntries(
+      Object.entries(validMapInput).filter(([key]) => key !== "travelEdges"),
+    );
+    const result = validateMapMaster(withoutTravelEdges);
+
+    expect(result.usable).toBe(true);
+    expect(result.data?.travelEdges).toEqual([]);
+  });
+
   it("重複 ID は先勝ちにせず衝突した全 record を除外する", () => {
     const duplicate = {
       ...validMapInput,
