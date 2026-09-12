@@ -1,7 +1,23 @@
 import { useEffect, useRef, useCallback } from 'react';
+import mapMasterJson from '@treasure-compass/master-data/data/map-master.v1.json';
+import { validateMapMaster, type MapRecord } from '@treasure-compass/master-data';
 import { useAppStore } from '@/store/useAppStore';
-import { CANVAS_SIZE, GRADE_IMAGE_PREFIX, POINT_COLORS } from '@/constants';
+import { AetheryteOverlay } from '@/components/AetheryteOverlay/AetheryteOverlay';
+import { CANVAS_SIZE, POINT_COLORS } from '@/constants';
 import type { RouteStep, Point } from '@/types';
+
+const mapMasterValidation = validateMapMaster(mapMasterJson);
+if (!mapMasterValidation.usable || !mapMasterValidation.data) {
+  throw new Error('Map master validation failed.');
+}
+const mapMaster = mapMasterValidation.data;
+
+function resolveMapMasterRecord(grade: number, mapNo: number): MapRecord | null {
+  return (
+    mapMaster.maps.find((map) => map.id === `legacy-g${grade}-map-${mapNo}`) ??
+    null
+  );
+}
 
 function getScale(mapSize: number): number {
   return CANVAS_SIZE / mapSize;
@@ -152,6 +168,7 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
     : (route[activeStep]?.mapNo ?? mapData?.mapData[0]?.mapNo ?? 1);
 
   const currentMapItem = mapData?.mapData.find(m => m.mapNo === targetMapNo);
+  const currentMapMaster = resolveMapMasterRecord(grade, targetMapNo);
 
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -174,17 +191,24 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
 
   // マップ画像を読み込んで描画
   useEffect(() => {
-    if (!mapData) return;
-    const prefix = GRADE_IMAGE_PREFIX[grade];
-    const src = `${prefix}${targetMapNo}.png`;
+    if (!mapData || !currentMapMaster) {
+      imageRef.current = null;
+      return;
+    }
+    const src = `/${currentMapMaster.image.asset.replace(/^\/+/, '')}`;
+    let cancelled = false;
 
     const img = new Image();
     img.onload = () => {
+      if (cancelled) return;
       imageRef.current = img;
       redraw();
     };
     img.src = src;
-  }, [grade, targetMapNo, mapData, redraw]);
+    return () => {
+      cancelled = true;
+    };
+  }, [targetMapNo, mapData, redraw, currentMapMaster]);
 
   // route/activeStep変更時に再描画
   useEffect(() => {
@@ -220,12 +244,15 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
   }, [interactive, onPointClick, mapData, currentMapItem]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={CANVAS_SIZE}
-      height={CANVAS_SIZE}
-      onClick={handleCanvasClick}
-      className={`w-full aspect-square rounded-lg border border-slate-700 bg-slate-900 shadow-xl shadow-black/50 ${interactive ? 'cursor-crosshair' : ''}`}
-    />
+    <div className="relative w-full aspect-square">
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_SIZE}
+        height={CANVAS_SIZE}
+        onClick={handleCanvasClick}
+        className={`block w-full h-full rounded-lg border border-slate-700 bg-slate-900 shadow-xl shadow-black/50 ${interactive ? 'cursor-crosshair' : ''}`}
+      />
+      {currentMapMaster && <AetheryteOverlay map={currentMapMaster} />}
+    </div>
   );
 }

@@ -16,13 +16,11 @@ export const STORAGE_KEY_MEMBERS = "treasure-compass:members";
  * グレード設定テーブル。
  * 新グレードを追加するにはここに1行追加するだけです。
  *   jsonFile   : public/json/ 以下のファイルパス
- *   imagePrefix: public/img/ 以下のプレフィックス（末尾は _{mapNo}.png が続く）
  */
 export interface GradeConfig {
   grade: Grade;
   label: string;
   jsonFile: string;
-  imagePrefix: string;
 }
 
 export const GRADE_CONFIG: GradeConfig[] = [
@@ -30,33 +28,28 @@ export const GRADE_CONFIG: GradeConfig[] = [
     grade: 8,
     label: "G8",
     jsonFile: "/json/g8.json",
-    imagePrefix: "/img/map_g8_",
   },
   {
     grade: 10,
     label: "G10",
     jsonFile: "/json/g10.json",
-    imagePrefix: "/img/map_g10_",
   },
   {
     grade: 12,
     label: "G12",
     jsonFile: "/json/g12.json",
-    imagePrefix: "/img/map_g12_",
   },
   {
     grade: 14,
     label: "G14/G15",
     jsonFile: "/json/g14.json",
-    imagePrefix: "/img/map_g14_",
   },
   {
     grade: 17,
     label: "G17/G18",
     jsonFile: "/json/g17.json",
-    imagePrefix: "/img/map_g17_",
   },
-  // 新グレード例: { grade: 20, label: 'G20', jsonFile: '/json/g20.json', imagePrefix: '/img/map_g20_' },
+  // 新グレード追加時は、対応するバージョン管理済み master data も追加する。
 ];
 
 export const GRADES: Grade[] = GRADE_CONFIG.map((c) => c.grade);
@@ -74,9 +67,6 @@ export const GRADE_LABELS: Record<number, string> = Object.fromEntries(
 );
 export const GRADE_JSON_MAP: Record<number, string> = Object.fromEntries(
   GRADE_CONFIG.map((c) => [c.grade, c.jsonFile]),
-);
-export const GRADE_IMAGE_PREFIX: Record<number, string> = Object.fromEntries(
-  GRADE_CONFIG.map((c) => [c.grade, c.imagePrefix]),
 );
 
 export const DEFAULT_MEMBER_NAME = "";

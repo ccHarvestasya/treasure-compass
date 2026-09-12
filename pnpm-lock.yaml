@@ -81,6 +81,9 @@ importers:
       '@fontsource-variable/geist':
         specifier: ^5.3.0
         version: 5.3.0
+      '@treasure-compass/master-data':
+        specifier: workspace:*
+        version: link:../../packages/master-data
       '@treasure-compass/treasure-domain':
         specifier: workspace:*
         version: link:../../packages/treasure-domain
