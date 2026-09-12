@@ -1,0 +1,1381 @@
+{
+  "schemaVersion": 1,
+  "dataRevision": "2026-09-12.1",
+  "expansions": [
+    {
+      "id": "expansion-unconfirmed",
+      "name": "拡張区分未確認",
+      "order": 1,
+      "sourceIds": [
+        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570",
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d",
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a",
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58",
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ]
+    }
+  ],
+  "maps": [
+    {
+      "id": "legacy-g8-map-1",
+      "name": "クルザス西部高地",
+      "shortName": "クル西部",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 44.1,
+        "minY": 1,
+        "maxY": 44.1
+      },
+      "image": {
+        "asset": "img/map_g8_1.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g8-map-1-point-8",
+          "name": "ファルコンネスト",
+          "x": 32,
+          "y": 36.7,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        },
+        {
+          "id": "g8-map-1-point-9",
+          "name": "テイルフェザー→西部高地",
+          "x": 6,
+          "y": 9.7,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g8-map-2",
+      "name": "高地ドラヴァニア",
+      "shortName": "高地ドラ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 44.1,
+        "minY": 1,
+        "maxY": 44.1
+      },
+      "image": {
+        "asset": "img/map_g8_2.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g8-map-2-point-10",
+          "name": "テイルフェザー",
+          "x": 33.2,
+          "y": 23.1,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        },
+        {
+          "id": "g8-map-2-point-11",
+          "name": "不浄の三塔",
+          "x": 16.4,
+          "y": 23.1,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g8-map-3",
+      "name": "ドラヴァニア雲海",
+      "shortName": "ドラ雲海",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 44.1,
+        "minY": 1,
+        "maxY": 44.1
+      },
+      "image": {
+        "asset": "img/map_g8_3.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g8-map-3-point-10",
+          "name": "モグモグホーム",
+          "x": 27.7,
+          "y": 34.4,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        },
+        {
+          "id": "g8-map-3-point-11",
+          "name": "白亜の宮殿",
+          "x": 10.8,
+          "y": 28.8,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g8-map-4",
+      "name": "アバラシア雲海",
+      "shortName": "アバ雲海",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 44.1,
+        "minY": 1,
+        "maxY": 44.1
+      },
+      "image": {
+        "asset": "img/map_g8_4.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g8-map-4-point-11",
+          "name": "キャンプ･クラウドトップ",
+          "x": 10.2,
+          "y": 33.4,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        },
+        {
+          "id": "g8-map-4-point-12",
+          "name": "オク･ズンド",
+          "x": 10.3,
+          "y": 14.2,
+          "sourceIds": [
+            "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g10-map-1",
+      "name": "ギラバニア辺境地帯",
+      "shortName": "辺境",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g10_1.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g10-map-1-point-9",
+          "name": "カストルム･オリエンス",
+          "x": 8.8,
+          "y": 11.3,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-1-point-10",
+          "name": "ピーリングストーンズ",
+          "x": 29.7,
+          "y": 26.4,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-1-point-11",
+          "name": "ラールガーズリーチ",
+          "x": 30,
+          "y": 10.8,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g10-map-2",
+      "name": "ギラバニア山岳地帯",
+      "shortName": "山岳",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g10_2.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g10-map-2-point-9",
+          "name": "アラガーナ",
+          "x": 23.8,
+          "y": 6.5,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-2-point-10",
+          "name": "アラギリ",
+          "x": 16,
+          "y": 36.4,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-2-point-11",
+          "name": "ラールガーズリーチ",
+          "x": 8.5,
+          "y": 5.6,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g10-map-3",
+      "name": "ギラバニア湖畔地帯",
+      "shortName": "湖畔",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g10_3.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g10-map-3-point-9",
+          "name": "ポルタ･プレトリア",
+          "x": 8.3,
+          "y": 21.1,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-3-point-10",
+          "name": "アラミガン･クォーター",
+          "x": 33.6,
+          "y": 34.6,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g10-map-4",
+      "name": "紅玉海",
+      "shortName": "紅玉海",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g10_4.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g10-map-4-point-9",
+          "name": "碧のタマミズ",
+          "x": 28.7,
+          "y": 16.1,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-4-point-10",
+          "name": "オノコロ島",
+          "x": 23.2,
+          "y": 9.7,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-4-point-11",
+          "name": "クガネ",
+          "x": 38.3,
+          "y": 38.4,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-4-point-12",
+          "name": "アジム(再開の市)",
+          "x": 6.8,
+          "y": 4.3,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-4-point-13",
+          "name": "ヤンサ(ナマイ村)",
+          "x": 5.3,
+          "y": 15.9,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g10-map-5",
+      "name": "ヤンサ",
+      "shortName": "ヤンサ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g10_5.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g10-map-5-point-10",
+          "name": "ナマイ村",
+          "x": 30,
+          "y": 19.6,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-5-point-11",
+          "name": "烈士庵",
+          "x": 26.3,
+          "y": 13.4,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-5-point-12",
+          "name": "町人地",
+          "x": 11.7,
+          "y": 32.2,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g10-map-6",
+      "name": "アジムステップ",
+      "shortName": "アジム",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g10_6.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g10-map-6-point-9",
+          "name": "再開の市",
+          "x": 32.6,
+          "y": 28.3,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-6-point-10",
+          "name": "明けの王座",
+          "x": 23,
+          "y": 22.1,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        },
+        {
+          "id": "g10-map-6-point-11",
+          "name": "ドーロ･イロー",
+          "x": 6.3,
+          "y": 23.8,
+          "sourceIds": [
+            "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g12-map-1",
+      "name": "レイクランド",
+      "shortName": "レイク",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g12_1.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g12-map-1-point-9",
+          "name": "ジョッブ砦",
+          "x": 36.5,
+          "y": 20.9,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-1-point-10",
+          "name": "オスタル厳命城",
+          "x": 6.8,
+          "y": 16.8,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-1-point-11",
+          "name": "クリスタリウム",
+          "x": 37.9,
+          "y": 29.6,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g12-map-2",
+      "name": "コルシア島",
+      "shortName": "コルシア",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g12_2.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g12-map-2-point-9",
+          "name": "スティルタイド",
+          "x": 34.7,
+          "y": 27.2,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-2-point-10",
+          "name": "ライト村",
+          "x": 17,
+          "y": 29.2,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-2-point-11",
+          "name": "トメラの村",
+          "x": 12.9,
+          "y": 8.9,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g12-map-3",
+      "name": "アム・アレーン",
+      "shortName": "アムアレーン",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g12_3.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g12-map-3-point-9",
+          "name": "モルド・スーク",
+          "x": 26.4,
+          "y": 17.1,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-3-point-10",
+          "name": "旅立ちの宿",
+          "x": 29.5,
+          "y": 27.6,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-3-point-11",
+          "name": "トゥワイン",
+          "x": 11.1,
+          "y": 17.2,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g12-map-4",
+      "name": "イル・メグ",
+      "shortName": "イルメグ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g12_4.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g12-map-4-point-9",
+          "name": "リダ・ラーン",
+          "x": 14.5,
+          "y": 31.7,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-4-point-10",
+          "name": "プラ・エンニ茸窟",
+          "x": 20,
+          "y": 4.3,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-4-point-11",
+          "name": "ヴォレクドルフ",
+          "x": 29.1,
+          "y": 7.7,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g12-map-5",
+      "name": "ラケティカ大森林",
+      "shortName": "ラケティカ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g12_5.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g12-map-5-point-9",
+          "name": "スリザーバウ",
+          "x": 19.4,
+          "y": 27.4,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-5-point-10",
+          "name": "ファノヴの里",
+          "x": 29,
+          "y": 17.5,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g12-map-6",
+      "name": "テンペスト",
+      "shortName": "テンペスト",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g12_6.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g12-map-6-point-9",
+          "name": "オンドの潮溜まり",
+          "x": 32.6,
+          "y": 17.4,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        },
+        {
+          "id": "g12-map-6-point-10",
+          "name": "マカレンサス広場",
+          "x": 18.5,
+          "y": 25.8,
+          "sourceIds": [
+            "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g14-map-1",
+      "name": "ラヴィリンソス",
+      "shortName": "ラヴィリンソス",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g14_1.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g14-map-1-point-9",
+          "name": "アルケイオン保管院",
+          "x": 30.3,
+          "y": 11.9,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-1-point-10",
+          "name": "リトルシャーレアン",
+          "x": 21.6,
+          "y": 20.5,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-1-point-11",
+          "name": "アポリア本部",
+          "x": 6.8,
+          "y": 27.5,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g14-map-2",
+      "name": "サベネア島",
+      "shortName": "サベネア島",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g14_2.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g14-map-2-point-9",
+          "name": "イェドリマン",
+          "x": 25.3,
+          "y": 34,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-2-point-10",
+          "name": "デミールの遺烈郷",
+          "x": 10.9,
+          "y": 22.2,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-2-point-11",
+          "name": "パーラカの里",
+          "x": 29.5,
+          "y": 16.5,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-2-point-12",
+          "name": "トラーナ関門",
+          "x": 31.8,
+          "y": 8.9,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g14-map-3",
+      "name": "ガレマルド",
+      "shortName": "ガレマルド",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g14_3.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g14-map-3-point-9",
+          "name": "キャンプ・ブロークングラス",
+          "x": 13.3,
+          "y": 31,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-3-point-10",
+          "name": "テルティウム駅",
+          "x": 31.8,
+          "y": 17.9,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g14-map-4",
+      "name": "嘆きの海",
+      "shortName": "嘆きの海",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g14_4.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g14-map-4-point-9",
+          "name": "涙の入江",
+          "x": 10.1,
+          "y": 34.4,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-4-point-10",
+          "name": "ベストウェイ・バロー",
+          "x": 21.4,
+          "y": 11.2,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g14-map-5",
+      "name": "ウルティマ・トゥーレ",
+      "shortName": "ウルティマ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g14_5.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g14-map-5-point-9",
+          "name": "リア・ターラ",
+          "x": 10.5,
+          "y": 26.8,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-5-point-10",
+          "name": "イーアの里",
+          "x": 22.6,
+          "y": 8.3,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-5-point-11",
+          "name": "オミクロンベース",
+          "x": 31.2,
+          "y": 28.1,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g14-map-6",
+      "name": "エルピス",
+      "shortName": "エルピス",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g14_6.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g14-map-6-point-9",
+          "name": "十二節の園",
+          "x": 8.8,
+          "y": 32.3,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-6-point-10",
+          "name": "アナグノリシス天測園",
+          "x": 24.6,
+          "y": 24,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        },
+        {
+          "id": "g14-map-6-point-11",
+          "name": "ポイエテーン・オイコス",
+          "x": 11,
+          "y": 17.7,
+          "sourceIds": [
+            "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g17-map-1",
+      "name": "オルコ・パチャ",
+      "shortName": "オルコ・パチャ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g17_1.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g17-map-1-point-1",
+          "name": "ウォーラーの残響",
+          "x": 30.7,
+          "y": 34.1,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-1-point-2",
+          "name": "ワチュン・ペロ",
+          "x": 28.1,
+          "y": 13.1,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g17-map-2",
+      "name": "コザマル・カ",
+      "shortName": "コザマル・カ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g17_2.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g17-map-2-point-1",
+          "name": "オック・ハヌ",
+          "x": 18,
+          "y": 11.8,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-2-point-2",
+          "name": "アースンシャイア",
+          "x": 11.9,
+          "y": 27.7,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-2-point-3",
+          "name": "朋友の灯火",
+          "x": 32.3,
+          "y": 25.5,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-2-point-4",
+          "name": "ポガ停船所",
+          "x": 37.2,
+          "y": 16.8,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g17-map-3",
+      "name": "ヤクテル樹海",
+      "shortName": "ヤクテル樹海",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g17_3.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g17-map-3-point-1",
+          "name": "イクブラーシャ",
+          "x": 13.5,
+          "y": 12.8,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-3-point-2",
+          "name": "マムーク",
+          "x": 35.9,
+          "y": 32,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g17-map-4",
+      "name": "シャーローニ荒野",
+      "shortName": "シャーローニ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g17_4.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g17-map-4-point-1",
+          "name": "フーサタイ宿場町",
+          "x": 29.2,
+          "y": 30.8,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-4-point-2",
+          "name": "シェシェネ青燐泉",
+          "x": 15.6,
+          "y": 19.1,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-4-point-3",
+          "name": "メワヘイゾーン",
+          "x": 27.7,
+          "y": 10.1,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g17-map-5",
+      "name": "ヘリテージファウンド",
+      "shortName": "ヘリテージ",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g17_5.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g17-map-5-point-1",
+          "name": "ヤースラニ駅",
+          "x": 31.7,
+          "y": 25.6,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-5-point-2",
+          "name": "アウトスカーツ",
+          "x": 17,
+          "y": 9.7,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-5-point-3",
+          "name": "エレクトロープ採石場",
+          "x": 17,
+          "y": 23.8,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-g17-map-6",
+      "name": "リビング・メモリー",
+      "shortName": "リビング",
+      "aliases": [],
+      "expansionId": "expansion-unconfirmed",
+      "sourceIds": [
+        "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+      ],
+      "bounds": {
+        "minX": 1,
+        "maxX": 41.9,
+        "minY": 1,
+        "maxY": 41.9
+      },
+      "image": {
+        "asset": "img/map_g17_6.png",
+        "licenseId": "license-ffxiv-third-party-unreviewed"
+      },
+      "aetherytes": [
+        {
+          "id": "g17-map-6-point-1",
+          "name": "レイノード・メモリス",
+          "x": 21.4,
+          "y": 37.4,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-6-point-2",
+          "name": "レイノード・ファイア",
+          "x": 34.6,
+          "y": 15.7,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        },
+        {
+          "id": "g17-map-6-point-3",
+          "name": "レイノード・ウィンド",
+          "x": 16.3,
+          "y": 13.5,
+          "sourceIds": [
+            "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3"
+          ]
+        }
+      ]
+    }
+  ],
+  "travelEdges": [],
+  "sources": [
+    {
+      "id": "legacy-json-g8-bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570",
+      "label": "legacy Treasure JSON g8",
+      "reference": "apps/treasure-compass/public/json/g8.json (SHA-256: bd25233144f2b45393197eac7597cac60b8e7a9c4d7ac87b2da344e6ffce2570)",
+      "verifiedAt": "2026-09-12"
+    },
+    {
+      "id": "legacy-json-g10-2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d",
+      "label": "legacy Treasure JSON g10",
+      "reference": "apps/treasure-compass/public/json/g10.json (SHA-256: 2b2dd6d2ec6a98681eb19d98720d461ac82ddcb62ef5023e96482878ee65607d)",
+      "verifiedAt": "2026-09-12"
+    },
+    {
+      "id": "legacy-json-g12-7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a",
+      "label": "legacy Treasure JSON g12",
+      "reference": "apps/treasure-compass/public/json/g12.json (SHA-256: 7143176b592f1cad2a94b383e5ba893d67bf3dde4bf30e4e6d69735f04235e6a)",
+      "verifiedAt": "2026-09-12"
+    },
+    {
+      "id": "legacy-json-g14-dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58",
+      "label": "legacy Treasure JSON g14",
+      "reference": "apps/treasure-compass/public/json/g14.json (SHA-256: dfa0ea2429d11a27ccc84aa7bc9f69278f6185d3a09d4a1314f21241db4feb58)",
+      "verifiedAt": "2026-09-12"
+    },
+    {
+      "id": "legacy-json-g17-6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3",
+      "label": "legacy Treasure JSON g17",
+      "reference": "apps/treasure-compass/public/json/g17.json (SHA-256: 6df75f053ab5d9e1a9e6804880856e4b65b6cc10fda9dd2b75d96395739cdbb3)",
+      "verifiedAt": "2026-09-12"
+    },
+    {
+      "id": "repo-notice",
+      "label": "リポジトリ NOTICE",
+      "reference": "NOTICE（FFXIV関連の第三者資産とSquare Enixの適用条件に関する記載）",
+      "verifiedAt": "2026-09-12"
+    },
+    {
+      "id": "repo-image-copyright",
+      "label": "既存画像の Copyright.txt",
+      "reference": "apps/treasure-compass/public/img/Copyright.txt（既存画像ディレクトリの記載）",
+      "verifiedAt": "2026-09-12"
+    }
+  ],
+  "licenses": [
+    {
+      "id": "license-ffxiv-third-party-unreviewed",
+      "name": "FFXIV第三者資産（利用条件未レビュー）",
+      "notice": "NOTICEおよびapps/treasure-compass/public/img/Copyright.txtに記載された第三者資産の表示・利用条件を参照する。本候補データの画像利用許諾、出典の正式確認、runtime採用は未レビュー・未承認である。"
+    }
+  ]
+}
