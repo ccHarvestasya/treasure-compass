@@ -33,6 +33,7 @@ interface AppState {
   setIsLoading: (value: boolean) => void;
   members: (UserItem | null)[];
   setMember: (memberNo: number, item: UserItem) => void;
+  replaceMembers: (items: UserItem[]) => void;
   removeMember: (memberNo: number) => void;
   draftMemberNames: string[];
   setDraftMemberName: (memberNo: number, name: string) => void;
@@ -225,6 +226,43 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!persistNext(state, { members })) return;
     set({ members, draftMemberNames });
     get().recalcRoute();
+  },
+  replaceMembers: (items) => {
+    const state = get();
+    const members = emptyMembers();
+    const normalizedItems = items.slice(0, FULL_PARTY).map((item, index) => ({
+      ...item,
+      memberNo: index,
+    }));
+    normalizedItems.forEach((item, index) => {
+      members[index] = item;
+    });
+
+    const route = state.mapData
+      ? toRouteSteps(
+          calcShortestRoute(
+            normalizedItems,
+            state.mapData.mapData,
+            {},
+          ).orderedSteps,
+        )
+      : [];
+    const currentMapPoints: Record<string, Point> = {};
+    if (!persistNext(state, {
+      members,
+      route,
+      isManualSort: false,
+      activeStep: 0,
+      currentMapPoints,
+    })) return;
+    set({
+      members,
+      draftMemberNames: members.map(() => ""),
+      route,
+      isManualSort: false,
+      activeStep: 0,
+      currentMapPoints,
+    });
   },
   removeMember: (memberNo) => {
     const state = get();

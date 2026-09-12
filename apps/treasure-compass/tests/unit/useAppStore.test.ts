@@ -136,6 +136,29 @@ const mapData: MapData = {
 };
 
 describe("useAppStore", () => {
+  it("replaces bulk members and recalculates a fresh route atomically", () => {
+    const s = useAppStore.getState();
+    s.setMapData(mapData);
+    s.setMember(
+      0,
+      makeMember(0, "Old", 1, "Living Memory", "Memory", 1, 100, 100),
+    );
+    s.completeStep(0);
+
+    s.replaceMembers([
+      makeMember(7, "Alice", 1, "Living Memory", "Memory", 1, 100, 100),
+    ]);
+
+    const next = useAppStore.getState();
+    expect(next.members[0]?.memberName).toBe("Alice");
+    expect(next.members.slice(1).every((member) => member === null)).toBe(true);
+    expect(next.route.map((step) => step.memberName)).toEqual(["Alice"]);
+    expect(next.route[0]?.isCompleted).toBe(false);
+    expect(next.currentMapPoints).toEqual({});
+    expect(next.isManualSort).toBe(false);
+    expect(next.activeStep).toBe(0);
+  });
+
   it("setMember updates route when mapData is loaded", () => {
     const s = useAppStore.getState();
     s.setMapData(mapData);

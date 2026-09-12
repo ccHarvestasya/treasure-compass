@@ -108,6 +108,21 @@ describe("findMapByName", () => {
   it("returns null when no map matches", () => {
     expect(findMapByName("Not Found", maps)).toBeNull();
   });
+
+  it("returns null when a partial name is ambiguous", () => {
+    const overlappingMaps = [
+      ...maps,
+      {
+        region: "R3",
+        mapNo: 3,
+        mapName: "Ruby Sea (North)",
+        mapNameShort: "Ruby North",
+        point: [],
+      },
+    ];
+
+    expect(findMapByName("Sea", overlappingMaps)).toBeNull();
+  });
 });
 
 describe("findPointByCoord", () => {

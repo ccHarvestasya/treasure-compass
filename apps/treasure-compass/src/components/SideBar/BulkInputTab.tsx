@@ -11,7 +11,7 @@ export function BulkInputTab() {
   const setBulkText = useAppStore(s => s.setBulkText);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mapData = useAppStore(s => s.mapData);
-  const setMember = useAppStore(s => s.setMember);
+  const replaceMembers = useAppStore(s => s.replaceMembers);
   const clearMembers = useAppStore(s => s.clearMembers);
 
   const handleRegister = (inputText?: string) => {
@@ -27,7 +27,7 @@ export function BulkInputTab() {
       return;
     }
 
-    clearMembers();
+    const nextMembers: Parameters<typeof replaceMembers>[0] = [];
     let registered = 0;
 
     for (const p of parsed) {
@@ -45,7 +45,7 @@ export function BulkInputTab() {
         continue;
       }
 
-      setMember(registered, {
+      nextMembers.push({
         memberNo: registered,
         memberName: p.memberName || DEFAULT_MEMBER_NAME,
         mapNo: mapItem.mapNo,
@@ -55,6 +55,12 @@ export function BulkInputTab() {
       });
       registered++;
     }
+
+    if (registered === 0) {
+      toast.warning('登録できるデータがありませんでした');
+      return;
+    }
+    replaceMembers(nextMembers);
 
     toast.success(`${registered}名を登録しました`);
   };

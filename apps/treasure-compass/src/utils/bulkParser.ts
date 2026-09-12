@@ -100,19 +100,19 @@ export function findMapByName(
   allMapData: MapDataItem[],
 ): MapDataItem | null {
   // 完全一致優先
-  const exact = allMapData.find(
+  const exact = allMapData.filter(
     (m) => m.mapName === mapName || m.mapNameShort === mapName,
   );
-  if (exact) return exact;
+  if (exact.length === 1) return exact[0] ?? null;
+  if (exact.length > 1) return null;
 
   // 部分一致
-  return (
-    allMapData.find(
+  const partial = allMapData.filter(
       (m) =>
         m.mapName.includes(mapName) ||
         mapName.includes(m.mapName) ||
         m.mapNameShort.includes(mapName) ||
         mapName.includes(m.mapNameShort),
-    ) ?? null
   );
+  return partial.length === 1 ? partial[0] ?? null : null;
 }
