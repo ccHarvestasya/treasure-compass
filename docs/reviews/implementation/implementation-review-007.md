@@ -55,12 +55,6 @@
 - 現行実装はlegacy `mapNo` / `pointNo` projectionを使用しており、Design §9のstable visit referenceへ移行していない。
 - 解消条件: stable point master、出典、移行対応表の承認。
 
-### Upstream Feedback: travel data準備
-
-- 検証済みのmap間travel edge、テレポ料金、比較可能なロード時間が存在しない。
-- 現行経路はマップ内X/Y距離とlegacy T recordを使用しており、Specification §6の遷移数第一評価、Pareto補助評価、補助情報不足の結果を完全には実現していない。
-- 解消条件: 出典付きtravel dataの承認。
-
 ## 6. 未検証範囲
 
 - 正式master参照不能地点・有効エーテライト欠落時の計算不能理由を、経路結果として識別表示する専用UI。
@@ -72,4 +66,4 @@
 
 `REVISE IMPLEMENTATION`
 
-現行の登録・保存・進捗・基本経路は検証済みだが、正式masterおよびtravel dataの必須証拠がないため、Treasure全体を仕様適合済みとは判定できない。データ準備gateの承認後、stable ID移行、正式route planner、計算不能診断を再レビュー対象とする。
+現行の登録・保存・進捗・基本経路は検証済みだが、正式Treasure masterのstable point IDとlegacy移行対応表がないため、Treasure全体を仕様適合済みとは判定できない。データ準備gateの承認後、stable ID移行、正式route planner、計算不能診断を再レビュー対象とする。料金・ロード時間はTreasure v1の評価対象外であり、完了条件に含めない。

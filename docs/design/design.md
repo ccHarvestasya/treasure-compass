@@ -68,7 +68,7 @@
 | `posX` / `posY` | 描画、入力照合、表示、経路 | 10 倍値をゲーム座標へ変換して移行 |
 | `pointName` | 地点・エーテライトの表示 | 検証済み T の日本語表示名として移行候補 |
 | `posZ` | 旧距離関数の高さ | 新マスターへ移行しない。v1 は X/Y のみ |
-| `time` | 現行 JSON に値はあるが、現行経路処理からの参照なし | ロード時間へ転用しない。別の検証済み情報源から登録する |
+| `time` | 現行 JSON に値はあるが、Treasureの順序評価へ使用しない | 新 masterへ移行せず、ロード時間へ転用しない |
 | `region` / `block` / `posT` | 実行時参照を確認できない | 移行しない |
 | `division=R` | `g10.json` に存在するが現行 UI・経路から到達しない | 検証済みでも v1 の共通地図情報へ移行しない |
 | `division=Z` | 型には存在するが現行 JSON で実レコードを確認できない | 移行しない |
@@ -204,7 +204,7 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
 }
 ```
 
-上記および 4.3、4.4 の値は構造例であり、座標、料金、ロード時間、名称、revision を実データとして採用する根拠にはしない。各値は 6 章の移行 gate または新規データの確認を経て確定する。`sources` と `licenses` は結合 master context の共通 catalog であり、Treasure/Mob master の `sourceIds` もこの catalog を参照する。
+上記および 4.3、4.4 の値は構造例であり、座標、名称、revision を実データとして採用する根拠にはしない。各値は 6 章の移行 gate または新規データの確認を経て確定する。Treasureの順序評価では料金・ロード時間を扱わない。`sources` と `licenses` は結合 master context の共通 catalog であり、Treasure/Mob master の `sourceIds` もこの catalog を参照する。
 
 この構造例の aetheryte `name` は master 入力側の名称表現を示すためのものであり、実行時には Master adapter が stable ID に対応する言語 keyed な表示名を含む aetheryte projection へ変換する。raw master の field 形状と projection の内部表現を混同しない。
 
@@ -217,7 +217,7 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
 - `travelEdges` は出発 map から到着 aetheryte への有向 edge である。`fee` は 0 以上の整数、`loadTime` は 0 以上の有限数で、比較単位を全レコードで統一する。
 - 初回 map への到達は map 間遷移回数に含めない。異なる map group 間の移動だけが edge を消費する。必要な edge の欠落をゼロ値で補わない。
 
-`loadTime` は経路比較用の同一基準による値であり、現行 JSON の `time` を転用しない。料金とロード時間は独立した軸として保持し、重み付け値を master に持たせない。
+Treasureのv1経路比較では料金およびロード時間を使用しない。現行 JSON の`time`も経路評価へ転用しない。将来別の経路負荷を扱う場合は、外部仕様と検証済みデータを先に更新する。
 
 Master adapter は raw map record から、アプリが参照する検証済み map projection を一度だけ生成する。aetheryte projection は stable ID、所属 map ID、canonical X/Y、言語別表示名の対応を持ち、v1 では日本語表示名を必須とする。raw record の `division` は adapter 内の検証境界に留め、検証済み `division=T` だけを projection へ通し、`division=R` は検証済みでも projection、表示、参照および経路入力へ渡さない。stable ID が衝突した場合は衝突する全 record を除外し、別の有効 record の projection 生成を妨げない。
 
@@ -320,7 +320,7 @@ Master adapter が生成した aetheryte projection は、grade set や product 
 - map master が利用不能なら両アプリの地点登録・経路を成立させられないため、既存 session を変更せず master 読込失敗を表示する。
 - Treasure master だけが利用不能なら Treasure の登録・経路を停止するが、Mob app は map/Mob master が有効なら利用できる。
 - Mob master だけが利用不能なら Mob の登録・経路を停止するが、Treasure app は map/Treasure master が有効なら利用できる。
-- travel edge の不足・不正があっても、マップ間遷移回数の第一評価だけで全体経路が一意になる場合は、補助情報不足 warning を持つ route success とする。第一評価後に複数候補が残り、不足値なしでは Pareto 比較を完了できない場合だけ route failure とする。一つの map 内だけの経路まで無効にしない。
+- Treasureの経路ではtravel edgeの料金・ロード時間を評価しない。マップ間遷移回数と同一マップX/Y距離で決定できる候補だけを扱い、料金・ロード時間の不足を計算不能理由にしない。
 - 一部 record の除外後も利用可能な候補一覧を表示し、除外理由を利用者が識別できるようにする。
 - aetheryte record の部分除外後も、同じ map の他の有効な aetheryte projection は overlay と route の入力として利用する。全件が除外され対象 map に有効な aetheryte がない場合だけ、既存の master 不備・経路計算不能境界へ渡す。
 
@@ -501,11 +501,11 @@ legacy lookup により grade、mapNo、pointNo を stable ID へ一意に解決
 
 ### 9.1 入力と出力
 
-Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、共通 map projection に含まれる有効なエーテライトおよび travel data、order mode を入力する。返り値は次のいずれかである。
+Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、共通 map projection に含まれる有効なエーテライト、order mode を入力する。Treasureのv1では料金・ロード時間を入力に含めない。返り値は次のいずれかである。
 
-- success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、利用可能な料金・ロード時間、tie 情報、0件以上の warning。
+- success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、tie 情報、0件以上の warning。
 - empty: 有効な未完了 visit がない正常結果。
-- failure: 対象と、missing aetheryte、unresolved visit、missing travel data 等の理由。
+- failure: 対象と、missing aetheryte、unresolved visit 等の理由。
 
 Application は result の session revision と master identity が現在値に一致する場合だけ採用する。非同期計算中の入力変更や master reload により stale になった result は破棄する。success の warning は route と同じ result の一部として presentation へ渡し、補助情報が利用できない対象を識別可能に表示する。warning を failure へ昇格させたり、表示せず捨てたりしない。
 
@@ -513,13 +513,13 @@ Application は result の session revision と master identity が現在値に�
 
 1. 完了、探索済み、unresolved を除外し、一般モブの候補選択を含む有効 visit 集合を作る。
 2. visit を map group に分け、異なる map group が隣接する回数が最小となる group order 候補を求める。
-3. 第一評価で全体経路が一つに決まった場合は、補助値を採用条件に使わない。不足・不正な料金またはロード時間があれば、該当 edge と値種別を warning にして success とする。
-4. 第一評価後に複数候補が残る場合は、必要な全 travel edge の料金合計とロード時間合計による Pareto 優越を判定する。比較に必要な値が不足・不正なら補助情報不足 failure とし、部分的な比較結果を採用しない。
+3. 料金およびロード時間は採用条件、warning、failureの判定に使用しない。
+4. 第一評価後に複数候補が残る場合は、同一マップX/Y距離と安定した同率規則で一つの表示順を決める。
 5. 優越されない候補が複数なら tie を保持し、Specification の stable tuple 列で表示採用順を一つ決める。
 6. map ごとに、保存済み current location があればそれを、なければ共通 map projection の各有効 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。raw record や `division=R` は route planner に渡さない。
 7. 一般モブは全 candidate のうち map 内巡回全体を最短にする一地点を同時に選ぶ。B は全未探索 candidate を visit とする。
 
-料金とロード時間を加算して一つの score にしない。Z、帰還距離、入力順を評価軸にしない。同率の最終順は Specification の Unicode code point、数値、stable ID の規則を用いる。
+料金・ロード時間を評価軸にしない。Z、帰還距離、入力順も評価軸にしない。同率の最終順は Specification の Unicode code point、数値、stable ID の規則を用いる。
 
 探索アルゴリズムは候補数に応じて完全探索と、同じ最適性を保証できる動的計画法等を選べる。近似解を成功結果として返さない。上限超過や計算資源不足は既存順序を維持する calculation failure とする。
 
@@ -635,13 +635,13 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 - 初期日本語表示、安定 ID から言語別表示名を解決する境界、未提供言語を翻訳・推測しないこと、Mob 多言語名称照合を提供しないこと。
 - Treasure の手動・一括入力、8 枠、置換、grade 変更、旧保存移行、legacy resurrection 防止。
 - Mob の正式名・alias 検索、filter、mode eligibility、全候補登録、一般一地点、B 全候補、パーティ即時登録・置換。
-- マップ間遷移最小、料金／ロード時間 Pareto、第一評価で一意な場合の補助値不足 warning、補助値が必要な場合の failure、複数 aetheryte、二次元最短、同率 stable order。
+- マップ間遷移最小、料金・ロード時間を使用しないこと、複数 aetheryte、二次元最短、同率 stable order。
 - 手動順序の末尾追加・位置維持・候補単位並べ替え、自動計算成功時だけの切替。
 - 完了・取消、B Next・一段取消・unfound・再探索、対象削除、map 別 current location。
 - 各 root の独立保存・復元・全消去、破損保存、write failure、stale calculation。
 - 320 CSS px 以上の縦横 viewport、touch marker、非 drag の並べ替え、dialog、orientation change。
 
-静的データの正確性、Mob の実データ、料金、ロード時間、出典、画像利用条件は Implementation 開始前の data preparation gate で確認する。値を確認できない状態では仮値を production master に入れず、該当機能を正常扱いしない。
+静的データの正確性、Mob の実データ、出典、画像利用条件は Implementation 開始前の data preparation gate で確認する。Treasureの料金・ロード時間はv1の評価対象外であり、masterへ追加しない。
 
 ## 15. 追跡性
 
@@ -668,7 +668,6 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 一方、次は未決定値を仮定して実装してはならない data preparation 項目である。
 
 - Mob の正式 master 全件、別名、rank、候補地点と出典。
-- map 間 teleport 料金、比較可能な load time と出典。
 - map/地点画像の利用条件、既存アイコン視覚資産の出典と利用条件、および map 単位で再利用できることの確認。
 - configured な G8、G10、G12、G14、G17 の地図画像から埋め込み町名・エーテライト表示を除去したことの確認。新しいラベルデザインは地図画像から再利用しない。
 - 現行設定対象データの変換 report と stable ID 対応表の承認。
