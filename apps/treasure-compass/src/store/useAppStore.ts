@@ -43,6 +43,7 @@ interface AppState {
   clearMembers: () => void;
   clearAllData: () => void;
   route: RouteStep[];
+  routeError: string | null;
   isManualSort: boolean;
   setRoute: (steps: RouteStep[]) => void;
   setManualSort: (value: boolean) => void;
@@ -197,7 +198,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   mapData: null,
   setMapData: (data) => {
-    set({ mapData: data, ...(data ? { mapDataError: null } : {}) });
+    set({ mapData: data, routeError: null, ...(data ? { mapDataError: null } : {}) });
     get().recalcRoute();
   },
   mapDataError: null,
@@ -344,6 +345,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   route: initialRoute,
+  routeError: null,
   isManualSort: initialManualSort,
   setRoute: (steps) => {
     const state = get();
@@ -427,7 +429,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         activeStep: 0,
       };
       if (!persistNext(state, next)) return;
-      set(next);
+      set({ ...next, routeError: null });
       return;
     }
     const result = calcShortestRoute(
@@ -442,6 +444,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       state.mapData.mapData,
       state.currentMapPoints,
     );
+    if (result.failure) {
+      set({
+        routeError: `有効なエーテライトがないマップ: ${result.failure.mapNos.join(", ")}`,
+      });
+      return;
+    }
+    set({ routeError: null });
     const recalculatedRoute = toRouteSteps(result.orderedSteps);
     const currentMembers = new Map(
       state.members

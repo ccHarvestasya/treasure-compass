@@ -109,6 +109,7 @@ export function RouteProgressTab() {
   const completeStep = useAppStore(s => s.completeStep);
   const uncompleteStep = useAppStore(s => s.uncompleteStep);
   const setRoute = useAppStore(s => s.setRoute);
+  const routeError = useAppStore(s => s.routeError);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -137,15 +138,22 @@ export function RouteProgressTab() {
 
   if (route.length === 0) {
     return (
-      <div className="p-4 text-center text-slate-500 text-sm mt-8">
-        <ChevronRight className="inline size-4 mr-1" />
-        メンバーを登録すると巡回経路が表示されます
+      <div className="p-4 text-center text-sm mt-8">
+        {routeError ? (
+          <p className="text-red-300" role="alert">{routeError}</p>
+        ) : (
+          <p className="text-slate-500">
+            <ChevronRight className="inline size-4 mr-1" />
+            メンバーを登録すると巡回経路が表示されます
+          </p>
+        )}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      {routeError && <p className="text-sm text-red-300" role="alert">{routeError}</p>}
       {/* パンくずナビ */}
       <div className="flex flex-wrap gap-1.5">
         {route.map((step, i) => (

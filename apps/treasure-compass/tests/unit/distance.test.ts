@@ -44,4 +44,13 @@ describe("Treasure route distance", () => {
     );
     expect(result.orderedSteps.map((step) => step.memberNo)).toEqual([0, 1]);
   });
+
+  it("エーテライトがないマップは計算不能理由を返す", () => {
+    const result = calcShortestRoute(
+      [{ memberNo: 0, memberName: "Alice", mapNo: 2, mapName: "Map 2", mapNameShort: "M2", mapPoint: point(1, "P", 200, 100) }],
+      [{ ...map, mapNo: 2, point: [point(1, "P", 200, 100)] }],
+    );
+    expect(result.failure).toEqual({ reason: "missing-aetheryte", mapNos: [2] });
+    expect(result.orderedSteps).toEqual([]);
+  });
 });

@@ -47,6 +47,7 @@ export interface ShortestRouteResult {
     teleportPoint?: Point;
   }>;
   totalDistance: number;
+  failure?: { reason: 'missing-aetheryte'; mapNos: number[] };
 }
 
 /** 
@@ -138,7 +139,13 @@ export function calcShortestRoute(
         for (const tp of teleportPoints) {
           tryFromStart(null, tp);
         }
-        if (teleportPoints.length === 0) tryFromStart(null);
+        if (teleportPoints.length === 0) {
+          return {
+            orderedSteps: [],
+            totalDistance: Infinity,
+            failure: { reason: 'missing-aetheryte', mapNos: [mapNo] },
+          };
+        }
       }
 
       totalDist += bestMapDist;
