@@ -401,11 +401,25 @@ export const useAppStore = create<AppState>((set, get) => ({
   recalcRoute: () => {
     const state = get();
     if (!state.mapData) return;
-    const activeMembers = state.members.filter(
-      (member): member is UserItem => member !== null,
-    );
+    const activeMembers = state.members.filter((member): member is UserItem => {
+      if (!member) return false;
+      return !state.route.some(
+        (step) =>
+          step.isCompleted &&
+          step.memberNo === member.memberNo &&
+          step.mapNo === member.mapNo &&
+          step.point.pointNo === member.mapPoint.pointNo,
+      );
+    });
     if (activeMembers.length === 0) {
-      const next = { route: [] as RouteStep[], isManualSort: false, activeStep: 0 };
+      const completedRoute = state.route
+        .filter((step) => step.isCompleted)
+        .map((step, index) => ({ ...step, orderNo: index + 1 }));
+      const next = {
+        route: completedRoute,
+        isManualSort: false,
+        activeStep: 0,
+      };
       if (!persistNext(state, next)) return;
       set(next);
       return;
@@ -422,16 +436,45 @@ export const useAppStore = create<AppState>((set, get) => ({
       state.mapData.mapData,
       state.currentMapPoints,
     );
-    const nextRoute = toRouteSteps(result.orderedSteps);
+    const recalculatedRoute = toRouteSteps(result.orderedSteps);
+    const currentMembers = new Map(
+      state.members
+        .filter((member): member is UserItem => member !== null)
+        .map((member) => [member.memberNo, member]),
+    );
+    const completedSteps = state.route.filter(
+      (step) =>
+        step.isCompleted &&
+        currentMembers.get(step.memberNo)?.mapNo === step.mapNo &&
+        currentMembers.get(step.memberNo)?.mapPoint.pointNo === step.point.pointNo,
+    );
+    const nextRoute: RouteStep[] = [];
+    let recalculatedIndex = 0;
+    for (const step of state.route) {
+      const completed = completedSteps.find(
+        (candidate) => candidate.orderNo === step.orderNo,
+      );
+      if (completed) {
+        nextRoute.push(completed);
+      } else if (recalculatedRoute[recalculatedIndex]) {
+        nextRoute.push(recalculatedRoute[recalculatedIndex++]);
+      }
+    }
+    nextRoute.push(...recalculatedRoute.slice(recalculatedIndex));
+    const normalizedRoute = nextRoute.map((step, index) => ({
+      ...step,
+      orderNo: index + 1,
+    }));
+    const nextActiveStep = normalizedRoute.findIndex((step) => !step.isCompleted);
     if (!persistNext(state, {
-      route: nextRoute,
+      route: normalizedRoute,
       isManualSort: false,
-      activeStep: 0,
+      activeStep: nextActiveStep >= 0 ? nextActiveStep : 0,
     })) return;
     set({
-      route: nextRoute,
+      route: normalizedRoute,
       isManualSort: false,
-      activeStep: 0,
+      activeStep: nextActiveStep >= 0 ? nextActiveStep : 0,
     });
   },
 }));

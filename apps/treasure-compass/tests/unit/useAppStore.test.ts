@@ -240,7 +240,7 @@ describe("useAppStore", () => {
     expect(next.route.map((step) => step.memberName)).toEqual(["Bob", "Carol"]);
   });
 
-  it("completion flags are reset on recalculation after data change", () => {
+  it("keeps completed progress while recalculating remaining members", () => {
     const s = useAppStore.getState();
     s.setMapData(mapData);
     s.setMember(
@@ -261,7 +261,10 @@ describe("useAppStore", () => {
     );
 
     const next = useAppStore.getState();
-    expect(next.route.every((step) => step.isCompleted === false)).toBe(true);
+    expect(next.route[0]?.memberName).toBe("Alice");
+    expect(next.route[0]?.isCompleted).toBe(true);
+    expect(next.route[1]?.memberName).toBe("Bob");
+    expect(next.route[1]?.isCompleted).toBe(false);
   });
 
   it("clearMembers resets members, route, manual sort and active step", () => {
