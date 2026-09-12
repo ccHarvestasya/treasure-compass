@@ -53,6 +53,13 @@ describe("macro utils", () => {
     expect(generateOneLineMacro(steps)).toBe("/p 1.Alice→2.Bob");
   });
 
+  it("完了済み地点を除外し、残りを詰めて出力する", () => {
+    const completed = [{ ...steps[0], isCompleted: true }, steps[1]];
+    expect(generateOneLineMacro(completed)).toBe("/p 1.Bob");
+    expect(generateMultiLineMacro(completed)).toBe("/p 1.Bob Ruby (7.5, 29.6)");
+    expect(generateOneLineMacro([{ ...steps[0], isCompleted: true }])).toBe("");
+  });
+
   it("generateMultiLineMacro returns empty string for empty array", () => {
     expect(generateMultiLineMacro([])).toBe("");
   });
