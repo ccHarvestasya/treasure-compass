@@ -48,7 +48,6 @@ function isValidMember(value: unknown): value is UserItem | null {
     !isRecord(value) ||
     !Number.isInteger(value.memberNo) ||
     typeof value.memberName !== "string" ||
-    value.memberName.trim().length === 0 ||
     !Number.isInteger(value.mapNo) ||
     typeof value.mapName !== "string" ||
     value.mapName.trim().length === 0 ||

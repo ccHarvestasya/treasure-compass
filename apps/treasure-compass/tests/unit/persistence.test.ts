@@ -39,6 +39,27 @@ describe("Treasure persistence boundary", () => {
     vi.stubGlobal("localStorage", new LocalStorageMock());
   });
 
+  it("空の表示名を許可された既定名として保存・復元する", () => {
+    const point = {
+      pointNo: 1,
+      division: "P" as const,
+      block: "",
+      posX: 100,
+      posY: 200,
+      posZ: 0,
+      posT: 0,
+      time: 0,
+      pointName: "P1",
+    };
+    const snapshot = {
+      grade: DEFAULT_GRADE,
+      members: [{ memberNo: 0, memberName: "", mapNo: 1, mapName: "Map", mapNameShort: "M", mapPoint: point }, ...Array(FULL_PARTY - 1).fill(null)],
+    };
+
+    expect(writePersistedTreasure(snapshot)).toBe(true);
+    expect(readPersistedTreasure().snapshot?.members[0]?.memberName).toBe("");
+  });
+
   it("完全な session snapshot を保存・復元する", () => {
     const point = {
       pointNo: 1,
