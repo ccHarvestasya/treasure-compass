@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { MapRecord } from "@treasure-compass/master-data";
-import aetheryteImageUrl from "../../../../../packages/master-data/assets/maps/aetheryte.png";
+import aetheryteImageUrl from "../../../../../packages/master-data/assets/icons/aetheryte.png";
 import {
   layoutAetherytes,
   type LayoutViewport,

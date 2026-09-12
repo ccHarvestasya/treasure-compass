@@ -21,7 +21,7 @@
 - 町名ラベルは既存地図画像の見た目を再現せず、新しいアプリ用のラベルデザインを採用する。
 - 画面が狭い、または自動回避しても全町名を収められない場合は、エーテライトアイコンを優先して表示し、町名ラベルは一部省略または非表示にする。
 - 同じマップが複数グレードに登場する場合、町名・エーテライト位置はグレード別 JSON に重複保持せず、共通 map master で一元管理して各グレードへ反映する。
-- 地図画像とエーテライト案内アイコンも `packages/master-data` の `assets/maps/` に集約し、地図メタデータ・画像・出典／利用条件を同じ master-data 管理単位で扱う。各アプリへは build 時に必要な検証済み画像だけを配信する。
+- 地図画像は `packages/master-data/assets/maps/`、エーテライト案内アイコンは `packages/master-data/assets/icons/` に集約し、地図メタデータ・画像・出典／利用条件を同じ master-data 管理単位で扱う。各アプリへは build 時に必要な検証済み画像だけを配信する。
 - `@treasure-compass/master-data` の `./legacy-report` export は実行時機能ではない。legacy JSON の移行・棚卸しが完了するまで `src/legacy-report.ts`、テスト、棚卸しreportは内部資料として保持し、公開前にパッケージexportを削除する。
 - Treasure Compass は現在運用中であり、外部仕様を大きく変更する必要はない。Mob Compass は新規作成であり、UI は未確定である。
 - Treasure Compass と Mob Compass は同一アプリ内の製品切替ではなく、別アプリに分ける。同じリポジトリ内で管理し、Treasure と Mob を別エントリ・別 URL としてビルド・公開する。リポジトリ自体は分割しない。地図表示、地点選択、経路描画などの基本機能は共有してよいが、画面、入力フロー、周回状態、保存、消去はアプリごとに分離する。
