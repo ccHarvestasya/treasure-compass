@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { GRADE_JSON_MAP } from '@/constants';
+import { isValidMapData } from '@/utils/mapData';
 
 /**
  * グレードに応じたJSONとマップ画像を非同期ロードするフック
@@ -26,6 +27,7 @@ export function useMapData() {
       })
       .then(data => {
         if (cancelled) return;
+        if (!isValidMapData(data)) throw new Error('Invalid map data');
         setMapData(data);
         setIsLoading(false);
         recalcRoute();
