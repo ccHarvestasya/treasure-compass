@@ -1,12 +1,12 @@
 # Treasure Compass / Mob Compass 基本設計
 
-| 項目           | 内容                                                                                                                                                                                                                                         |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status         | Design Author Revision 009（Specification Revision 009 / Specification Review 015 READY、Requirements Revision 013 / Requirements Review 013 READY、SR-029 resolved。Design Review 010 READY） |
-| 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                                                            |
-| 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                                                           |
+| 項目           | 内容                                                                                                                                                                                                                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status         | Design Author Revision 010（Specification Revision 009 / Specification Review 015 READY、Requirements Revision 013 / Requirements Review 013 READY、SR-029 resolved。Design Review 010 READY、Design Review 011 の DR-015 / DR-016 対応済み・再確認待ち）                                       |
+| 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                                                                                                               |
+| 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                                                                                                              |
 | 上流の承認状態 | Specification Revision 009 は [Specification Review 015](../reviews/specification/specification-review-015.md) が `READY`。Requirements Revision 013 は [Requirements Review 013](../reviews/requirements/requirements-review-013.md) が `READY`。Specification Review 015 の SR-029 は解消済み |
-| 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                                                        |
+| 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                                                                                                           |
 
 ## 1. 目的、対象、対象外
 
@@ -88,9 +88,9 @@
 
 ```text
 Treasure App ──┐
-               ├── Application-shared contracts ── Map UI
-Mob App ───────┘                 │                  │
-       │                         ├── Route Core ────┘
+               ├── Shared map/master contracts
+Mob App ───────┘                 ├── logical Map UI / overlay responsibility
+       │                         ├── logical Route planner responsibility
        │                         ├── Master Data Model
        │                         └── Persistence ports
        └── Mob-specific domain
@@ -101,7 +101,9 @@ Static master assets ── validated adapters ── application/domain read mo
 Browser storage ─────── persistence adapters ── session snapshots
 ```
 
-pnpm workspace の root から二つの Vite application を個別に build できる構成とし、次の workspace package へ分ける。
+この図の `logical` は、両 app が同じ外部契約と interaction の意味を満たすための責務境界を示し、特定の workspace package や source directory への配置を意味しない。現行の Treasure では route calculation / projection と地図描画 / overlay は Treasure app 内にあり、Mob はそれらの論理責務を Treasure app の module へ依存せずに実現する。Treasure の共通化のための refactor や、新しい shared package の追加は本 Design の前提にしない。
+
+pnpm workspace の root から二つの Vite application を個別に build できる構成とし、現在の物理 package は次の境界を持つ。
 
 | 配置 / package                                                   | 責務                                                                                                                                                                                                            |
 | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -109,11 +111,10 @@ pnpm workspace の root から二つの Vite application を個別に build で�
 | `apps/mob-compass` / `@treasure-compass/mob-app`                 | Mob の Vite entry、shell、ソロ／パーティ切替、検索・フィルタ、登録、各 session coordinator、永続化 adapter、表示 projection                                                                                     |
 | `packages/treasure-domain` / `@treasure-compass/treasure-domain` | Treasure canonical session state、playlist、list selection／current target、point reference identity に関する pure rule、完了・取消・player transition、および Domain に抽出された Treasure 固有 pure operation |
 | `packages/mob-domain` / `@treasure-compass/mob-domain`           | ランク別登録、候補集合、一般モブ採用、B 探索、パーティ地点置換の固有規則                                                                                                                                        |
-| `packages/map-core` / `@treasure-compass/map-core`               | map/座標 value、map group 順序、同一 map 内の二次元経路、同率判定を行う純粋計算                                                                                                                                 |
-| `packages/map-ui` / `@treasure-compass/map-ui`                   | 地図画像、通常表示・地点選択表示の marker/route、共通エーテライト案内 overlay、地点選択 dialog、pan/zoom とレスポンシブ表示                                                                                     |
+| `packages/map-core` / `@treasure-compass/map-core`               | map/座標 value、bounds、2D distance 等の shared primitive と contract。route planner の物理配置は固定しない                                                                                                     |
 | `packages/master-data` / `@treasure-compass/master-data`         | repo 管理 JSON・画像、schema、validator、検証済み map projection、Treasure の legacy lookup と移行 report。`division=T` の採用と `division=R` の除外を所有する                                                  |
 
-Treasure application と Mob application は相互依存しない。`map-core` は他 workspace package に依存しない。`map-ui`、`master-data`、各 product domain は `map-core` の公開 value/contract だけへ依存できる。各 application は必要な共有 package と自 product domain に依存する。`treasure-domain` と `mob-domain` は相互依存しない。Map UI は検証済み map projection、overlay projection と明示的な UI event を扱い、JSON や session aggregate を直接解釈しない。案内 overlay から application coordinator へ状態変更 command を逆向きに発行しない。Treasure の登録入口は domain mode を作らず、主表示 projection に戻る presentation boundary として扱う。
+Treasure application と Mob application は相互依存しない。`map-core` は他 workspace package に依存しない。`master-data` は `map-core` の shared value/contract を利用し、各 product domain は相互依存しない。各 application は必要な現行 shared package と自 product domain に依存する。Route planner と Map UI / overlay は論理責務として、検証済み map projection、route input、明示的な UI event を扱うが、Treasure app の source、session aggregate、JSON raw data を直接共有することも、物理的な共通 package として固定することもない。案内 overlay から application coordinator へ状態変更 command を逆向きに発行しない。Treasure の登録入口は domain mode を作らず、主表示 projection に戻る presentation boundary として扱う。
 
 master の正本は `packages/master-data/data/` の `map-master.v1.json`、`treasure-master.v1.json`、`mob-master.v1.json` に分ける。地図画像は `packages/master-data/assets/maps/`、旧保存用対応表は `packages/master-data/migration/legacy-treasure-map.v1.json`、変換 report は `packages/master-data/reports/` に置く。build 時に各 app が必要な検証済み JSON と画像だけを静的 asset として出力する。report と移行元 JSON は runtime asset に含めない。
 
@@ -125,12 +126,12 @@ master の正本は `packages/master-data/data/` の `map-master.v1.json`、`tre
 | Treasure input pipeline  | 手動候補の version filter、チャット行の parse、全 version 横断の候補解決、行診断を行い、session を変更しない提案を返す                                                                                                                                                                                                                                           | session commit、保存、未解決行の推測登録                                                                               |
 | Session coordinator      | working state の作成、registration ID allocation、新規 registration construction、既存 member 検索、同一／別地点更新の orchestration、8 枠・conflict・capacity・save-failure の workflow 判定、bulk proposal 統合、必要な domain operation、route calculation、保存、公開 state の採用を順に調停。移行時の v3 marker／cleanup も persistence boundary と協調する | route algorithm、描画、未検証値の補完、入力提案の直接保存                                                              |
 | Domain operation         | canonical state の整合性、playlist／player transition、point reference identity に関する pure rule、および Domain に抽出された Treasure 固有 pure operation。v3 に投影可能な canonical state を所有する                                                                                                                                                          | browser API、非同期処理、画面表示、localStorage、registration workflow 全体の allocation・proposal 統合・capacity 判定 |
-| Route planner            | 固定 snapshot から success / tie / failure を返す読み取り専用計算                                                                                                                                                                                                                                                                                                | session commit、保存、UI 通知                                                                                          |
+| Route planner            | 固定 snapshot から success / tie / failure を返す読み取り専用の論理責務。物理的な package / source 配置は固定しない                                                                                                                                                                                                                                              | session commit、保存、UI 通知                                                                                          |
 | Master adapter           | JSON の構文・schema・参照・範囲を検証し、共通 map projection と app 固有 read model を作る。T のみを aetheryte projection に通し、R と無効・重複 record を除外する                                                                                                                                                                                               | session 変更、欠損値の推測、表示上の配置                                                                               |
 | Aetheryte overlay        | map projection と viewport projection から、アイコンと町名ラベルの案内表示を組み立てる。通常表示と地点選択表示で同じ入力・配置責務を共有する                                                                                                                                                                                                                     | master 検証、route/session 状態、登録・選択 command                                                                    |
 | Persistence adapter      | v3／Mob snapshot の serialize・検証、legacy candidate の exact decode、同一 origin の logical read/write/delete、write-before-publish の storage boundary                                                                                                                                                                                                        | domain の部分復元、route 計算、legacy の意味補完                                                                       |
 
-依存は presentation → application → domain/port の一方向とし、browser storage、fetch、React 等の環境依存は adapter に閉じ込める。domain と route core は環境 API を参照しない。
+依存は presentation → application → domain/port の一方向とし、browser storage、fetch、React 等の環境依存は adapter に閉じ込める。domain と route planner の計算責務は環境 API を参照しない。Map UI / overlay と route planner の物理配置は、各 application が明示された contract と責務を満たす範囲で決める。
 
 ### 3.3 二つのアプリの公開単位
 
@@ -466,7 +467,7 @@ route planner と domain operation は current published state を直接 mutate 
 
 一括入力の parse、チャット由来のプレイヤー名の前置装飾 normalization、候補解決および利用者の曖昧行選択は session 外の proposal lifecycle で行う。input pipeline は対応する marker と FFXIV chat 由来の先頭 private-use-area glyph を契約どおり扱い、通常の名前文字を推測削除せず、trim / Unicode NFC 後の identity を提案へ渡す。coordinator は解決済み行だけを含む提案を現在の Treasure aggregate と統合し、registration workflow の conflict・capacity 判定を含む candidate を一回だけ保存する。保存失敗時は aggregate を変更せず、入力画面側の未解決行・診断・再試行可能な draft だけを保持する。
 
-非同期の route calculation は、開始時の session revision と master identity を result に付与する。coordinator は両方が現在値と一致する result だけを working state へ適用し、古い result を破棄する。route の failure は保存へ進めず、warning 付き success は route と warning を同じ working result として保存・公開する。
+route calculation が非同期になる場合は、開始時の session revision と master identity を result に付与する。coordinator は両方が現在値と一致する result だけを working state へ適用し、古い result を破棄する。同期計算でも、計算対象の snapshot と公開対象の state が一致する境界を維持する。route result は Specification の success / empty / failure だけを扱い、failure は保存へ進めない。内部の補助診断を扱う場合も、外部 result、session state、保存 snapshot へ追加 field として投影しない。
 
 Treasure の `nextUndoChain` と phase は、該当操作の保存成功・publish 後にだけ更新する。成功した next は、phase が `next` のとき既存 chain へ frame を追加し、phase が `back` または初期状態のとき残存 chain を破棄して一 frame で新 chain を開始する。成功した back は一 frame を消費して phase を `back` にする。no-op next、保存失敗、route failure または stale result では chain と phase を変更しない。list selection、再生、登録変更、地点更新、削除、並べ替え、個別完了／取消など他の成功状態変更の publish 後は chain を破棄して phase を初期化する。back の直後に back を実行する場合だけ残存 frame を継続消費し、back 後の next は残存 frame を失効させる。chain は persistence record に含めない。
 
@@ -549,17 +550,17 @@ legacy migration は次の generation 別 policy と段階を持つ。
 
 Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、共通 map projection に含まれる有効なエーテライト、order mode を入力する。Treasure の `listSelection` と `currentTarget` は route の開始地点・対象集合・順序を決める入力に含めず、Treasure の playlist 全体から未完了 registration を route へ投影する。Treasure の v1 では料金・ロード時間を入力に含めない。返り値は次のいずれかである。
 
-- success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、tie 情報、0件以上の warning。
+- success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、tie 情報。
 - empty: 有効な未完了 visit がない正常結果。
 - failure: 対象と、missing aetheryte、unresolved visit 等の理由。
 
-Application は result の session revision と master identity が現在値に一致する場合だけ採用する。非同期計算中の入力変更や master reload により stale になった result は破棄する。success の warning は route と同じ result の一部として presentation へ渡し、補助情報が利用できない対象を識別可能に表示する。warning を failure へ昇格させたり、表示せず捨てたりしない。
+Application は result の session revision と master identity が現在値に一致する場合だけ採用する。非同期計算中の入力変更や master reload により stale になった result は破棄する。failure は route と working state を保存・公開せず、既存順序・manual / auto・現在地点・進捗を維持する。
 
 ### 9.2 計算の段階
 
 1. 完了、探索済み、unresolved を除外し、一般モブの候補選択を含む有効 visit 集合を作る。
 2. visit を map group に分け、異なる map group が隣接する回数が最小となる group order 候補を求める。
-3. 料金およびロード時間は採用条件、warning、failureの判定に使用しない。
+3. 料金およびロード時間は採用条件および failure の判定に使用しない。
 4. 第一評価後に複数候補が残る場合は、同一マップX/Y距離と安定した同率規則で一つの表示順を決める。
 5. 優越されない候補が複数なら tie を保持し、Specification の stable tuple 列で表示採用順を一つ決める。
 6. map ごとに、保存済み current location があればそれを、なければ共通 map projection の各有効 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。raw record や `division=R` は route planner に渡さない。Treasure の `mapCurrentLocations` は完了または探索で確定した map ごとの起点だけを供給し、再生・list selection は起点にしない。
@@ -637,9 +638,9 @@ B Next は current candidate を explored にし、その map の current locati
 
 ### 11.1 共通操作感
 
-両 app は共通 Map UI と共通 interaction contract を使い、marker 選択、pan/zoom、route 表示、現在地点、完了表示、並べ替え、完了・取消、全消去確認の結果を揃える。見た目の theme を完全共有する必要はないが、同じ意味の control label、状態色、feedback、確認 dialog を shared design token と interaction pattern で提供する。
+両 app は共通 map projection と共通 interaction contract を参照し、各 app の Map UI / presentation が marker 選択、pan/zoom、route 表示、現在地点、完了表示、並べ替え、完了・取消、全消去確認の結果を揃える。見た目の theme を完全共有する必要はないが、同じ意味の control label、状態色、feedback、確認 dialog を shared design token と interaction pattern で提供する。
 
-共通 Map UI は、地点登録用 marker と案内 overlay を別の表示・イベント境界として扱う。案内 overlay は全有効エーテライトのアイコンを実座標へ固定し、町名ラベルだけを表示領域と他ラベルとの関係で省略できる。ラベル配置は Map UI 内の純粋な表示 projection とし、幅 `8n + 24` CSS px、高さ 24 CSS px、22 CSS px の配置 offset / gap、8方向、矩形、正の面積の重なり、最大8件、安定 ID と候補順の全制約を満たす。overlay の視覚資産と新ラベルデザインは地図背景と別の表示責務にする。
+各 app の Map UI は、地点登録用 marker と案内 overlay を別の表示・イベント境界として扱う。案内 overlay は全有効エーテライトのアイコンを実座標へ固定し、町名ラベルだけを表示領域と他ラベルとの関係で省略できる。ラベル配置は Map UI 内の純粋な表示 projection とし、幅 `8n + 24` CSS px、高さ 24 CSS px、22 CSS px の配置 offset / gap、8方向、矩形、正の面積の重なり、最大8件、安定 ID と候補順の全制約を満たす。overlay の視覚資産と新ラベルデザインは地図背景と別の表示責務にする。
 
 Treasure は登録済み集合、プレイリスト、現在対象、地図・案内および進行を一つの主表示に置き、手動入力は全対象レイアウト、一括入力は広い画面から開く入口とする。狭いレイアウトでは一括入力入口を省略できるが、手動登録は維持する。Presentation は登録、list selection、next/back、complete/cancel、reorder および必要な current target 表示を提供する。独立した再生 control は Treasure 主操作として必須にしない。成功後は同じ主表示へ戻し、入口を domain mode や保存 state として表現しない。Mob は上部にソロ／パーティ switch、その下に登録／巡回経路 tab を持つ。mode と tab を一つの selector に混在させない。登録後は登録 tab に留まる。
 
@@ -655,7 +656,6 @@ Treasure は登録済み集合、プレイリスト、現在対象、地図・�
 | -------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | master fetch/envelope failure          | 該当 master context を作らない                                                                | 対象 app の登録・経路を停止し、既存 state を変更しない                       |
 | master record failure                  | 不正 record と依存 record を除外                                                              | 利用可能分と除外理由を区別表示                                               |
-| route success with warning             | result と warning を同じ revision で採用                                                      | 経路を表示し、利用できない補助情報と対象を識別可能に表示                     |
 | route failure                          | result を session へ採用しない                                                                | 理由と対象を表示し、既存順序・mode・進捗を維持                               |
 | stale calculation                      | result を破棄                                                                                 | 現在 state を維持し、必要なら現 revision で再要求                            |
 | save failure                           | working state を破棄                                                                          | 操作前表示と最後の正常保存を維持                                             |
@@ -690,7 +690,7 @@ Treasure は登録済み集合、プレイリスト、現在対象、地図・�
 
 ## 14. Implementation と Test への引継ぎ
 
-Implementation は、まずモノレポの二 entry と共有 package 境界を作り、次に master schema/validator と移行 report、session/persistence、route core、各 app UI の順で統合する。既存 Treasure を一度に置換せず、旧挙動との fixture 比較ができる単位で進める。
+Implementation は、既存 workspace package（`map-core`、`master-data`、`treasure-domain`、`mob-domain`）と二つの Vite entry の境界を維持し、次に master schema/validator と移行 report、session/persistence、各 app の route planner / Map UI、各 app UI の順で統合する。route planner と Map UI は論理責務として扱い、物理的な source file / directory / package 配置は Implementation で決める。既存 Treasure の route / Map UI を抽出・置換する refactor は Mob 実装の前提にしない。Mob は Treasure app の store、MapCanvas、member registration workflow、bulk parser、固有 state / UI へ依存しない。
 
 検証は少なくとも次を含む。
 
@@ -733,7 +733,7 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 
 ## 16. 未決定事項と参照資料
 
-上流へ戻す必要がある製品判断はない。具体的な URL 文字列と配備先は未決定だが、二つの build entry と state boundary により後から割り当てられる。ただし Treasure の origin 維持は §3.3 の確定した配備制約である。§3.1 の workspace package 名・配置は確定 Design とし、各 package 内の source file、探索アルゴリズムの具体実装、UI component 分割は、本 Design の責務・外部結果を維持して Implementation で決める。
+上流へ戻す必要がある製品判断はない。具体的な URL 文字列と配備先は未決定だが、二つの build entry と state boundary により後から割り当てられる。ただし Treasure の origin 維持は §3.3 の確定した配備制約である。現行の物理 package は `apps/treasure-compass`、`apps/mob-compass`、`packages/treasure-domain`、`packages/mob-domain`、`packages/map-core`、`packages/master-data` として扱う。Route planner と Map UI / overlay は、共通 map projection と interaction contract を実現する論理責務であり、物理的な共通 package 名・配置は固定しない。Mob 実装は Treasure の再編成や新しい shared package の追加を前提にせず、既存の application / domain / master / persistence 境界へ接続する。各 package 内の source file、探索アルゴリズムの具体実装、UI component 分割は、本 Design の責務・外部結果を維持して Implementation で決める。
 
 一方、次は未決定値を仮定して実装してはならない data preparation 項目である。
 
