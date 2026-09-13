@@ -2,22 +2,26 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| Status | Design Author Revision 005（動的エーテライト表示・ローカライズ境界を反映、Design Review 005 待ち） |
+| Status | Design Author Revision 007（DR-010〜DR-012対応、Design Review 007 READY） |
 | 対象 | Treasure Compass / Mob Compass v1 |
 | 直接の上流 | [Specification](../specification/specification.md) |
-| 上流の承認状態 | [Specification Review 009](../reviews/specification/specification-review-009.md) は `READY` |
+| 上流の承認状態 | [Specification Review 013](../reviews/specification/specification-review-013.md) は `READY` |
 | 文書の責務 | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める |
 
 ## 1. 目的、対象、対象外
 
 ### 1.1 目的
 
-本 Design は、独立した Treasure Compass と Mob Compass を一つのモノレポで構築し、両アプリが同じ意味の地図操作と巡回操作を提供するための内部構造を定める。Treasure の既存外部仕様を維持しながら、Mob のソロ／パーティを独立した状態境界として新設する。
+本 Design は、独立した Treasure Compass と Mob Compass を一つのモノレポで構築し、両アプリが同じ意味の地図操作と巡回操作を提供するための内部構造を定める。Treasure の既存外部仕様を維持しながら、Treasure の連続した巡回リスト体験とプレイヤー操作を一つの aggregate に統合し、Mob のソロ／パーティを独立した状態境界として新設する。
 
 本書は、次を Design 上の不変条件とする。
 
 - Treasure と Mob は、利用者が異なるアドレスから直接開く別アプリである。具体的な URL 文字列と配備先は決めない。
 - Treasure、Mob ソロ、Mob パーティは独立した session root と永続化境界を持つ。
+- Treasure は登録済み対象と巡回リストを同じ主表示 projection で扱い、一括入力・手動入力は主表示から開く登録入口とする。登録入口の開閉は presentation state であり、準備／実行または再生／一時停止の domain state ではない。
+- Treasure の `listSelection` と `currentTarget` は独立した参照として aggregate が所有し、再生・次へ・戻る・個別完了／取消の遷移はこの二つを暗黙に同期させない。
+- Treasure の registration identity、playlist order、完了、map 別 current location、未完了 route は一つの v3 session snapshot へ投影できる。連続した「次へ」の取消情報は保存せず、interaction lifecycle 内だけで所有する。
+- Treasure の各登録は内部の legacy grade／master reference と利用者向け version projection を分離し、表示投影だけが G8→3.x、G10→4.x、G12→5.x、G14→6.x、G17→7.x、G18→7.x を適用する。
 - 地図表示、地点選択、二次元座標、巡回順、完了・取消の共通意味だけを共有する。対象登録や進行の固有規則は各アプリが所有する。
 - Mob ソロは一般モブから B モブまで、Mob パーティは A モブ以上だけを扱う。
 - Z は地点識別、表示、登録および経路評価に用いない。
@@ -27,6 +31,7 @@
 - 通常の地図表示と地点選択表示は、同じ表示対象マップの全ての有効なエーテライトを、session state と独立した案内 overlay として継続表示する。
 - エーテライト案内は共通 map master の検証済み projection だけから作り、案内アイコン・町名ラベルを操作対象または保存対象にしない。
 - 初期リリースの表示名は日本語とし、内部の名称解決境界は安定 ID と言語別表示名の対応を維持する。
+- Treasure の現行 v3 key を保存の優先 marker とし、旧 v2／統合 v1／separate key の読込・移行は v3 が存在しない同一 browser origin に限る。旧保存は v3 の write と公開が成功するまで変更しない。
 
 ### 1.2 対象
 
@@ -49,7 +54,7 @@
 
 ### 2.1 根拠と工程境界
 
-直接の規範的根拠は [Specification](../specification/specification.md) である。[Requirements](../requirements/requirements.md) と [Concept](../concept/concept.md) は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。[Design Review 004](../reviews/design/design-review-004.md) までの DR-005〜DR-008 は既存設計の解消済み判断として維持する。
+直接の規範的根拠は [Specification](../specification/specification.md) Revision 007 である。[Specification Review 013](../reviews/specification/specification-review-013.md) の `READY` 判定を前提に、Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。[Design Review 005](../reviews/design/design-review-005.md) の DR-005〜DR-008 は既存設計の解消済み判断として維持し、DR-009（旧節番号）は本 Revision の追跡表更新で解消する。
 
 現行 JSON には実装から参照されない項目と設定から到達できないデータがある。そのため、既存形式をそのまま共通マスターへ昇格させず、参照実績、上流上の必要性、出典・利用条件を個別に確認してから移行する。
 
@@ -73,7 +78,7 @@
 | `division=R` | `g10.json` に存在するが現行 UI・経路から到達しない | 検証済みでも v1 の共通地図情報へ移行しない |
 | `division=Z` | 型には存在するが現行 JSON で実レコードを確認できない | 移行しない |
 
-`GRADE_CONFIG` から参照される `g8`、`g10`、`g12`、`g14`、`g17` だけを Treasure の移行入力候補とする。`g11.json` と対応画像は現行設定から到達できず、`g12` との関係も外部契約から確定できないため、自動移行しない。後から採用する場合は、対応グレード、地点、画像、出典および重複関係を別途承認する。
+`GRADE_CONFIG` から参照される `g8`、`g10`、`g12`、`g14`、`g17` だけを現行静的データからの Treasure 移行入力候補とする。`g11.json` と対応画像は現行設定から到達できず、`g12` との関係も外部契約から確定できないため、自動移行しない。`G18 → 7.x` は利用者向け表示変換の契約であり、現行設定にない `g18` のデータ採用を意味しない。後から G18 を採用する場合は、対応グレード、地点、画像、出典および重複関係を別途承認する。
 
 現行 Mob 試作は `/json/mobs.json` を要求するが、対応ファイルは存在しない。また現行のチャット案内、地点分類、利用者確認、Z 入力は承認済み Specification に含まれない。新 Mob 設計への移行対象にしない。
 
@@ -100,15 +105,15 @@ pnpm workspace の root から二つの Vite application を個別に build で�
 
 | 配置 / package | 責務 |
 | --- | --- |
-| `apps/treasure-compass` / `@treasure-compass/treasure-app` | Treasure の Vite entry、shell、登録入口、一括入力、session coordinator、永続化 adapter、表示 projection |
+| `apps/treasure-compass` / `@treasure-compass/treasure-app` | Treasure の Vite entry、連続した主表示、手動／一括の登録入口、Treasure player 操作、session coordinator、永続化 adapter、表示 projection |
 | `apps/mob-compass` / `@treasure-compass/mob-app` | Mob の Vite entry、shell、ソロ／パーティ切替、検索・フィルタ、登録、各 session coordinator、永続化 adapter、表示 projection |
-| `packages/treasure-domain` / `@treasure-compass/treasure-domain` | 8 枠、地点置換、チャット入力適用、完了、順序の Treasure 固有規則 |
+| `packages/treasure-domain` / `@treasure-compass/treasure-domain` | registration identity、8 枠、地点置換、playlist、list selection／current target、チャット入力提案、完了・取消・player 操作、順序の Treasure 固有規則 |
 | `packages/mob-domain` / `@treasure-compass/mob-domain` | ランク別登録、候補集合、一般モブ採用、B 探索、パーティ地点置換の固有規則 |
 | `packages/map-core` / `@treasure-compass/map-core` | map/座標 value、map group 順序、同一 map 内の二次元経路、同率判定を行う純粋計算 |
 | `packages/map-ui` / `@treasure-compass/map-ui` | 地図画像、通常表示・地点選択表示の marker/route、共通エーテライト案内 overlay、地点選択 dialog、pan/zoom とレスポンシブ表示 |
-| `packages/master-data` / `@treasure-compass/master-data` | repo 管理 JSON・画像、schema、validator、検証済み map projection、legacy lookup と移行 report。`division=T` の採用と `division=R` の除外を所有する |
+| `packages/master-data` / `@treasure-compass/master-data` | repo 管理 JSON・画像、schema、validator、検証済み map projection、Treasure の legacy lookup と移行 report。`division=T` の採用と `division=R` の除外を所有する |
 
-Treasure application と Mob application は相互依存しない。`map-core` は他 workspace package に依存しない。`map-ui`、`master-data`、各 product domain は `map-core` の公開 value/contract だけへ依存できる。各 application は必要な共有 package と自 product domain に依存する。`treasure-domain` と `mob-domain` は相互依存しない。Map UI は検証済み map projection、overlay projection と明示的な UI event を扱い、JSON や session aggregate を直接解釈しない。案内 overlay から application coordinator へ状態変更 command を逆向きに発行しない。
+Treasure application と Mob application は相互依存しない。`map-core` は他 workspace package に依存しない。`map-ui`、`master-data`、各 product domain は `map-core` の公開 value/contract だけへ依存できる。各 application は必要な共有 package と自 product domain に依存する。`treasure-domain` と `mob-domain` は相互依存しない。Map UI は検証済み map projection、overlay projection と明示的な UI event を扱い、JSON や session aggregate を直接解釈しない。案内 overlay から application coordinator へ状態変更 command を逆向きに発行しない。Treasure の登録入口は domain mode を作らず、主表示 projection に戻る presentation boundary として扱う。
 
 master の正本は `packages/master-data/data/` の `map-master.v1.json`、`treasure-master.v1.json`、`mob-master.v1.json` に分ける。地図画像は `packages/master-data/assets/maps/`、旧保存用対応表は `packages/master-data/migration/legacy-treasure-map.v1.json`、変換 report は `packages/master-data/reports/` に置く。build 時に各 app が必要な検証済み JSON と画像だけを静的 asset として出力する。report と移行元 JSON は runtime asset に含めない。
 
@@ -116,13 +121,14 @@ master の正本は `packages/master-data/data/` の `map-master.v1.json`、`tre
 
 | コンポーネント | 所有・責務 | 所有しないもの |
 | --- | --- | --- |
-| App shell / presentation | app・mode・tab の表示、入力収集、command 発行、結果表示 | domain 判定、JSON 解釈、storage 操作 |
-| Session coordinator | working state の作成、domain operation、必要な経路計算、保存、公開 state の採用を順に調停 | route algorithm、描画、未検証値の補完 |
-| Domain operation | 操作前後の invariant、対象・進捗・順序の状態遷移 | browser API、非同期処理、画面表示 |
+| App shell / presentation | app・Mob mode/tab・Treasure 主表示・登録入口の表示、入力収集、command 発行、結果表示。Treasure の成功登録後は主表示 projection を表示する | domain 判定、JSON 解釈、storage 操作 |
+| Treasure input pipeline | 手動候補の version filter、チャット行の parse、全 version 横断の候補解決、行診断、重複・競合・上限判定を行い、session を変更しない提案を返す | session commit、保存、未解決行の推測登録 |
+| Session coordinator | working state の作成、domain operation、Treasure player 操作、必要な経路計算、保存、公開 state の採用を順に調停。移行時の v3 marker／cleanup も persistence boundary と協調する | route algorithm、描画、未検証値の補完、入力提案の直接保存 |
+| Domain operation | 操作前後の invariant、対象・進捗・順序・Treasure selection/current target の状態遷移。v3 に投影可能な canonical state を所有する | browser API、非同期処理、画面表示、localStorage |
 | Route planner | 固定 snapshot から success / tie / failure を返す読み取り専用計算 | session commit、保存、UI 通知 |
 | Master adapter | JSON の構文・schema・参照・範囲を検証し、共通 map projection と app 固有 read model を作る。T のみを aetheryte projection に通し、R と無効・重複 record を除外する | session 変更、欠損値の推測、表示上の配置 |
 | Aetheryte overlay | map projection と viewport projection から、アイコンと町名ラベルの案内表示を組み立てる。通常表示と地点選択表示で同じ入力・配置責務を共有する | master 検証、route/session 状態、登録・選択 command |
-| Persistence adapter | snapshot の serialize、検証、原子的な logical read/write/delete | domain の部分復元、route 計算 |
+| Persistence adapter | v3／Mob snapshot の serialize・検証、legacy candidate の exact decode、同一 origin の logical read/write/delete、write-before-publish の storage boundary | domain の部分復元、route 計算、legacy の意味補完 |
 
 依存は presentation → application → domain/port の一方向とし、browser storage、fetch、React 等の環境依存は adapter に閉じ込める。domain と route core は環境 API を参照しない。
 
@@ -138,7 +144,7 @@ v1 の Treasure entry は、運用中 Treasure が使用する localStorage と�
 
 汎用 `point[]` は廃止し、次の三つの論理 master に分ける。
 
-1. map master: 両アプリが使う map、座標範囲、画像、エーテライト、map 間移動補助値。
+1. map master: 両アプリが使う map、座標範囲、画像およびエーテライト。
 2. Treasure master: grade set と宝箱候補地点。
 3. Mob master: モブ名、別名、rank、出現 map、候補地点。
 
@@ -181,15 +187,6 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
       ]
     }
   ],
-  "travelEdges": [
-    {
-      "fromMapId": "map-id",
-      "toAetheryteId": "aetheryte-id",
-      "fee": 100,
-      "loadTime": 5,
-      "sourceIds": ["source-id"]
-    }
-  ],
   "sources": [
     {
       "id": "source-id",
@@ -204,20 +201,17 @@ ID は entity 種別内で一意な安定文字列とし、表示名、配列位
 }
 ```
 
-上記および 4.3、4.4 の値は構造例であり、座標、名称、revision を実データとして採用する根拠にはしない。各値は 6 章の移行 gate または新規データの確認を経て確定する。Treasureの順序評価では料金・ロード時間を扱わない。`sources` と `licenses` は結合 master context の共通 catalog であり、Treasure/Mob master の `sourceIds` もこの catalog を参照する。
+上記および 4.3、4.4 の値は構造例であり、座標、名称、revision を実データとして採用する根拠にはしない。各値は 6 章の移行 gate または新規データの確認を経て確定する。`sources` と `licenses` は結合 master context の共通 catalog であり、Treasure/Mob master の `sourceIds` もこの catalog を参照する。
 
 この構造例の aetheryte `name` は master 入力側の名称表現を示すためのものであり、実行時には Master adapter が stable ID に対応する言語 keyed な表示名を含む aetheryte projection へ変換する。raw master の field 形状と projection の内部表現を混同しない。
 
-各 expansion、map、aetheryte、travel edge、grade set、Treasure point、mob、mob candidate の `sourceIds` は必須かつ一件以上とし、同じ ID を重複させない。すべての ID は共通 `sources` catalog の有効 record を参照しなければならない。`sourceIds` は名称、分類、座標、参照関係等の意味情報を確認・訂正する根拠を表し、画像の利用条件を表す `licenseId` とは分離する。
+各 expansion、map、aetheryte、grade set、Treasure point、mob、mob candidate の `sourceIds` は必須かつ一件以上とし、同じ ID を重複させない。すべての ID は共通 `sources` catalog の有効 record を参照しなければならない。`sourceIds` は名称、分類、座標、参照関係等の意味情報を確認・訂正する根拠を表し、画像の利用条件を表す `licenseId` とは分離する。
 
 - `bounds` は X/Y の包含範囲であり、有限数かつ `min <= max` とする。
 - map の `name` と `shortName` は Treasure の既存チャット照合へ供給し、`aliases` は明示登録された別名だけを持つ。
 - `image.asset` は実行時 asset への相対参照で、map ごとに一つの正規画像を参照する。同じ画像の再利用は、実データと利用条件を確認した場合だけ行う。
 - aetheryte の X/Y は map bounds 内に置く。巡回地点を持つ map には一つ以上必要である。
-- `travelEdges` は出発 map から到着 aetheryte への有向 edge である。`fee` は 0 以上の整数、`loadTime` は 0 以上の有限数で、比較単位を全レコードで統一する。
-- 初回 map への到達は map 間遷移回数に含めない。異なる map group 間の移動だけが edge を消費する。必要な edge の欠落をゼロ値で補わない。
-
-Treasureのv1経路比較では料金およびロード時間を使用しない。現行 JSON の`time`も経路評価へ転用しない。将来別の経路負荷を扱う場合は、外部仕様と検証済みデータを先に更新する。
+Treasure の v1 route は map 間遷移回数と同一 map 内の X/Y 距離だけを評価する。現行 JSON の `time` は経路評価へ転用しない。別の経路負荷を扱う場合は、外部仕様と検証済みデータを先に更新する。
 
 Master adapter は raw map record から、アプリが参照する検証済み map projection を一度だけ生成する。aetheryte projection は stable ID、所属 map ID、canonical X/Y、言語別表示名の対応を持ち、v1 では日本語表示名を必須とする。raw record の `division` は adapter 内の検証境界に留め、検証済み `division=T` だけを projection へ通し、`division=R` は検証済みでも projection、表示、参照および経路入力へ渡さない。stable ID が衝突した場合は衝突する全 record を除外し、別の有効 record の projection 生成を妨げない。
 
@@ -234,7 +228,7 @@ Master adapter は raw map record から、アプリが参照する検証済み 
   "gradeSets": [
     {
       "id": "grade-set-id",
-      "label": "G14 / G15",
+      "label": "internal-grade-set-label",
       "grades": [14, 15],
       "sourceIds": ["source-id"],
       "points": [
@@ -252,7 +246,20 @@ Master adapter は raw map record から、アプリが参照する検証済み 
 }
 ```
 
-Treasure master は map 名、画像、エーテライトを重複保持せず、map master の stable ID を参照する。`grades` は複数のゲーム内 grade が同じ候補集合を共有する現行ラベルを表現する。grade set ID、point ID、map ID の組を、旧保存データからの移行と新 session の参照に用いる。
+Treasure master は map 名、画像、エーテライトを重複保持せず、map master の stable ID を参照する。`grades` は複数のゲーム内 grade が同じ候補集合を共有する内部の legacy 数値を表現する。grade set ID、point ID、map ID の組を、旧保存データからの移行と新 session の参照に用いる。
+
+Treasure の version projection は、master の legacy grade 数値または旧保存の grade を次の利用者向け値へ変換する domain 境界として持つ。変換は表示、手動候補の絞り込み、一括入力候補の診断および v3 serializer へ供給するが、master の `grades`、旧 JSON のファイル名、旧保存値を変更しない。
+
+| 内部 legacy grade | version projection |
+| --- | --- |
+| 8 | `3.x` |
+| 10 | `4.x` |
+| 12 | `5.x` |
+| 14 | `6.x` |
+| 17 | `7.x` |
+| 18 | `7.x` |
+
+同じ version projection になる G17 と G18 も `gradeSetId`、`mapId`、`pointId` によって個々の参照を保持する。UI は legacy grade や `Gxx` を直接表示せず、Treasure session の登録 projection は上表の値だけを利用者向け version として出力する。G18 の表示対応はデータ採用を意味せず、データの存在・正確性・画像・出典は §6 の gate で別途確認する。
 
 ### 4.4 Mob master
 
@@ -320,7 +327,7 @@ Master adapter が生成した aetheryte projection は、grade set や product 
 - map master が利用不能なら両アプリの地点登録・経路を成立させられないため、既存 session を変更せず master 読込失敗を表示する。
 - Treasure master だけが利用不能なら Treasure の登録・経路を停止するが、Mob app は map/Mob master が有効なら利用できる。
 - Mob master だけが利用不能なら Mob の登録・経路を停止するが、Treasure app は map/Treasure master が有効なら利用できる。
-- Treasureの経路ではtravel edgeの料金・ロード時間を評価しない。マップ間遷移回数と同一マップX/Y距離で決定できる候補だけを扱い、料金・ロード時間の不足を計算不能理由にしない。
+- Treasure の経路はマップ間遷移回数と同一マップ X/Y 距離で決定できる候補だけを扱い、v1 master に存在しない追加の移動負荷を計算不能理由にしない。
 - 一部 record の除外後も利用可能な候補一覧を表示し、除外理由を利用者が識別できるようにする。
 - aetheryte record の部分除外後も、同じ map の他の有効な aetheryte projection は overlay と route の入力として利用する。全件が除外され対象 map に有効な aetheryte がない場合だけ、既存の master 不備・経路計算不能境界へ渡す。
 
@@ -374,23 +381,40 @@ Mob master は現行試作から生成しない。名称、rank、map、全候�
 
 ### 7.1 共通の状態原則
 
-Treasure、Mob ソロ、Mob パーティは別々の aggregate root である。各 root は単調増加する内部 revision、参照する master identity、order mode、visit order、map 別 current location、progress を持つ。Mob の最後に選択した mode は独立した小さな preference record とする。
+Treasure、Mob ソロ、Mob パーティは別々の aggregate root である。各 root は単調増加する内部 revision、参照する master identity、order mode、visit order、map 別 current location、progress を持つ。Mob の最後に選択した mode は独立した小さな preference record とする。Treasure の aggregate だけは、登録項目をそのまま巡回リストの全対象集合として保持し、登録画面用の別 domain aggregate を作らない。
 
 エーテライト案内 overlay は aggregate root に含めない。master adapter の検証済み aetheryte projection と、Map UI が管理する現在の viewport 投影から導出する一時的な表示 projection とし、アイコン・ラベルの採否、候補順位、viewport の変化を session の revision、progress、order、current location または localStorage へ反映しない。通常表示と地点選択表示は同じ overlay 責務を利用し、地点選択用 marker の選択 event だけを application coordinator へ渡す。
 
-route に並べる単位は `visitId` とする。同じ target に複数候補がある B モブは candidate ごとに別 visit を持つ。一方、完了と進捗表示は `targetId` 単位とする。進捗一覧の位置と未完了 route の位置を混同せず、`progressOrder` と `visitOrder` を分ける。
+route に並べる単位は `visitId` とする。同じ target に複数候補がある B モブは candidate ごとに別 visit を持つ。一方、完了と進捗表示は `targetId` 単位とする。進捗一覧の位置と未完了 route の位置を混同せず、`progressOrder` と `visitOrder` を分ける。Treasure では `playlistOrder` が進捗表示の全登録項目を一度ずつ並べ、`incompleteRoute` がそのうち未完了の訪問参照だけを持つ。
 
 ### 7.2 Treasure session
 
-Treasure Session は次を所有する。
+Treasure Session aggregate は、次の canonical state を所有する。
 
-- 選択 grade set ID。
-- 最大 8 枠の stable slot ID、表示名、現在の Treasure point reference。
-- 各枠の未完了／完了、完了取消用の直前位置。
-- `progressOrder`、未完了 `visitOrder`、`auto | manual`。
-- map ID ごとの current location reference。
+- 最大 8 件の `registrationId` をキーとする registration collection。各 registration は正規化済み member name、内部の grade/master reference、利用者向け version projection、Treasure point reference、completed および playlist position を持つ。
+- `playlistOrder`。登録項目を全件一度ずつ含む進捗表示の順序であり、完了済み項目を除去せず元の位置を保持する。`incompleteRoute` はこの collection から導出される未完了の route reference で、playlist 全体の代替ではない。
+- `orderMode` (`auto | manual`)。手動順序の既存相対順序を、明示的な自動計算成功まで domain transition が変更しないための所有値。
+- `listSelection` と `currentTarget`。どちらも registration ID または `null` の独立参照で、片方をもう片方から導出・補完しない。selection は list 上の選択、current target は地図・案内の前面表示と「次へ」の対象である。
+- `mapCurrentLocations`。map ID ごとに完了または探索で確定した Treasure point reference を一つ保持し、list selection や current target からは更新しない。
+- master 参照が解決できない registration／current location に対する内部の unresolved annotation。これは再投影時に生成する診断であり、近似置換せず、v3 の exact field を拡張して保存しない。
 
-枠の地点変更は同じ slot/target を更新する。完了済み枠の変更では旧完了対象を新しい未完了対象へ置換し、旧取消 snapshot を破棄する。一括入力は validation 後の最大 8 件から root 全体の working state を作り、一回の保存が成功した場合だけ置換する。
+Treasure coordinator は aggregate 外の interaction state として `nextUndoChain` と連続操作 phase (`next` または `back`) を所有する。各 frame は成功前の対象完了、playlist／incomplete route、mapCurrentLocations、currentTarget を復元できる最小の immutable snapshot とし、listSelection は変更されないため frame に複製しない。成功した「次へ」は、直前の成功した状態変更が「次へ」なら既存 chain を保持して新 frame を積み、それ以外（初回または「戻る」の後）なら残存 frame を破棄して新しい chain を開始する。成功した「戻る」は chain の先頭を一件だけ消費して phase を `back` にし、残りがあれば直後の「戻る」で続けて消費できる。「戻る」の後に新しい「次へ」を実行する場合は残存 frame を失効させ、その次へだけを戻せる新 chain を開始する。状態を変更しない「次へ」と失敗した操作は chain と phase を維持し、selection、再生、登録変更、地点更新、削除、並べ替え、個別完了／取消など他の成功状態変更は chain を破棄して phase を初期化する。`next → next → back → back` は二つの frame を順に戻し、`next → next → back → next` は最初の chain を破棄して最後の next だけを対象にする。chain は reload、再訪、保存、v3 serialize の対象にしないため、一般履歴や任意時点への巻き戻しにはならない。
+
+地点変更は同じ registrationId を更新し、listSelection／currentTarget が参照していれば同じ項目への参照を維持する。新地点が旧地点と異なる場合だけ completed を解除し、mapCurrentLocations は変更せず、旧「次へ」chain を破棄する。同じ地点の再登録は registration を増やさず、completed と二つの参照を維持する。登録削除は対象 registration、route、progress および取消 frame を一単位で除き、該当する listSelection／currentTarget だけを null にし、他の参照と mapCurrentLocations を巻き戻さない。新規登録は新しい registrationId を持ち、listSelection／currentTarget を設定しない。
+
+一括入力は input pipeline が作った提案を root 全体の working state に適用する。正規化済み名で既存 registration を更新し、新規名だけを空きへ追加する。入力内の重複・競合・上限超過は提案段階で解消され、未適用行は domain state に入らない。適用成功後も手動順序では既存相対順序を維持し、自動順序では mapCurrentLocations を起点に残りを再計算する。
+
+Treasure の player transition は次の owner 規則へ固定する。
+
+| transition | domain が行う状態変更 |
+| --- | --- |
+| list select | `listSelection` だけを更新する。`currentTarget`、地図前面表示、完了、順序および mapCurrentLocations は変更しない |
+| play | selection があればその registration、なければ playlist 順の先頭未完了を `currentTarget` にする。完了済み selection も対象にでき、対象なしなら `null` を維持する。selection は変更せず、再生／一時停止 state は作らない |
+| next | 未完了の currentTarget だけを完了し、playlist 位置を保ち、対象地点を mapCurrentLocations に記録する。currentTarget の後から playlist を一周して次の未完了へ進み、最後なら null にする。auto は残りを再計算し、manual は相対順序を保つ |
+| back | `nextUndoChain` の直近 frame だけを復元し、selection は変更しない。chain がない、または phase が `next`／`back` でない場合は no-op とする |
+| individual complete/cancel | 対象単位の completed と route を変更し、selection／currentTarget の同一・相違・片側のみ・双方 null の関係を仕様の遷移表どおり保持する。成功した完了は地点を mapCurrentLocations に記録し、取消は元の playlist 位置へ戻す |
+
+個別完了／取消では、current target と対象が異なる場合に前面地図を対象へ切り替えず、current target が対象の場合だけその地図を前面に保つ。selection と current target の片方を欠く状態を別方から補わない。いずれの transition も保存成功後にだけ published state へ反映する。
 
 ### 7.3 Mob root と mode state
 
@@ -431,13 +455,20 @@ current published state
   → immutable working state
   → domain validation / transition
   → 必要なら route calculation
+  → exact external snapshot serialize / validate
   → persistence write
   → write success のときだけ published state を置換
 ```
 
-route planner と domain operation は current published state を直接 mutate しない。保存に失敗した working state は破棄し、成功通知、順序・mode・進捗の変更を公開しない。この方式で UI rollback のための逆操作に依存しない。
+route planner と domain operation は current published state を直接 mutate しない。保存に失敗した working state は破棄し、成功通知、順序・mode・進捗・Treasure の selection/current target の変更を公開しない。この方式で UI rollback のための逆操作に依存しない。
 
-一つの利用者操作が一つの root を変更する場合、その root の完全 snapshot を一つの logical record として serialize し、一回の localStorage write で置換する。複数 root を一操作で変更する機能は設けない。Mob mode 切替は preference record だけを変更する。
+一つの利用者操作が一つの root を変更する場合、その root の完全 snapshot を一つの logical record として serialize し、一回の localStorage write で置換する。Treasure の手動登録、一括提案適用、list selection、再生、次へ、戻る、個別完了／取消、地点更新、削除、並べ替え、経路自動計算および全消去はこの境界を共有する。複数 root を一操作で変更する機能は設けない。Mob mode 切替は preference record だけを変更する。
+
+一括入力の parse、候補解決、利用者の曖昧行選択、競合解消および上限判定は session 外の proposal lifecycle で行う。解決済み行だけを含む提案を、現在の Treasure aggregate と統合してから一回だけ保存する。保存失敗時は aggregate を変更せず、入力画面側の未解決行・診断・再試行可能な draft だけを保持する。
+
+非同期の route calculation は、開始時の session revision と master identity を result に付与する。coordinator は両方が現在値と一致する result だけを working state へ適用し、古い result を破棄する。route の failure は保存へ進めず、warning 付き success は route と warning を同じ working result として保存・公開する。
+
+Treasure の `nextUndoChain` と phase は、該当操作の保存成功・publish 後にだけ更新する。成功した next は、phase が `next` のとき既存 chain へ frame を追加し、phase が `back` または初期状態のとき残存 chain を破棄して一 frame で新 chain を開始する。成功した back は一 frame を消費して phase を `back` にする。no-op next、保存失敗、route failure または stale result では chain と phase を変更しない。list selection、再生、登録変更、地点更新、削除、並べ替え、個別完了／取消など他の成功状態変更の publish 後は chain を破棄して phase を初期化する。back の直後に back を実行する場合だけ残存 frame を継続消費し、back 後の next は残存 frame を失効させる。chain は persistence record に含めない。
 
 ### 8.2 保存 record
 
@@ -445,16 +476,16 @@ route planner と domain operation は current published state を直接 mutate 
 
 | 対象 | localStorage key |
 | --- | --- |
-| Treasure session | `treasure-compass:treasure-session:v2` |
+| Treasure session | `treasure-compass:treasure-session:v3` |
 | Mob Solo session | `mob-compass:solo-session:v1` |
 | Mob Party session | `mob-compass:party-session:v1` |
 | Mob last-mode preference | `mob-compass:last-mode:v1` |
 
-session record の JSON envelope は次とする。
+Treasure の現行 session は Specification §9.1.1 の exact v3 envelope を、上表の key へ保存する。Design の内部 aggregate は次の外部 field へ投影する。
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "sessionRevision": 1,
   "masterIdentity": {
     "mapSchemaVersion": 1,
@@ -466,32 +497,47 @@ session record の JSON envelope は次とする。
 }
 ```
 
-`state` は 7 章で対象 root に定めた状態を欠落なく持つ。map/object collection は stable ID を明示した配列として encode し、JSON object の key 順序に意味を持たせない。順序は `progressOrder` と `visitOrder` の ID 配列だけで表す。未定義値、非有限数、関数、UI-local state は保存しない。全 field を allow-list で検証し、未知 field、重複 ID、存在しない順序参照は root 全体の復元失敗とする。
+`state` は `registrations`、`playlistOrder`、`orderMode`、`listSelection`、`currentTarget`、`mapCurrentLocations` および `incompleteRoute` を持つ v3 projection とする。registration の `version` は §4.3 の version projection、`pointRef` は grade-set／map／point の stable reference とし、内部の legacy grade は v3 の利用者向け field へ漏らさない。`playlistOrder` は全 registrations、`incompleteRoute` は未完了 registrations だけを参照する。map/object collection は stable ID を明示した配列として encode し、JSON object の key 順序に意味を持たせない。
 
-preference record は `{ "schemaVersion": 1, "revision": 1, "mode": "solo" }` の形とし、`mode` は `solo | party` だけを受理する。storage key の末尾 version は key generation、record 内の `schemaVersion` はその key 内の形式を表す。
+v3 の root、state、registration、reference object は Specification の exact field、型、値域、上限、参照整合性および余分 field 拒否を満たすよう persistence adapter が検証する。`nextUndoChain`、再生中／一時停止中、viewport、入力 draft、parser 診断、未解決理由の表示用 annotation は v3 に含めない。未解決参照そのものは保持し、現行 master との reconcile で診断 projection を再生成する。
+
+Mob の session／preference record は既存の独立 key と record contract を維持する。preference record は `{ "schemaVersion": 1, "revision": 1, "mode": "solo" }` の形とし、`mode` は `solo | party` だけを受理する。storage key の末尾 version は key generation、record 内の `schemaVersion` はその key 内の形式を表す。
 
 ### 8.3 復元
 
-起動時は master を先に検証し、その後に該当 app の保存 record を decode・検証・参照解決する。不正 record を部分採用しない。復元失敗時は保存原文を上書きせず、該当 root を初期状態で公開し、理由を表示する。他 root の正常復元は妨げない。
+起動時は master を先に検証し、その後に該当 app の保存 record を decode・検証・参照解決する。Treasure では v3 key の存在を最初に確認し、存在する v3 が不正なら legacy へ fallback せず、保存原文を上書きしない。不正 record を部分採用せず、該当 root を初期状態で公開し、理由を表示する。他 root の正常復元は妨げない。
 
-master identity が異なる保存状態は stable ID で reconcile する。解決できない参照を unresolved として保持できる構造上の整合性がある場合は復元し、route から除外する。snapshot 自体の型、重複、rank/mode、順序参照等が不整合なら root 全体を拒否する。
+master identity が異なる保存状態は stable ID で reconcile する。解決できない Treasure registration／point reference／mapCurrentLocation を unresolved annotation として保持できる構造上の整合性がある場合は復元し、正常な地図・完了・経路から除外する。近似地点、同名地点または別エーテライトへ置換しない。listSelection と currentTarget はそれぞれ保存値を復元し、片方から補わない。currentTarget が解決できる場合だけその地図・案内を前面表示し、reload で暗黙に再生しない。snapshot 自体の型、重複、順序参照等が不整合なら root 全体を拒否し、`nextUndoChain` は常に空で開始する。
 
 ### 8.4 旧 Treasure 保存の初回移行
 
-新 Treasure record が存在しない場合だけ、Treasure entry と運用中 Treasure が共有する origin の localStorage に対し、次の優先順で legacy decoder を使う。Persistence adapter はこの origin 内での読込と新 key への write を所有し、Mob app や別 origin へ旧値を渡さない。
+v3 key が存在しない場合だけ、Treasure entry と運用中 Treasure が共有する同一 browser origin の localStorage に対して legacy decoder を起動する。Persistence adapter は key の存在判定、候補選択、exact decode、migration write、旧 key cleanup を所有し、Mob app や別 origin へ旧値を渡さない。候補の優先順位は次のとおりである。
 
-1. 現行統合 key `treasure-compass:sessions:v1` の `treasure.grade` と `treasure.members`。廃止する `product` と `mob` は移行しないが、Treasure 部分と envelope 自体は独立に検証する。
-2. それが存在しない場合、旧 key `treasure-compass:grade` と `treasure-compass:members`。
+1. `treasure-compass:treasure-session:v2`。root の `{schemaVersion, sessionRevision, state}` または `{schemaVersion, sessionRevision, masterIdentity, state}` の二形状を区別して検証し、`schemaVersion: 1` の `{grade, members}` または `schemaVersion: 2` の旧完全 state を受理する。
+2. `treasure-compass:sessions:v1`。root の exact field を検証し、`treasure` の grade／members だけを移行入力とする。`product` は文字列として検証するが移行せず、`mob` は opaque legacy value として検査・コピーしない。
+3. `treasure-compass:grade` と `treasure-compass:members`。二つを一組として読み、grade と 8 件の LegacyMember 配列を検証する。一方だけの存在、不正形状または余分 field は separate boundary 全体の失敗とする。
 
-legacy lookup により grade、mapNo、pointNo を stable ID へ一意に解決できる有効データだけを、新 Treasure の未完了・自動順序・current location なしの working state にする。保存成功後に新 state を公開する。先順位の保存が存在するが不正な場合、古い別 key へ fallback して不整合を隠さず、復元失敗とする。
+上位候補の key が存在して不正な場合は下位候補を読まず、破損を隠さない。複数候補は merge しない。候補が存在しない場合だけ未保存の初期 state を公開する。v2 の旧 route、`isManualSort`、`activeStep`、`bulkText` および `currentMapPoints` は、認識対象の exact shape として検証したうえで、v3 に表現できる完了・順序・order mode・mapCurrentLocations を migration input として保持する。`activeStep`、`bulkText`、selection、current target、undo chain は v3 に対応する旧意味がないため既定化または破棄する。新 v3 に必要な意味は下記の generation 別 migration policy で構築する。
 
-移行手順は次の安全条件を満たす。
+legacy migration は次の generation 別 policy と段階を持つ。
 
-- 新 record が有効なら旧 record を読まない。
-- 読取不能、曖昧、未知参照が一つでもあれば部分移行せず、旧 record を変更しない。
-- 新 record の write 成功前に旧 record を削除・変更しない。
-- 移行後および全消去後に旧 state が復活しないよう、新 record の存在を移行済み marker とする。旧 key の削除は新 record の正常保存後に限る。削除に失敗しても新 record を優先し、旧 key を再移行しない。
-- Mob の旧試作 state は移行しない。
+| legacy source | v3 へ保持する意味 | v3 に存在しないため既定化・保存しない意味 |
+| --- | --- | --- |
+| `treasure-session:v2` の `schemaVersion: 2` | route の `orderNo` による playlist order、各 route step の `isCompleted`、`isManualSort` による order mode、`currentMapPoints` による mapCurrentLocations | listSelection、currentTarget、nextUndoChain、`activeStep`、`bulkText`、`teleportPoint` |
+| `treasure-session:v2` の `schemaVersion: 1` | members の解決済み registration | completed、playlist order、order mode、mapCurrentLocations、listSelection、currentTarget、nextUndoChain |
+| `sessions:v1` の Treasure 部分、または separate keys | grade／members から解決した registration | completed、playlist order、order mode、mapCurrentLocations、listSelection、currentTarget、nextUndoChain |
+
+1. 選択した legacy candidate の全 object、型、値域、重複、順序参照および入れ子 exact field を検証する。
+2. `master-data` の legacy lookup で、legacy grade と `(mapNo, pointNo)` を members、v2 route、v2 `currentMapPoints` 等の各実使用 point reference について stable grade-set／map／point へ一意に解決する。未知、曖昧、参照不能または v3 の `TreasurePointRef` として表現不能な参照が一件でもあれば全体を拒否する。lookup 用の legacy grade は利用者向け表示へ渡さない。
+3. null の空 slot は無視する。地点のある slot は member name を前後空白除去・Unicode NFC 正規化し、空、既定名、正規化後の重複または必須条件不一致があれば匿名登録にせず全体を拒否する。各 occupied member は同じ slot／registration identity を一度だけ持つ。
+4. 各 member を新 registration として registration identity、version projection および stable point reference を構築する。`sessions:v1` と separate keys、または v2 `schemaVersion: 1` では completed=false、`orderMode=auto`、`mapCurrentLocations=[]`、`listSelection=null`、`currentTarget=null` とする。これらの source に存在しない playlist order は、auto なら現行 route planner の成功結果、manual を選べる旧意味がないため slot 順の deterministic order として構築する。旧保存の単一 grade をリスト全体の version として保持しない。
+5. v2 `schemaVersion: 2` では、legacy `memberNo` と新 registrationId の対応を先に確定する。route step を `orderNo` 昇順で playlist order に写し、各 step の `memberNo` と point が同じ registration に対応することを確認する。route step の `isCompleted` を該当 registration の completed へ写し、`isManualSort=true` を `manual`、false を `auto` へ写す。route にない occupied member は失われないよう legacy `memberNo` 昇順で末尾へ加え、その completed は false とする。重複 step、member／point の不一致または order の解決不能は migration 全体を拒否する。
+6. v2 `currentMapPoints` は各 map key と LegacyPoint を lookup し、v3 の `mapCurrentLocations` へ写す。空 object は空配列とする。`activeStep` は currentTarget に変換せず null とし、`bulkText` と v3 に対応しない `teleportPoint` は検証後に保存しない。v2 route が空で playlist order を提供しない場合だけ、`orderMode=auto` なら route planner の成功結果を採用し、manual なら上記の slot 順を採用する。route が存在する場合は、旧順序を再計算で置換せず v3 の playlist order として保持する。
+7. 全 generation で `listSelection=null`、`currentTarget=null`、`nextUndoChain` 空から開始し、`incompleteRoute` は構築した playlist order のうち completed=false の registration reference だけから生成する。v2 の preserved mapCurrentLocations は自動 route の次回再計算起点として利用する。
+
+変換後の v3 を保存して正常に公開するまで、legacy key は変更・削除しない。v2 の表現可能な completed、playlist order、order mode および mapCurrentLocations を保持した v3 が作れない場合も、v3 write を行わず旧保存を保持する。v3 write が失敗した場合は旧保存を保持し、v3 を公開せず、再訪時に再移行できるようにする。v3 write と publish が成功した後だけ旧 key の cleanup を試み、cleanup の失敗は保存済み v3 の有効性を損なわない。v3 key の存在を移行済み marker として扱うため、旧 key が残っても再移行せず、全消去後も旧 state が復活しない。Mob の旧試作 state は移行しない。
+
+この候補選択と migration は同じ browser origin に限定する。path や entry が変わっても同じ origin なら key に到達できる限り移行できるが、異なる origin では旧値を移行成功として扱わず、変更・削除しない。別 origin へ公開するには、旧 key へ到達する承認済み外部移行 boundary が別途必要である。
 
 ### 8.5 全消去
 
@@ -501,7 +547,7 @@ legacy lookup により grade、mapNo、pointNo を stable ID へ一意に解決
 
 ### 9.1 入力と出力
 
-Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、共通 map projection に含まれる有効なエーテライト、order mode を入力する。Treasureのv1では料金・ロード時間を入力に含めない。返り値は次のいずれかである。
+Route planner は、固定した session revision、master identity、未完了の有効 visit、map 別 current location、共通 map projection に含まれる有効なエーテライト、order mode を入力する。Treasure の `listSelection` と `currentTarget` は route の開始地点・対象集合・順序を決める入力に含めず、Treasure の playlist 全体から未完了 registration を route へ投影する。Treasure の v1 では料金・ロード時間を入力に含めない。返り値は次のいずれかである。
 
 - success: visit order、一般モブの採用 candidate、map group order、各 map の開始地点、tie 情報、0件以上の warning。
 - empty: 有効な未完了 visit がない正常結果。
@@ -516,7 +562,7 @@ Application は result の session revision と master identity が現在値に�
 3. 料金およびロード時間は採用条件、warning、failureの判定に使用しない。
 4. 第一評価後に複数候補が残る場合は、同一マップX/Y距離と安定した同率規則で一つの表示順を決める。
 5. 優越されない候補が複数なら tie を保持し、Specification の stable tuple 列で表示採用順を一つ決める。
-6. map ごとに、保存済み current location があればそれを、なければ共通 map projection の各有効 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。raw record や `division=R` は route planner に渡さない。
+6. map ごとに、保存済み current location があればそれを、なければ共通 map projection の各有効 aetheryte を開始候補として、X/Y 直線距離合計が最小の visit order を求める。raw record や `division=R` は route planner に渡さない。Treasure の `mapCurrentLocations` は完了または探索で確定した map ごとの起点だけを供給し、再生・list selection は起点にしない。
 7. 一般モブは全 candidate のうち map 内巡回全体を最短にする一地点を同時に選ぶ。B は全未探索 candidate を visit とする。
 
 料金・ロード時間を評価軸にしない。Z、帰還距離、入力順も評価軸にしない。同率の最終順は Specification の Unicode code point、数値、stable ID の規則を用いる。
@@ -525,11 +571,11 @@ Application は result の session revision と master identity が現在値に�
 
 ### 9.3 自動順序と手動順序
 
-自動順序中の成功した対象追加、置換、削除、完了、取消、B Next、Next 取消、再探索は、変更後 working state から再計算する。計算または保存の失敗時は操作全体を採用しない。
+自動順序中の成功した Treasure 登録、地点置換、削除、個別完了、個別取消、player の「次へ」／「戻る」、および Mob の対象追加、置換、削除、完了、B Next、Next 取消、再探索は、変更後 working state から再計算する。Treasure の player では「次へ」が完了した地点を mapCurrentLocations に記録してから残りを再計算し、現在対象の次を playlist 規則で決める。計算または保存の失敗時は操作全体を採用しない。
 
 手動順序中は既存 visit の相対順序を固定する。新 Treasure、一般、パーティ visit は末尾、新 B の全候補は既存末尾からの最短順でまとまって末尾へ追加する。一般モブの採用 candidate と B の追加順だけは Specification の手動追加規則で決め、その後は明示的な自動計算まで固定する。B candidate は追加後に一件ずつ任意位置へ移動できる。
 
-「経路自動計算」は current state から working result を作り、保存成功時だけ `auto` と新 order を公開する。失敗時は `manual` と既存 order を維持する。
+「経路自動計算」は current state から working result を作り、保存成功時だけ `auto` と新 order を公開する。Treasure の registration／incompleteRoute と Mob の visit はそれぞれの root の canonical state から入力し、list selection・current target や overlay state を route result に混ぜない。失敗時は `manual` と既存 order を維持する。
 
 ## 10. 主要フロー
 
@@ -541,7 +587,25 @@ Application は result の session revision と master identity が現在値に�
 4. coordinator が master と session reference を reconcile する。
 5. 有効 state、unresolved 情報、master/session failure を presentation projection として公開する。
 
-### 10.2 エーテライト案内 overlay
+### 10.2 Treasure 主表示と登録入口
+
+1. Treasure presentation は登録済み registration、playlist order、未完了 route、完了表示、list selection、current target を一つの主表示 projection にまとめる。登録済み集合と巡回経路を別の対象集合として生成しない。
+2. 主表示から手動登録または一括入力の入口を開く。入口の開閉、入力値、候補一覧、行診断および未解決行は presentation／proposal state とし、Treasure session aggregate や localStorage へ直接書き込まない。
+3. 手動入口は利用者向け version projection で候補を絞るだけで、選択された candidate から grade-set／map／point reference を確定する。session coordinator は非空の正規化済み member name と有効な point reference を受け取ったときだけ登録 proposal を作る。
+4. 一括入口は input pipeline が全 version を横断して各行を parse・resolve し、曖昧な candidate を利用者解決へ残す。解決済み行のみを既存 registration と統合し、同一名更新、新規追加、重複、競合および上限超過を一つの proposal にする。入力全体の事前 version selector は作らない。
+5. proposal を session coordinator が現在 published state から working state へ適用し、§8.1 の保存を通過した場合だけ主表示を更新する。全行が適用済みなら入口を閉じて同じ主表示へ戻る。部分適用で未適用行が残る場合は、主表示 projection の更新と未適用行・理由の保持を両立し、未解決行を domain state へ混ぜない。保存失敗時は主表示を更新せず、proposal を再試行可能なまま保持する。
+6. 新規登録は list selection／current target を設定しない。既存 member の地点更新は同じ registration identity を維持し、手動順序の位置と selection/current target の参照を保つ。新地点なら完了を解除し、mapCurrentLocations は変更せず、auto の残りだけを再計算する。
+
+### 10.3 Treasure player 操作
+
+1. リスト項目の選択 command は `listSelection` だけを候補 working state で変更する。current target、前面地図、順序、完了および mapCurrentLocations を変更しない。
+2. 再生 command は selection を優先し、selection がない場合だけ playlist 順の先頭未完了を current target にする。完了済み selection もそのまま前面表示でき、対象がなければ `null` のままとする。再生／一時停止の domain state は作らない。
+3. 次へ command は未完了の current target に限定する。対象を完了し、元の playlist 位置を残し、対象 point を mapCurrentLocations へ記録し、current target の直後から playlist を一周して次の未完了を選ぶ。最後の未完了なら current target を null にする。auto では残りの route を新しい mapCurrentLocations から再計算し、manual では残りの相対順序を維持する。保存成功後、phase が `next` なら既存 chain を保持して直前 state の frame を追加し、phase が `back` または初期状態なら残存 chain を破棄して新しい chain を開始する。
+4. current target がない、完了済み、空または全件完了の場合の次へ command は no-op とし、既存の selection、current target、完了、順序、mapCurrentLocations および undo chain を変更しない。
+5. 戻る command は phase が `next` または `back` で chain に frame がある場合だけ、先頭 frame を一件復元する。対象を未完了へ戻し、元の playlist 位置、操作前の mapCurrentLocations、操作前の current target および route を復元して phase を `back` にする。listSelection は変更しない。最終対象の次へ後に行われた no-op next は chain を消費せず、back 後の next は残存 frame を破棄して新 chain を開始する。
+6. 個別完了／取消は player の next と別 command とし、対象単位で §7.2 の selection/current target 関係を適用する。完了・取消の保存成功後は nextUndoChain を失効させ、他対象の完了や後続操作を巻き戻さない。
+
+### 10.4 エーテライト案内 overlay
 
 1. master adapter は app 固有 master や grade set から独立した共通 map projection を coordinator へ提供する。
 2. coordinator は表示対象 map の projection と、地点選択用なら選択対象 marker の projection を Map UI へ渡す。案内 overlay には全ての有効 aetheryte を渡し、登録対象や完了状態で絞らない。
@@ -549,23 +613,23 @@ Application は result の session revision と master identity が現在値に�
 4. overlay の描画、再描画、pan/zoom およびラベル省略は、application command、session mutation、persistence write を発生させない。案内 icon/label の pointer event は Map UI 内で消費し、地点選択 coordinator へ転送しない。
 5. master revision または表示対象 map が変わった場合だけ新しい共通 projection から再構築し、viewport の変更時は表示 projection だけを再計算する。Master adapter の検証失敗は §12 の failure boundary へ渡し、Map UI は未検証値や座標・名称の推測 fallback を作らない。
 
-### 10.3 Mob ソロ登録
+### 10.5 Mob ソロ登録
 
 検索 projection は Unicode NFC とラテン文字の case-fold を行い、正式名・明示 alias の部分一致と、map 由来 expansion、category/rank filter を AND/OR 規則で適用する。候補行の明示選択でのみ command を発行する。
 
 選択した一般/B target へ現 master の全 candidate reference を登録する。一般は現在 order mode の規則で一 candidate、B は全未探索 candidate を visit 化する。保存成功後も登録 tab と検索・filter の UI-local state を維持する。検索文字列と filter は session 永続化対象にしない。
 
-### 10.4 Mob パーティ登録
+### 10.6 Mob パーティ登録
 
 A/S/SS の選択で Map UI の選択 dialog を開く。dialog には対象 mob の map と有効 candidate marker だけを渡す。marker の click/tap は candidate ID を返し、coordinator が即時登録または置換して保存する。成功時だけ dialog を閉じ、登録 tab に戻る。閉じる操作と無効 marker は state を変えない。
 
-### 10.5 完了、取消、B 探索
+### 10.7 完了、取消、B 探索
 
 完了 command は target を完了し、その全 visit を route から外すが、progress order に残す。取消は当該 target の完了直前 state と位置だけを戻す。
 
 B Next は current candidate を explored にし、その map の current location を当該 candidate に更新する。直前 snapshot を一段だけ保存し、残りを order mode に従って更新する。Next 取消はその snapshot だけを復元する。全候補探索済みなら unfound を導出し、明示的な再探索で全 candidate を unexplored へ戻す。一般とパーティには Next を発行しない。
 
-### 10.6 対象削除
+### 10.8 対象削除
 
 削除は target とその candidate/visit/progress/取消情報を一単位で除く。map 別 current location は戻さない。手動では残りの相対順序を維持し、自動では残りを再計算する。削除操作自体の undo snapshot は持たない。
 
@@ -577,7 +641,7 @@ B Next は current candidate を explored にし、その map の current locati
 
 共通 Map UI は、地点登録用 marker と案内 overlay を別の表示・イベント境界として扱う。案内 overlay は全有効エーテライトのアイコンを実座標へ固定し、町名ラベルだけを表示領域と他ラベルとの関係で省略できる。ラベル配置は Map UI 内の純粋な表示 projection とし、4 CSS px、8方向、矩形、正の面積の重なり、最大8件、安定 ID と候補順の全制約を満たす。overlay の視覚資産と新ラベルデザインは地図背景と別の表示責務にする。
 
-Treasure は既存の一括入力、手動入力、巡回経路への到達性を維持する。Mob は上部にソロ／パーティ switch、その下に登録／巡回経路 tab を持つ。mode と tab を一つの selector に混在させない。登録後は登録 tab に留まる。
+Treasure は登録済み集合、プレイリスト、現在対象、地図・案内および進行を一つの主表示に置き、手動入力と一括入力はそこから開く同格の入口とする。成功後は同じ主表示へ戻し、入口を domain mode や保存 state として表現しない。Mob は上部にソロ／パーティ switch、その下に登録／巡回経路 tab を持つ。mode と tab を一つの selector に混在させない。登録後は登録 tab に留まる。
 
 ### 11.2 画面領域
 
@@ -596,7 +660,10 @@ Treasure は既存の一括入力、手動入力、巡回経路への到達性�
 | stale calculation | result を破棄 | 現在 state を維持し、必要なら現 revision で再要求 |
 | save failure | working state を破棄 | 操作前表示と最後の正常保存を維持 |
 | restore failure | root 全体を採用しない | 該当 root を初期表示し、元保存を上書きしない |
-| legacy migration failure | 新 record を作らない | 旧保存を保持し、部分移行しない |
+| v3 structural failure | v3 decoder が root 全体を拒否し、legacy へ fallback しない | 該当 Treasure root を初期表示し、v3 保存を上書きしない |
+| legacy migration failure | legacy candidate 全体を拒否し、新 v3 を作らない | 旧保存を保持し、部分移行しない |
+| legacy cleanup failure | v3 の正常保存・公開を優先し、旧 key は残り得る | v3 を現行として扱い、旧 key を再移行しない |
+| Treasure player no-op | domain transition と persistence write を発生させない | 境界操作前の selection／target／進捗／undo chain を維持 |
 | aetheryte record failure / R exclusion | invalid・重複・参照不能・範囲外 record と R を projection から除外し、diagnostic へ理由を渡す | 他の有効な案内を継続し、全件無効時だけ既存の master 不備・経路計算不能を適用 |
 | image source / license 未確認 | 背景 asset としての採用を停止し、動的案内の正本とは分離する | 未確認画像や埋め込み案内を runtime の正常 asset として表示しない |
 
@@ -633,11 +700,11 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 - 通常の地図表示と地点選択表示の共通 map projection、全有効エーテライトの継続表示、アイコン固定、町名ラベルの8方向配置・重なり回避・最大8件・省略、案内表示の非操作性と session 非変更。
 - アイコン視覚資産の出典・利用条件確認、新ラベルデザインの地図画像由来でないこと、未確認 asset が採用されないこと。
 - 初期日本語表示、安定 ID から言語別表示名を解決する境界、未提供言語を翻訳・推測しないこと、Mob 多言語名称照合を提供しないこと。
-- Treasure の手動・一括入力、8 枠、置換、grade 変更、旧保存移行、legacy resurrection 防止。
+- Treasure の手動・一括入力、8 枠、置換、grade 変更、v2 の route／`isCompleted`／`isManualSort`／`currentMapPoints` の v3 への保持、v1／統合 v1／separate keys でのみ存在しない意味を既定化する移行、legacy resurrection 防止。
 - Mob の正式名・alias 検索、filter、mode eligibility、全候補登録、一般一地点、B 全候補、パーティ即時登録・置換。
-- マップ間遷移最小、料金・ロード時間を使用しないこと、複数 aetheryte、二次元最短、同率 stable order。
+- マップ間遷移最小、複数 aetheryte、二次元最短、同率 stable order。Treasure の v1 route master は料金・ロード時間を field、validation、data preparation の対象にしない。
 - 手動順序の末尾追加・位置維持・候補単位並べ替え、自動計算成功時だけの切替。
-- 完了・取消、B Next・一段取消・unfound・再探索、対象削除、map 別 current location。
+- 完了・取消、Treasure の next→next→back→back と back 後の next 分岐、no-op next の chain 維持、B Next・一段取消・unfound・再探索、対象削除、map 別 current location。
 - 各 root の独立保存・復元・全消去、破損保存、write failure、stale calculation。
 - 320 CSS px 以上の縦横 viewport、touch marker、非 drag の並べ替え、dialog、orientation change。
 
@@ -648,18 +715,21 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 | Specification / Requirement | Design の具体化 |
 | --- | --- |
 | §1、§3 / REQ-F-001〜005 | 1、3、7.3、8.2、11 |
-| §4 / REQ-T-001〜003 | 4.3、6、7.2、8.4、10.1 |
-| §5 / REQ-M-001〜008 | 4.4、7.3〜7.5、10.2、10.3、10.5 |
+| §4 / REQ-T-001〜003 | 4.3、6、7.2、8.4、10.1〜10.2 |
+| §5 / REQ-M-001〜008 | 4.4、7.3〜7.5、10.5〜10.7 |
 | §6 / REQ-R-001〜005 | 4.2、5、9.1、9.2 |
 | §7 / REQ-R-006〜008 | 7.1、9.3、11 |
-| §8 / REQ-P-001〜005 | 7.2〜7.5、10.4 |
-| §9 / REQ-L-001〜006 | 7、8、10.1、12 |
+| §8 / REQ-P-001〜005 | 7.2〜7.5、10.7 |
+| §9 / REQ-L-001〜006 | 7、8、8.4〜8.5、10.1、12 |
 | §10 / REQ-A-001〜002、REQ-D-001〜003 | 2、4〜6、12 |
 | §11 / REQ-Q-001 | 3.1、11、14 |
 | §1.2 / REQ-S-001〜005 | 1.3、4、12 |
 | §12 / SPC-AC-001〜021 | 3〜14 の責務・flow・failure・test 引継ぎ |
-| §4.4、§10.1〜10.3 / SPC-AC-022〜024、REQ-F-006〜008、REQ-A-003〜004 | 1.1、3.1〜3.2、4.2、5、6、7.1、9.1、10.2、11.1、12、13、14 |
-| §10.3 / SPC-AC-025、REQ-D-004 | 1.1、4.2、10.2、13、14、16 |
+| §9.1.1〜9.2 / SPC-AC-014、SPC-AC-017、REQ-Q-002 | 8.2〜8.5、12、14 |
+| §4.3.1 / SPC-AC-028、REQ-T-007、REQ-P-001〜002 | 7.2、8.1、10.3、12、14 |
+| §12 / SPC-AC-026〜031 | 1.1、3.1〜3.2、4.3、7.2、8.1〜8.4、9.3、10.2〜10.3、12、14 |
+| §4.4、§10.1〜10.3 / SPC-AC-022〜024、REQ-F-006〜008、REQ-A-003〜004 | 1.1、3.1〜3.2、4.2、5、6、7.1、9.1、10.4、11.1、12、13、14 |
+| §10.3 / SPC-AC-025、REQ-D-004 | 1.1、4.2〜4.3、10.2、10.4、13、14 |
 
 ## 16. 未決定事項と参照資料
 
@@ -675,11 +745,12 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 参照資料:
 
 - [Specification](../specification/specification.md)
-- [Specification Review 009](../reviews/specification/specification-review-009.md)
+- [Specification Review 013](../reviews/specification/specification-review-013.md)
 - [Requirements](../requirements/requirements.md)
-- [Requirements Review 009](../reviews/requirements/requirements-review-009.md)
+- [Requirements Review 011](../reviews/requirements/requirements-review-011.md)
 - [Concept](../concept/concept.md)
 - [Concept Review 005](../reviews/concept/concept-review-005.md)
+- [Design Review 005](../reviews/design/design-review-005.md)
 - [README](../../README.md)
 - [Project Memory](../../MEMORY.md)
 
