@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./legacy-report": "./src/legacy-report.ts",
     "./data/map-master.v1.json": "./data/map-master.v1.json",
-    "./data/treasure-master.v1.json": "./data/treasure-master.v1.json"
+    "./data/treasure-master.v1.json": "./data/treasure-master.v1.json",
+    "./migration/legacy-treasure-point.v1.json": "./migration/legacy-treasure-point.v1.json"
   },
   "dependencies": {
     "@treasure-compass/map-core": "workspace:*"

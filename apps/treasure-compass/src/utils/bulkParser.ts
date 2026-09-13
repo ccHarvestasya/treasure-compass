@@ -1,118 +1,164 @@
-import type { MapDataItem, Point } from "@/types";
 import {
   COORD_SEARCH_RADIUS_1,
   COORD_SEARCH_RADIUS_2,
-  DEFAULT_MEMBER_NAME,
 } from "@/constants";
-
-/**
- * FFXIVパーティチャットからメンバー情報を一括解析する
- * 形式: (★PlayerName)  マップ名 (X.x, Y.y)
- *       (.●PlayerName) マップ名 (X.x, Y.y)  など
- */
+import type { MapDataItem, Point, TreasureCandidate, TreasureCatalog } from "@/types";
 
 export interface ParsedMember {
+  lineNumber: number;
   memberName: string;
   mapName: string;
   coordX: number;
   coordY: number;
 }
 
-// FFXIVチャット座標の形式に対応
-// 元の形式: /.*\((.★|.●|.▲|.◆|.♥|.♠|.♣|.)(.*)\.{2}(.*)\s\(\s(\d+\.\d+)\s{1,2},\s(\d+\.\d+)\s\)/
-// グループ1=プレフィックス(+任意アイコン)、グループ2=名前、グループ3=マップ、グループ4,5=座標
-const CHAT_REGEX =
-  /.*[（(](.[★☆●▲◆♥♠♣◇♦♡○□△▽]?)(.*?)[)）]\s+(.+?)\s+[（(]\s*(\d+(?:\.\d+)?)\s*[,，]\s*(\d+(?:\.\d+)?)\s*[)）]/;
+export type BulkRowStatus = "resolved" | "ambiguous" | "unresolved";
+
+export interface BulkRow {
+  lineNumber: number;
+  raw: string;
+  parsed: ParsedMember | null;
+  status: BulkRowStatus;
+  reason: string | null;
+  candidates: TreasureCandidate[];
+  selectedCandidate: TreasureCandidate | null;
+}
+
+const MARKERS = "★☆●▲◆♥♠♣◇♦♡○□△▽";
+const FFXIV_PRIVATE_USE_AREA_PREFIX = /^[\uE000-\uF8FF]/;
+const NUMBER = "(\\d+(?:\\.\\d+)?)";
+const CHAT_LINE = new RegExp(
+  `[（(]([${MARKERS}]?)([^()（）]+)[)）]\\s+(.+?)\\s+[（(]\\s*${NUMBER}\\s*[,，]\\s*${NUMBER}\\s*[)）]`,
+);
+const COORDINATE_EXPRESSION = /[（(]\s*\d+(?:\.\d+)?\s*[,，]\s*\d+(?:\.\d+)?\s*[)）]/g;
+
+function normalizeName(value: string): string {
+  return value.trim().normalize("NFC");
+}
+
+function normalizeMemberName(value: string): string {
+  return value
+    .trim()
+    .replace(FFXIV_PRIVATE_USE_AREA_PREFIX, "")
+    .replace(new RegExp(`^[${MARKERS}]+`), "")
+    .normalize("NFC");
+}
+
+function coordinateExpressionCount(value: string): number {
+  return value.match(COORDINATE_EXPRESSION)?.length ?? 0;
+}
+
+function distanceToCoordinate(point: Point, x: number, y: number): number {
+  return Math.hypot(point.posX / 10 - x, point.posY / 10 - y);
+}
+
+function candidateDistance(candidate: TreasureCandidate, x: number, y: number): number {
+  return distanceToCoordinate(candidate.point, x, y);
+}
 
 export function parseBulkInput(text: string): ParsedMember[] {
-  const lines = text.split("\n").filter((l) => l.trim().length > 0);
-  const results: ParsedMember[] = [];
-
-  for (const line of lines) {
-    const match = CHAT_REGEX.exec(line);
-    if (!match) continue;
-
-    const memberName = match[2].trim() || DEFAULT_MEMBER_NAME;
-    const mapName = match[3].trim();
-    const coordX = parseFloat(match[4]);
-    const coordY = parseFloat(match[5]);
-
-    results.push({ memberName, mapName, coordX, coordY });
-  }
-
-  return results;
+  return text
+    .split(/\r?\n/)
+    .map((raw, index) => ({ raw, lineNumber: index + 1 }))
+    .filter(({ raw }) => raw.trim().length > 0)
+    .flatMap(({ raw, lineNumber }) => {
+      if (coordinateExpressionCount(raw) !== 1) return [];
+      const match = CHAT_LINE.exec(raw);
+      if (!match) return [];
+      const memberName = normalizeMemberName(match[2] ?? "");
+      const mapName = normalizeName(match[3] ?? "");
+      const coordX = Number(match[4]);
+      const coordY = Number(match[5]);
+      if (!memberName || !mapName || !Number.isFinite(coordX) || !Number.isFinite(coordY)) return [];
+      return [{ lineNumber, memberName, mapName, coordX, coordY }];
+    });
 }
 
-/**
- * FFXIV表示座標(例: 12.3, 45.6)からJSONポイントを探す
- * FFXIV座標 = (posX / 10) に相当（スケール10倍）
- */
-export function findPointByCoord(
-  coordX: number,
-  coordY: number,
-  mapData: MapDataItem,
-): Point | null {
-  const treasurePoints = mapData.point.filter((p) => p.division === "P");
-
-  // ±1.0 で検索
-  const found = searchNearest(
-    coordX,
-    coordY,
-    treasurePoints,
-    COORD_SEARCH_RADIUS_1,
-  );
-  if (found) return found;
-
-  // ±2.0 に拡張
-  return searchNearest(coordX, coordY, treasurePoints, COORD_SEARCH_RADIUS_2);
-}
-
-function searchNearest(
-  coordX: number,
-  coordY: number,
-  points: Point[],
-  radius: number,
-): Point | null {
-  let nearest: Point | null = null;
-  let minDist = Infinity;
-
-  for (const p of points) {
-    // JSONのposX/posY → FFXIV座標変換 (÷10 + オフセット)
-    const px = p.posX / 10;
-    const py = p.posY / 10;
-    const dx = coordX - px;
-    const dy = coordY - py;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist <= radius && dist < minDist) {
-      minDist = dist;
-      nearest = p;
-    }
-  }
-
-  return nearest;
-}
-
-/**
- * マップ名からMapDataItemを探す（部分一致対応）
- */
-export function findMapByName(
+export function findMapCandidatesByName(
   mapName: string,
   allMapData: MapDataItem[],
-): MapDataItem | null {
-  // 完全一致優先
+): MapDataItem[] {
+  const name = normalizeName(mapName);
   const exact = allMapData.filter(
-    (m) => m.mapName === mapName || m.mapNameShort === mapName,
+    (map) => map.mapName === name || map.mapNameShort === name,
   );
-  if (exact.length === 1) return exact[0] ?? null;
-  if (exact.length > 1) return null;
-
-  // 部分一致
+  if (exact.length > 0) return [...new Map(exact.map((map) => [map.mapId ?? String(map.mapNo), map])).values()];
   const partial = allMapData.filter(
-      (m) =>
-        m.mapName.includes(mapName) ||
-        mapName.includes(m.mapName) ||
-        m.mapNameShort.includes(mapName) ||
-        mapName.includes(m.mapNameShort),
+    (map) =>
+      map.mapName.includes(name) ||
+      name.includes(map.mapName) ||
+      map.mapNameShort.includes(name) ||
+      name.includes(map.mapNameShort),
   );
-  return partial.length === 1 ? partial[0] ?? null : null;
+  return [...new Map(partial.map((map) => [map.mapId ?? String(map.mapNo), map])).values()];
+}
+
+export function findMapByName(mapName: string, allMapData: MapDataItem[]): MapDataItem | null {
+  const candidates = findMapCandidatesByName(mapName, allMapData);
+  return candidates.length === 1 ? candidates[0] ?? null : null;
+}
+
+function pointsNear(
+  x: number,
+  y: number,
+  points: Point[],
+  radius: number,
+): Point[] {
+  return points
+    .filter((point) => point.division === "P" && distanceToCoordinate(point, x, y) <= radius)
+    .sort((left, right) => {
+      const distance = distanceToCoordinate(left, x, y) - distanceToCoordinate(right, x, y);
+      return distance || (left.stableId ?? "").localeCompare(right.stableId ?? "");
+    });
+}
+
+export function findPointByCoord(coordX: number, coordY: number, mapData: MapDataItem): Point | null {
+  const first = pointsNear(coordX, coordY, mapData.point, COORD_SEARCH_RADIUS_1);
+  if (first.length > 0) return first[0] ?? null;
+  return pointsNear(coordX, coordY, mapData.point, COORD_SEARCH_RADIUS_2)[0] ?? null;
+}
+
+function candidatesNear(catalog: TreasureCatalog, map: MapDataItem, x: number, y: number, radius: number): TreasureCandidate[] {
+  return catalog.candidates
+    .filter((candidate) => candidate.map.mapId === map.mapId && candidate.map.mapNo === map.mapNo)
+    .filter((candidate) => candidateDistance(candidate, x, y) <= radius)
+    .sort((left, right) => {
+      const distance = candidateDistance(left, x, y) - candidateDistance(right, x, y);
+      return distance || left.pointRef.pointId.localeCompare(right.pointRef.pointId);
+    });
+}
+
+export function analyzeBulkInput(text: string, catalog: TreasureCatalog): BulkRow[] {
+  return text
+    .split(/\r?\n/)
+    .map((raw, index) => ({ raw, lineNumber: index + 1 }))
+    .filter(({ raw }) => raw.trim().length > 0)
+    .map(({ raw, lineNumber }) => {
+      if (coordinateExpressionCount(raw) > 1) {
+        return { lineNumber, raw, parsed: null, status: "ambiguous", reason: "複数の座標候補があります", candidates: [], selectedCandidate: null };
+      }
+      const match = CHAT_LINE.exec(raw);
+      if (!match) {
+        return { lineNumber, raw, parsed: null, status: "unresolved", reason: "形式を認識できません", candidates: [], selectedCandidate: null };
+      }
+      const memberName = normalizeMemberName(match[2] ?? "");
+      const mapName = normalizeName(match[3] ?? "");
+      const coordX = Number(match[4]);
+      const coordY = Number(match[5]);
+      const parsed = { lineNumber, memberName, mapName, coordX, coordY };
+      if (!memberName) return { lineNumber, raw, parsed, status: "unresolved", reason: "名前がありません", candidates: [], selectedCandidate: null };
+      if (!Number.isFinite(coordX) || !Number.isFinite(coordY)) return { lineNumber, raw, parsed, status: "unresolved", reason: "座標が不正です", candidates: [], selectedCandidate: null };
+      const maps = findMapCandidatesByName(mapName, catalog.mapData.mapData);
+      if (maps.length === 0) return { lineNumber, raw, parsed, status: "unresolved", reason: "マップが見つかりません", candidates: [], selectedCandidate: null };
+      const candidates = maps.flatMap((map) => candidatesNear(catalog, map, coordX, coordY, COORD_SEARCH_RADIUS_1));
+      const expanded = candidates.length > 0 ? candidates : maps.flatMap((map) => candidatesNear(catalog, map, coordX, coordY, COORD_SEARCH_RADIUS_2));
+      const unique = [...new Map(expanded.map((candidate) => [
+        `${candidate.pointRef.gradeSetId}:${candidate.pointRef.mapId}:${candidate.pointRef.pointId}`,
+        candidate,
+      ])).values()];
+      if (unique.length === 0) return { lineNumber, raw, parsed, status: "unresolved", reason: "座標に一致する地点がありません", candidates: [], selectedCandidate: null };
+      if (maps.length > 1) return { lineNumber, raw, parsed, status: "ambiguous", reason: "複数の正規マップに一致します", candidates: unique, selectedCandidate: null };
+      if (unique.length === 1) return { lineNumber, raw, parsed, status: "resolved", reason: null, candidates: unique, selectedCandidate: unique[0] ?? null };
+      return { lineNumber, raw, parsed, status: "ambiguous", reason: "バージョンまたは地点が曖昧です", candidates: unique, selectedCandidate: null };
+    });
 }

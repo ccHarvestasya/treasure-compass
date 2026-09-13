@@ -1,182 +1,256 @@
-import type { Point, MapDataItem, RouteStep } from '@/types';
-/** 2点間のゲーム内 X/Y 二次元距離 */
+import type { MapDataItem, Point, RouteStep } from "@/types";
+
 function calcDistance(a: Point, b: Point): number {
-  const dx = b.posX - a.posX;
-  const dy = b.posY - a.posY;
-  return Math.hypot(dx, dy);
+  return Math.hypot(b.posX - a.posX, b.posY - a.posY);
 }
 
-/** 配列の順列をすべて生成 */
-function permutations<T>(arr: T[]): T[][] {
-  if (arr.length <= 1) return [arr];
+function permutations<T>(items: T[]): T[][] {
+  if (items.length <= 1) return [items];
   const result: T[][] = [];
-  for (let i = 0; i < arr.length; i++) {
-    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
-    for (const perm of permutations(rest)) {
-      result.push([arr[i], ...perm]);
+  for (let index = 0; index < items.length; index += 1) {
+    const rest = [...items.slice(0, index), ...items.slice(index + 1)];
+    for (const permutation of permutations(rest)) {
+      result.push([items[index]!, ...permutation]);
     }
   }
   return result;
 }
 
-function routeTieKey(
-  steps: Array<{ mapNo: number; memberNo: number; point: Point }>,
-): string {
-  return steps
-    .map((step) =>
-      [step.mapNo, step.point.posX, step.point.posY, step.memberNo, step.point.pointNo].join(":"),
-    )
-    .join("|");
+function mapKey(map: { mapId?: string; mapNo: number }): string {
+  return map.mapId?.normalize("NFC") ?? String(map.mapNo);
 }
 
-function memberTieKey(
-  members: Array<{ memberNo: number }>,
-): string {
-  return members.map((member) => String(member.memberNo).padStart(4, "0")).join(",");
+function compareCodePointStrings(left: string, right: string): number {
+  const leftPoints = Array.from(left);
+  const rightPoints = Array.from(right);
+  const length = Math.min(leftPoints.length, rightPoints.length);
+  for (let index = 0; index < length; index += 1) {
+    const leftCodePoint = leftPoints[index]!.codePointAt(0)!;
+    const rightCodePoint = rightPoints[index]!.codePointAt(0)!;
+    if (leftCodePoint !== rightCodePoint) return leftCodePoint - rightCodePoint;
+  }
+  return leftPoints.length - rightPoints.length;
 }
 
-/** 最短経路の計算結果 */
+function comparePoint(left: Point | undefined, right: Point | undefined): number {
+  if (!left && !right) return 0;
+  if (!left) return -1;
+  if (!right) return 1;
+  return left.posX - right.posX || left.posY - right.posY || compareCodePointStrings(left.stableId ?? "", right.stableId ?? "");
+}
+
+function compareRouteSteps(
+  left: Array<{ registrationId?: string; mapId?: string; mapNo: number; startPoint?: Point; point: Point }>,
+  right: Array<{ registrationId?: string; mapId?: string; mapNo: number; startPoint?: Point; point: Point }>,
+): number {
+  const length = Math.max(left.length, right.length);
+  for (let index = 0; index < length; index += 1) {
+    const leftStep = left[index];
+    const rightStep = right[index];
+    if (!leftStep && !rightStep) continue;
+    if (!leftStep) return -1;
+    if (!rightStep) return 1;
+    const mapComparison = compareCodePointStrings(
+      (leftStep.mapId ?? String(leftStep.mapNo)).normalize("NFC"),
+      (rightStep.mapId ?? String(rightStep.mapNo)).normalize("NFC"),
+    );
+    if (mapComparison !== 0) return mapComparison;
+    const xComparison = leftStep.point.posX - rightStep.point.posX;
+    if (xComparison !== 0) return xComparison;
+    const yComparison = leftStep.point.posY - rightStep.point.posY;
+    if (yComparison !== 0) return yComparison;
+    const targetComparison = compareCodePointStrings(
+      leftStep.point.stableId ?? leftStep.registrationId ?? "",
+      rightStep.point.stableId ?? rightStep.registrationId ?? "",
+    );
+    if (targetComparison !== 0) return targetComparison;
+  }
+  for (let index = 0; index < length; index += 1) {
+    const leftStep = left[index];
+    const rightStep = right[index];
+    if (!leftStep && !rightStep) continue;
+    if (!leftStep) return -1;
+    if (!rightStep) return 1;
+    const startComparison = comparePoint(leftStep.startPoint, rightStep.startPoint);
+    if (startComparison !== 0) return startComparison;
+  }
+  return 0;
+}
+
+export interface ShortestRouteInput {
+  registrationId?: string;
+  memberNo: number;
+  memberName: string;
+  mapId?: string;
+  mapNo: number;
+  mapName: string;
+  mapNameShort: string;
+  mapPoint: Point;
+}
+
 export interface ShortestRouteResult {
   orderedSteps: Array<{
+    registrationId?: string;
     memberNo: number;
+    mapId?: string;
     mapNo: number;
     mapName: string;
     mapNameShort: string;
     memberName: string;
     point: Point;
+    startPoint?: Point;
     teleportPoint?: Point;
   }>;
   totalDistance: number;
-  failure?: { reason: 'missing-aetheryte'; mapNos: number[] };
+  tieCandidates?: Array<{
+    orderedSteps: ShortestRouteResult["orderedSteps"];
+    totalDistance: number;
+  }>;
+  failure?: { reason: "missing-aetheryte"; mapNos: number[] };
 }
 
-/** 
- * メンバーリストから最短巡回経路を計算する
- * マップごとにグループ化し、テレポートポイントを始点として
- * permutationで全パターンを評価する
- */
+/** マップ遷移数を先に固定し、同一マップ内の X/Y 距離だけを最小化する。 */
 export function calcShortestRoute(
-  members: Array<{
-    memberNo: number;
-    memberName: string;
-    mapNo: number;
-    mapName: string;
-    mapNameShort: string;
-    mapPoint: Point;
-  }>,
+  members: ShortestRouteInput[],
   allMapData: MapDataItem[],
   currentMapPoints: Readonly<Record<string, Point>> = {},
 ): ShortestRouteResult {
-  // マップNoでグループ化
-  const mapGroups = new Map<number, typeof members>();
-  for (const m of members) {
-    const arr = mapGroups.get(m.mapNo) ?? [];
-    arr.push(m);
-    mapGroups.set(m.mapNo, arr);
+  if (members.length === 0) return { orderedSteps: [], totalDistance: 0 };
+  const mapGroups = new Map<string, ShortestRouteInput[]>();
+  for (const member of members) {
+    const key = member.mapId ?? String(member.mapNo);
+    const group = mapGroups.get(key) ?? [];
+    group.push(member);
+    mapGroups.set(key, group);
   }
 
-  // マップが1つしかない場合も含めて、マップ訪問順の最適化
-  const mapNos = Array.from(mapGroups.keys());
-
-  let bestSteps: ShortestRouteResult['orderedSteps'] = [];
+  let bestSteps: ShortestRouteResult["orderedSteps"] = [];
   let bestDistance = Infinity;
+  const bestTieCandidates: Array<{
+    orderedSteps: ShortestRouteResult["orderedSteps"];
+    totalDistance: number;
+  }> = [];
+  const mapOrders = permutations([...mapGroups.keys()]);
 
-  // マップ訪問順の全順列を試す（マップ数が少ないので許容範囲）
-  for (const mapOrder of permutations(mapNos)) {
-    let totalDist = 0;
-    const steps: ShortestRouteResult['orderedSteps'] = [];
+  for (const mapOrder of mapOrders) {
+    let totalDistance = 0;
+    const steps: ShortestRouteResult["orderedSteps"] = [];
+    const mapCandidateGroups: ShortestRouteResult["orderedSteps"][][] = [];
+    for (const key of mapOrder) {
+      const group = mapGroups.get(key)!;
+      const mapInfo = allMapData.find((map) => mapKey(map) === key);
+      const teleportPoints = mapInfo?.point.filter((point) => point.division === "T") ?? [];
+      const currentPoint = currentMapPoints[key];
+      let bestMapDistance = Infinity;
+      const bestMapCandidates: ShortestRouteResult["orderedSteps"][] = [];
 
-    for (const mapNo of mapOrder) {
-      const group = mapGroups.get(mapNo)!;
-      const mapInfo = allMapData.find(m => m.mapNo === mapNo);
-      const teleportPoints = mapInfo?.point.filter(p => p.division === 'T') ?? [];
-      const currentPoint = currentMapPoints[String(mapNo)];
-
-      // このマップ内でのメンバー順序の最適化
-      // テレポートポイントからの最短順序を計算
-      let bestMapSteps: typeof steps = [];
-      let bestMapDist = Infinity;
-
-      const tryFromStart = (startPoint: Point | null, teleportPoint?: Point) => {
-        for (const memberOrder of permutations(group)) {
-          let dist = 0;
-          let cur = startPoint;
-          if (teleportPoint) cur = teleportPoint;
-          for (const m of memberOrder) {
-            if (cur) dist += calcDistance(cur, m.mapPoint);
-            cur = m.mapPoint;
-          }
-          if (
-            dist < bestMapDist ||
-            (dist === bestMapDist &&
-              memberTieKey(memberOrder) < memberTieKey(bestMapSteps))
-          ) {
-            bestMapDist = dist;
-            bestMapSteps = memberOrder.map(m => ({
-              memberNo: m.memberNo,
-              mapNo: m.mapNo,
-              mapName: m.mapName,
-              mapNameShort: m.mapNameShort,
-              memberName: m.memberName,
-              point: m.mapPoint,
-              teleportPoint: teleportPoint,
-            }));
-            // teleportPointはマップ最初のstepにのみ付与
-            if (bestMapSteps.length > 0 && teleportPoint) {
-              bestMapSteps = bestMapSteps.map((s, i) => ({
-                ...s,
-                teleportPoint: i === 0 ? teleportPoint : undefined,
-              }));
-            }
-          }
-        }
-      };
-
-      if (currentPoint) {
-        tryFromStart(currentPoint);
-      } else {
-        // 現在地点がないマップはエーテライトを起点とする。
-        for (const tp of teleportPoints) {
-          tryFromStart(null, tp);
-        }
-        if (teleportPoints.length === 0) {
-          return {
-            orderedSteps: [],
-            totalDistance: Infinity,
-            failure: { reason: 'missing-aetheryte', mapNos: [mapNo] },
-          };
-        }
+      const starts: Array<{ startPoint: Point; teleportPoint?: Point }> =
+        currentPoint
+          ? [{ startPoint: currentPoint }]
+          : teleportPoints.map((point) => ({ startPoint: point, teleportPoint: point }));
+      if (starts.length === 0) {
+        return {
+          orderedSteps: [],
+          totalDistance: Infinity,
+          failure: { reason: "missing-aetheryte", mapNos: [group[0]!.mapNo] },
+        };
       }
 
-      totalDist += bestMapDist;
+      for (const start of starts) {
+        for (const order of permutations(group)) {
+          let distance = 0;
+          let current: Point | null = start.startPoint;
+          for (const member of order) {
+            if (current) distance += calcDistance(current, member.mapPoint);
+            current = member.mapPoint;
+          }
+          const candidateSteps = order.map((member, index) => ({
+            registrationId: member.registrationId,
+            memberNo: member.memberNo,
+            mapId: member.mapId,
+            mapNo: member.mapNo,
+            mapName: member.mapName,
+            mapNameShort: member.mapNameShort,
+            memberName: member.memberName,
+            point: member.mapPoint,
+            ...(index === 0 ? { startPoint: start.startPoint } : {}),
+            ...(index === 0 && start.teleportPoint
+              ? { teleportPoint: start.teleportPoint }
+              : {}),
+          }));
+          if (distance < bestMapDistance) {
+            bestMapDistance = distance;
+            bestMapCandidates.length = 0;
+            bestMapCandidates.push(candidateSteps);
+          } else if (distance === bestMapDistance) {
+            bestMapCandidates.push(candidateSteps);
+          }
+        }
+      }
+      bestMapCandidates.sort((left, right) => compareRouteSteps(left, right));
+      const bestMapSteps = bestMapCandidates[0] ?? [];
+      totalDistance += bestMapDistance;
       steps.push(...bestMapSteps);
+      mapCandidateGroups.push(bestMapCandidates);
     }
 
-    if (
-      totalDist < bestDistance ||
-      (totalDist === bestDistance && routeTieKey(steps) < routeTieKey(bestSteps))
-    ) {
-      bestDistance = totalDist;
-      bestSteps = steps;
+    const routeCandidates: ShortestRouteResult["orderedSteps"][] = [steps];
+    let offset = 0;
+    for (const candidates of mapCandidateGroups) {
+      const selected = candidates[0] ?? [];
+      for (const alternative of candidates.slice(1)) {
+        routeCandidates.push([
+          ...steps.slice(0, offset),
+          ...alternative,
+          ...steps.slice(offset + selected.length),
+        ]);
+      }
+      offset += selected.length;
+    }
+    for (const routeCandidate of routeCandidates) {
+      if (totalDistance < bestDistance) {
+        bestDistance = totalDistance;
+        bestSteps = routeCandidate;
+        bestTieCandidates.length = 0;
+        bestTieCandidates.push({ orderedSteps: routeCandidate, totalDistance });
+      } else if (totalDistance === bestDistance) {
+        bestTieCandidates.push({ orderedSteps: routeCandidate, totalDistance });
+        if (compareRouteSteps(routeCandidate, bestSteps) < 0) bestSteps = routeCandidate;
+      }
     }
   }
-
-  return { orderedSteps: bestSteps, totalDistance: bestDistance };
+  const uniqueCandidates = new Map<string, { orderedSteps: ShortestRouteResult["orderedSteps"]; totalDistance: number }>();
+  for (const candidate of bestTieCandidates) {
+    const key = candidate.orderedSteps.map((step) =>
+      `${step.mapId ?? step.mapNo}:${step.point.posX}:${step.point.posY}:${step.point.stableId ?? step.registrationId ?? ""}:${step.startPoint?.stableId ?? ""}`,
+    ).join("|");
+    uniqueCandidates.set(key, candidate);
+  }
+  const tieCandidates = [...uniqueCandidates.values()].sort((left, right) =>
+    compareRouteSteps(left.orderedSteps, right.orderedSteps),
+  );
+  return {
+    orderedSteps: bestSteps,
+    totalDistance: bestDistance,
+    tieCandidates,
+  };
 }
 
-/** RouteStep配列に変換 */
 export function toRouteSteps(
-  result: ShortestRouteResult['orderedSteps'],
+  result: ShortestRouteResult["orderedSteps"],
 ): RouteStep[] {
-  return result.map((s, i) => ({
-    orderNo: i + 1,
-    memberNo: s.memberNo,
-    mapNo: s.mapNo,
-    mapName: s.mapName,
-    mapNameShort: s.mapNameShort,
-    memberName: s.memberName,
-    point: s.point,
-    teleportPoint: s.teleportPoint,
+  return result.map((step, index) => ({
+    orderNo: index + 1,
+    registrationId: step.registrationId,
+    memberNo: step.memberNo,
+    mapId: step.mapId,
+    mapNo: step.mapNo,
+    mapName: step.mapName,
+    mapNameShort: step.mapNameShort,
+    memberName: step.memberName,
+    point: step.point,
+    startPoint: step.startPoint,
+    teleportPoint: step.teleportPoint,
     isCompleted: false,
   }));
 }

@@ -1,13 +1,20 @@
-import type { Grade } from "@/types";
+import type { Grade, TreasureVersion } from "@/types";
 import { TREASURE_MEMBER_SLOTS } from "@treasure-compass/treasure-domain";
 
 export const CANVAS_SIZE = 658;
 export const FULL_PARTY = TREASURE_MEMBER_SLOTS;
-export const TELEPORT_TIME_COST = 25;
-export const BULK_INPUT_DELAY_MS = 1500;
 export const COORD_SEARCH_RADIUS_1 = 1.0;
 export const COORD_SEARCH_RADIUS_2 = 2.0;
 export const FFXIV_COORD_SCALE = 10;
+
+/** 旧 UI caller 用の解析待ち時間。登録の可否は parser/store が判定する。 */
+export const BULK_INPUT_DELAY_MS = 1500;
+
+/**
+ * 匿名登録を作らないための無効値。登録処理は空文字を必ず拒否する。
+ * 新しい UI ではこの値を表示名として補完しない。
+ */
+export const DEFAULT_MEMBER_NAME = "";
 
 export const STORAGE_KEY_GRADE = "treasure-compass:grade";
 export const STORAGE_KEY_MEMBERS = "treasure-compass:members";
@@ -45,6 +52,15 @@ export const GRADE_CONFIG: GradeConfig[] = [
   // 新グレード追加時は、対応するバージョン管理済み master data も追加する。
 ];
 
+export const VERSION_BY_GRADE: Readonly<Record<number, TreasureVersion>> = {
+  8: "3.x",
+  10: "4.x",
+  12: "5.x",
+  14: "6.x",
+  17: "7.x",
+  18: "7.x",
+};
+
 export const GRADES: Grade[] = GRADE_CONFIG.map((c) => c.grade);
 export const DEFAULT_GRADE: Grade = GRADE_CONFIG[GRADE_CONFIG.length - 1].grade;
 
@@ -70,8 +86,6 @@ export const MAP_MASTER_IDS_BY_GRADE: Readonly<Record<number, readonly string[]>
   14: ['map-017', 'map-018', 'map-019', 'map-020', 'map-021', 'map-022'],
   17: ['map-023', 'map-024', 'map-025', 'map-026', 'map-027', 'map-028'],
 };
-
-export const DEFAULT_MEMBER_NAME = "";
 
 export const POINT_COLORS = {
   treasure: "#18181b",
