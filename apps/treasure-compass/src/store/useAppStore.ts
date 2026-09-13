@@ -18,10 +18,20 @@ import type {
 import type { MasterIdentity } from "@/persistence/storage";
 import {
   cloneTreasureSession,
+  completeTreasureRegistration,
+  advanceTreasureTarget,
+  cancelTreasureRegistration,
   deriveTreasureSession,
+  ensureTreasureCurrentTarget,
   normalizeTreasureMemberName,
-  nextUncompletedRegistration,
-  replaceTreasureMapCurrentLocation,
+  moveTreasureRegistration,
+  playTreasureRegistration,
+  playTreasureSelection,
+  removeTreasureRegistration,
+  reorderTreasureRegistrations,
+  restoreTreasureSessionState,
+  selectTreasureRegistration,
+  setTreasureManualOrder,
   treasurePointRefsEqual,
 } from "@treasure-compass/treasure-domain";
 import { calculateTreasureSession, projectTreasureRoute } from "@/store/routeProjection";
@@ -91,12 +101,6 @@ function createRegistration(
     completed,
     playlistPosition,
   };
-}
-
-function withAutomaticTarget(session: TreasureSessionState): TreasureSessionState {
-  if (session.currentTarget !== null) return session;
-  const target = nextUncompletedRegistration(session, null);
-  return target === null ? session : { ...session, currentTarget: target };
 }
 
 interface AppState {
@@ -251,7 +255,7 @@ const useAppStore = create<AppState>((set, get) => {
     setManualSort: (value) => {
       if (value) {
         const state = get();
-        const published = publish(deriveTreasureSession({ ...state.session, orderMode: "manual" }));
+        const published = publish(setTreasureManualOrder(state.session));
         if (published) invalidateUndo();
         return published;
       }
@@ -291,7 +295,7 @@ const useAppStore = create<AppState>((set, get) => {
         };
       }
       const calculated = calculateTreasureSession(next, state.catalog);
-      if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) return false;
+      if (calculated.routeError || !publish(ensureTreasureCurrentTarget(calculated.session), { routeError: calculated.routeError })) return false;
       if (!existing) nextRegistrationNumber = allocateRegistrationId(state.session.registrations, nextRegistrationNumber).nextNumber;
       invalidateUndo();
       return true;
@@ -357,7 +361,7 @@ const useAppStore = create<AppState>((set, get) => {
       if (applied === 0) return { applied: 0, appliedLineNumbers: [], rejected };
 
       const calculated = calculateTreasureSession({ ...state.session, registrations, playlistOrder }, state.catalog);
-      if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) {
+      if (calculated.routeError || !publish(ensureTreasureCurrentTarget(calculated.session), { routeError: calculated.routeError })) {
         const failedEntries = proposal.flatMap((entry) => {
           const memberName = normalizeTreasureMemberName(entry.memberName);
           return memberName
@@ -376,29 +380,28 @@ const useAppStore = create<AppState>((set, get) => {
     },
     selectListItem: (registrationId) => {
       const state = get();
-      if (registrationId !== null && !state.session.registrations.some((registration) => registration.registrationId === registrationId)) return false;
-      if (state.session.listSelection === registrationId) return true;
-      const next = { ...state.session, listSelection: registrationId };
+      const next = selectTreasureRegistration(state.session, registrationId);
+      if (!next || next === state.session) return next !== null;
       if (!publish(next)) return false;
       invalidateUndo();
       return true;
     },
     play: () => {
       const state = get();
-      const target = state.session.listSelection ?? nextUncompletedRegistration(state.session, null);
+      const next = playTreasureSelection(state.session);
+      const target = next.currentTarget;
       if (target && state.unresolvedReferences.some((reference) => reference.registrationId === target && (reference.source === "registration" || reference.source === "currentTarget"))) return false;
-      if (target === state.session.currentTarget) return true;
-      const next = { ...state.session, currentTarget: target };
+      if (next === state.session) return true;
       if (!publish(next)) return false;
       invalidateUndo();
       return true;
     },
     playRegistration: (registrationId) => {
       const state = get();
-      if (!state.session.registrations.some((registration) => registration.registrationId === registrationId)) return false;
+      const next = playTreasureRegistration(state.session, registrationId);
+      if (!next) return false;
       if (state.unresolvedReferences.some((reference) => reference.registrationId === registrationId && (reference.source === "registration" || reference.source === "currentTarget"))) return false;
-      if (state.session.listSelection === registrationId && state.session.currentTarget === registrationId) return true;
-      const next = { ...state.session, listSelection: registrationId, currentTarget: registrationId };
+      if (next === state.session) return true;
       if (!publish(next)) return false;
       invalidateUndo();
       return true;
@@ -406,16 +409,10 @@ const useAppStore = create<AppState>((set, get) => {
     next: () => {
       const state = get();
       const currentId = state.session.currentTarget;
-      const current = currentId ? state.session.registrations.find((registration) => registration.registrationId === currentId) : undefined;
-      if (!current || current.completed) return false;
-      if (state.unresolvedReferences.some((reference) => reference.registrationId === current.registrationId && (reference.source === "registration" || reference.source === "currentTarget"))) return false;
+      if (currentId && state.unresolvedReferences.some((reference) => reference.registrationId === currentId && (reference.source === "registration" || reference.source === "currentTarget"))) return false;
+      const nextSession = advanceTreasureTarget(state.session);
+      if (!nextSession) return false;
       const before = cloneTreasureSession(state.session);
-      let nextSession = replaceTreasureMapCurrentLocation({
-        ...state.session,
-        registrations: state.session.registrations.map((registration) => registration.registrationId === current.registrationId ? { ...registration, completed: true } : registration),
-      }, current.pointRef);
-      const nextId = nextUncompletedRegistration(nextSession, current.registrationId);
-      nextSession = { ...nextSession, currentTarget: nextId };
       const calculated = calculateTreasureSession(nextSession, state.catalog);
       if (calculated.routeError) return false;
       const nextFrames = state.undoFrames.length > 0 && state.undoPhase !== "back"
@@ -428,19 +425,17 @@ const useAppStore = create<AppState>((set, get) => {
       const state = get();
       const frame = state.undoFrames[0];
       if (!frame) return false;
-      if (!publish({ ...cloneTreasureSession(frame.session), listSelection: state.session.listSelection }, { clearUndo: false, undoFrames: state.undoFrames.slice(1) })) return false;
+      if (!publish(restoreTreasureSessionState(frame.session, state.session.listSelection), { clearUndo: false, undoFrames: state.undoFrames.slice(1) })) return false;
       set({ undoPhase: "back" });
       return true;
     },
     completeRegistration: (registrationId) => {
       const state = get();
       const registration = state.session.registrations.find((entry) => entry.registrationId === registrationId);
-      if (!registration || registration.completed) return false;
       if (state.unresolvedReferences.some((reference) => reference.registrationId === registrationId && reference.source === "registration")) return false;
-      const next = replaceTreasureMapCurrentLocation({
-        ...state.session,
-        registrations: state.session.registrations.map((entry) => entry.registrationId === registrationId ? { ...entry, completed: true } : entry),
-      }, registration.pointRef);
+      if (!registration) return false;
+      const next = completeTreasureRegistration(state.session, registrationId);
+      if (!next) return false;
       const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(calculated.session, { routeError: calculated.routeError })) return false;
       invalidateUndo();
@@ -449,9 +444,10 @@ const useAppStore = create<AppState>((set, get) => {
     cancelRegistration: (registrationId) => {
       const state = get();
       const registration = state.session.registrations.find((entry) => entry.registrationId === registrationId);
-      if (!registration || !registration.completed) return false;
       if (state.unresolvedReferences.some((reference) => reference.registrationId === registrationId && reference.source === "registration")) return false;
-      const next = { ...state.session, registrations: state.session.registrations.map((entry) => entry.registrationId === registrationId ? { ...entry, completed: false } : entry) };
+      if (!registration) return false;
+      const next = cancelTreasureRegistration(state.session, registrationId);
+      if (!next) return false;
       const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(calculated.session, { routeError: calculated.routeError })) return false;
       invalidateUndo();
@@ -459,14 +455,8 @@ const useAppStore = create<AppState>((set, get) => {
     },
     removeRegistration: (registrationId) => {
       const state = get();
-      if (!state.session.registrations.some((registration) => registration.registrationId === registrationId)) return false;
-      const next = deriveTreasureSession({
-        ...state.session,
-        registrations: state.session.registrations.filter((registration) => registration.registrationId !== registrationId),
-        playlistOrder: state.session.playlistOrder.filter((id) => id !== registrationId),
-        listSelection: state.session.listSelection === registrationId ? null : state.session.listSelection,
-        currentTarget: state.session.currentTarget === registrationId ? null : state.session.currentTarget,
-      });
+      const next = removeTreasureRegistration(state.session, registrationId);
+      if (!next) return false;
       const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(calculated.session, { routeError: calculated.routeError })) return false;
       invalidateUndo();
@@ -474,26 +464,16 @@ const useAppStore = create<AppState>((set, get) => {
     },
     moveRegistration: (registrationId, direction) => {
       const state = get();
-      const index = state.session.playlistOrder.indexOf(registrationId);
-      const target = direction === "up" ? index - 1 : index + 1;
-      if (index < 0 || target < 0 || target >= state.session.playlistOrder.length) return false;
-      const playlistOrder = [...state.session.playlistOrder];
-      [playlistOrder[index], playlistOrder[target]] = [playlistOrder[target]!, playlistOrder[index]!];
-      if (!publish(deriveTreasureSession({ ...state.session, playlistOrder, orderMode: "manual" }))) return false;
+      const next = moveTreasureRegistration(state.session, registrationId, direction);
+      if (!next || !publish(next)) return false;
       invalidateUndo();
       return true;
     },
     reorderRegistrations: (activeRegistrationId, overRegistrationId) => {
       const state = get();
-      const index = state.session.playlistOrder.indexOf(activeRegistrationId);
-      const target = state.session.playlistOrder.indexOf(overRegistrationId);
-      if (index < 0 || target < 0) return false;
-      if (index === target) return true;
-      const playlistOrder = [...state.session.playlistOrder];
-      const [moved] = playlistOrder.splice(index, 1);
-      if (!moved) return false;
-      playlistOrder.splice(target, 0, moved);
-      if (!publish(deriveTreasureSession({ ...state.session, playlistOrder, orderMode: "manual" }))) return false;
+      const next = reorderTreasureRegistrations(state.session, activeRegistrationId, overRegistrationId);
+      if (!next || next === state.session) return next !== null;
+      if (!publish(next)) return false;
       invalidateUndo();
       return true;
     },

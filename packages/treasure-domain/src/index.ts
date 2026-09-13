@@ -134,6 +134,188 @@ export function fillTreasureAutoOrder(
     .concat(calculated);
 }
 
+function registrationById(
+  session: TreasureSessionState,
+  registrationId: string,
+): TreasureRegistration | undefined {
+  return session.registrations.find(
+    (registration) => registration.registrationId === registrationId,
+  );
+}
+
+export function selectTreasureRegistration(
+  session: TreasureSessionState,
+  registrationId: string | null,
+): TreasureSessionState | null {
+  if (registrationId !== null && !registrationById(session, registrationId)) {
+    return null;
+  }
+  if (session.listSelection === registrationId) return session;
+  return { ...session, listSelection: registrationId };
+}
+
+export function playTreasureSelection(
+  session: TreasureSessionState,
+): TreasureSessionState {
+  const target = session.listSelection ?? nextUncompletedRegistration(session, null);
+  if (target === session.currentTarget) return session;
+  return { ...session, currentTarget: target };
+}
+
+export function playTreasureRegistration(
+  session: TreasureSessionState,
+  registrationId: string,
+): TreasureSessionState | null {
+  if (!registrationById(session, registrationId)) return null;
+  if (
+    session.listSelection === registrationId &&
+    session.currentTarget === registrationId
+  ) {
+    return session;
+  }
+  return {
+    ...session,
+    listSelection: registrationId,
+    currentTarget: registrationId,
+  };
+}
+
+export function ensureTreasureCurrentTarget(
+  session: TreasureSessionState,
+): TreasureSessionState {
+  if (session.currentTarget !== null) return session;
+  const target = nextUncompletedRegistration(session, null);
+  return target === null ? session : { ...session, currentTarget: target };
+}
+
+function setTreasureCompletion(
+  session: TreasureSessionState,
+  registrationId: string,
+  completed: boolean,
+): TreasureSessionState | null {
+  const registration = registrationById(session, registrationId);
+  if (!registration || registration.completed === completed) return null;
+  return deriveTreasureSession({
+    ...session,
+    registrations: session.registrations.map((entry) =>
+      entry.registrationId === registrationId
+        ? { ...entry, completed }
+        : entry,
+    ),
+  });
+}
+
+export function advanceTreasureTarget(
+  session: TreasureSessionState,
+): TreasureSessionState | null {
+  const currentId = session.currentTarget;
+  const current = currentId === null ? undefined : registrationById(session, currentId);
+  if (!current || current.completed) return null;
+  const completedSession = replaceTreasureMapCurrentLocation(
+    {
+      ...session,
+      registrations: session.registrations.map((registration) =>
+        registration.registrationId === current.registrationId
+          ? { ...registration, completed: true }
+          : registration,
+      ),
+    },
+    current.pointRef,
+  );
+  return deriveTreasureSession({
+    ...completedSession,
+    currentTarget: nextUncompletedRegistration(
+      completedSession,
+      current.registrationId,
+    ),
+  });
+}
+
+export function completeTreasureRegistration(
+  session: TreasureSessionState,
+  registrationId: string,
+): TreasureSessionState | null {
+  const registration = registrationById(session, registrationId);
+  if (!registration || registration.completed) return null;
+  return setTreasureCompletion(
+    replaceTreasureMapCurrentLocation(session, registration.pointRef),
+    registrationId,
+    true,
+  );
+}
+
+export function cancelTreasureRegistration(
+  session: TreasureSessionState,
+  registrationId: string,
+): TreasureSessionState | null {
+  return setTreasureCompletion(session, registrationId, false);
+}
+
+export function removeTreasureRegistration(
+  session: TreasureSessionState,
+  registrationId: string,
+): TreasureSessionState | null {
+  if (!registrationById(session, registrationId)) return null;
+  return deriveTreasureSession({
+    ...session,
+    registrations: session.registrations.filter(
+      (registration) => registration.registrationId !== registrationId,
+    ),
+    playlistOrder: session.playlistOrder.filter((id) => id !== registrationId),
+    listSelection:
+      session.listSelection === registrationId ? null : session.listSelection,
+    currentTarget:
+      session.currentTarget === registrationId ? null : session.currentTarget,
+  });
+}
+
+export function moveTreasureRegistration(
+  session: TreasureSessionState,
+  registrationId: string,
+  direction: "up" | "down",
+): TreasureSessionState | null {
+  const index = session.playlistOrder.indexOf(registrationId);
+  const target = direction === "up" ? index - 1 : index + 1;
+  if (index < 0 || target < 0 || target >= session.playlistOrder.length) {
+    return null;
+  }
+  const playlistOrder = [...session.playlistOrder];
+  [playlistOrder[index], playlistOrder[target]] = [
+    playlistOrder[target]!,
+    playlistOrder[index]!,
+  ];
+  return deriveTreasureSession({ ...session, playlistOrder, orderMode: "manual" });
+}
+
+export function setTreasureManualOrder(
+  session: TreasureSessionState,
+): TreasureSessionState {
+  return deriveTreasureSession({ ...session, orderMode: "manual" });
+}
+
+export function reorderTreasureRegistrations(
+  session: TreasureSessionState,
+  activeRegistrationId: string,
+  overRegistrationId: string,
+): TreasureSessionState | null {
+  const index = session.playlistOrder.indexOf(activeRegistrationId);
+  const target = session.playlistOrder.indexOf(overRegistrationId);
+  if (index < 0 || target < 0) return null;
+  if (index === target) return session;
+  const playlistOrder = [...session.playlistOrder];
+  const [moved] = playlistOrder.splice(index, 1);
+  if (!moved) return null;
+  playlistOrder.splice(target, 0, moved);
+  return deriveTreasureSession({ ...session, playlistOrder, orderMode: "manual" });
+}
+
+export function restoreTreasureSessionState(
+  session: TreasureSessionState,
+  listSelection: string | null,
+): TreasureSessionState {
+  return { ...cloneTreasureSession(session), listSelection };
+}
+
 export function normalizeTreasureMemberName(value: string): string {
   return value.trim().normalize("NFC");
 }
