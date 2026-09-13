@@ -163,7 +163,7 @@ Critical の New / Open / Reopened は0件であるため、規定により最�
 
 ## 13. 自動変更
 
-レビュー中は対象 Design、Specification、Requirements、Concept、コード、テスト、静的データ、画像、既存レビューを変更していない。本サイクルで新規作成したのは本レビュー成果物だけである。`MEMORY.md` の既存未コミット変更は Design Author / project dialogue の成果であり、本レビューによる変更ではない。
+レビュー中は対象 Design、Specification、Requirements、Concept、コード、テスト、静的データ、画像、既存レビューを変更していない。本サイクルで新規作成したのは本レビュー成果物だけである。`MEMORY.md` の既存未コミット変更は Design Author / プロジェクト対話担当の成果であり、本レビューによる変更ではない。
 
 ## 14. 最終判定
 
