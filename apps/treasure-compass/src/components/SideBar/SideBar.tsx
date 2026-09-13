@@ -1,60 +1,53 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BulkInputTab } from "./BulkInputTab";
-import { ManualEntryTab } from "./ManualEntryTab";
-import { RouteProgressTab } from "./RouteProgressTab";
-import { useAppStore } from "@/store/useAppStore";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAppStore } from "@/store/useAppStore";
+import { ManualEntryTab } from "./ManualEntryTab";
+import { BulkInputTab } from "./BulkInputTab";
+import { RouteProgressTab } from "./RouteProgressTab";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
 
-export function SideBar() {
-  const route = useAppStore((s) => s.route);
-  const members = useAppStore((s) => s.members);
-  const memberCount = members.filter(Boolean).length;
+interface SideBarProps {
+  readonly onClearRequest: () => void;
+}
+
+export function SideBar({ onClearRequest }: SideBarProps) {
+  const registrations = useAppStore((state) => state.registrations);
+  const [manualRegistrationId, setManualRegistrationId] = useState<string | null | undefined>(undefined);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-full">
-      <Tabs defaultValue="bulk" className="flex flex-col flex-1 min-h-0">
-        <TabsList className="w-full grid grid-cols-3 bg-slate-900 border-b border-slate-700 rounded-none h-10 shrink-0">
-          <TabsTrigger
-            value="bulk"
-            className="text-xs text-slate-200 data-[state=active]:bg-sky-600 data-[state=active]:text-white rounded-sm"
-          >
+    <div className="flex min-h-0 flex-col h-full">
+      <div className="flex items-center gap-2 border-b border-slate-700 p-3">
+        <span className="text-xs font-semibold text-slate-200">巡回リスト</span>
+        <Badge className="bg-slate-700 text-slate-200">{registrations.length}/8</Badge>
+        <div className="ml-auto flex gap-1">
+          <Button size="sm" onClick={() => setManualRegistrationId(null)} className="h-8 bg-sky-600 px-2 text-xs hover:bg-sky-500">
+            手動登録
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setBulkOpen(true)} className="hidden h-8 border-slate-600 px-2 text-xs text-slate-200 hover:bg-slate-800 sm:inline-flex">
             一括入力
-          </TabsTrigger>
-          <TabsTrigger
-            value="manual"
-            className="text-xs text-slate-200 data-[state=active]:bg-sky-600 data-[state=active]:text-white rounded-sm relative"
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onClearRequest}
+            className="h-8 border-slate-600 px-2 text-xs text-slate-300 hover:border-red-900/60 hover:bg-red-950/30 hover:text-red-300"
           >
-            手動入力
-            {memberCount > 0 && (
-              <Badge className="ml-1 h-4 text-[10px] px-1 bg-sky-500 text-white">
-                {memberCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger
-            value="route"
-            className="text-xs text-slate-200 data-[state=active]:bg-sky-600 data-[state=active]:text-white rounded-sm relative"
-          >
-            巡回経路
-            {route.length > 0 && (
-              <Badge className="ml-1 h-4 text-[10px] px-1 bg-emerald-600 text-white">
-                {route.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-        </TabsList>
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <TabsContent value="bulk" className="m-0">
-            <BulkInputTab />
-          </TabsContent>
-          <TabsContent value="manual" className="m-0">
-            <ManualEntryTab />
-          </TabsContent>
-          <TabsContent value="route" className="m-0">
-            <RouteProgressTab />
-          </TabsContent>
+            <Trash2 className="mr-1 size-3.5" />
+            クリア
+          </Button>
         </div>
-      </Tabs>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <RouteProgressTab onEdit={(registrationId) => setManualRegistrationId(registrationId)} />
+      </div>
+      <ManualEntryTab
+        registrationId={manualRegistrationId}
+        open={manualRegistrationId !== undefined}
+        onOpenChange={(open) => { if (!open) setManualRegistrationId(undefined); }}
+      />
+      <BulkInputTab open={bulkOpen} onOpenChange={setBulkOpen} />
     </div>
   );
 }

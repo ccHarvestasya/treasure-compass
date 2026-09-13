@@ -1,10 +1,10 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import mapMasterJson from '@treasure-compass/master-data/data/map-master.v1.json';
 import { validateMapMaster, type MapRecord } from '@treasure-compass/master-data';
 import { useAppStore } from '@/store/useAppStore';
 import { AetheryteOverlay } from '@/components/AetheryteOverlay/AetheryteOverlay';
-import { CANVAS_SIZE, MAP_MASTER_IDS_BY_GRADE, POINT_COLORS } from '@/constants';
-import type { RouteStep, Point } from '@/types';
+import { CANVAS_SIZE, DEFAULT_GRADE, MAP_MASTER_IDS_BY_GRADE, POINT_COLORS } from '@/constants';
+import type { RouteStep, Point, TreasurePointRef } from '@/types';
 
 const mapMasterValidation = validateMapMaster(mapMasterJson);
 if (!mapMasterValidation.usable || !mapMasterValidation.data) {
@@ -22,9 +22,13 @@ function resolveMapImageUrl(asset: string): string | null {
   return mapImageAssets[key] ?? null;
 }
 
-function resolveMapMasterRecord(grade: number, mapNo: number): MapRecord | null {
-  const mapId = MAP_MASTER_IDS_BY_GRADE[grade]?.[mapNo - 1];
-  return mapId ? (mapMaster.maps.find((map) => map.id === mapId) ?? null) : null;
+function resolveMapMasterRecord(mapId: string | undefined, mapNo: number): MapRecord | null {
+  if (mapId) return mapMaster.maps.find((map) => map.id === mapId) ?? null;
+  return mapMaster.maps.find((map) => map.id === `map-${String(mapNo).padStart(3, '0')}`) ?? null;
+}
+
+function pointRefKey(ref: TreasurePointRef): string {
+  return `${ref.gradeSetId}:${ref.mapId}:${ref.pointId}`;
 }
 
 function getScale(mapSize: number): number {
@@ -39,7 +43,8 @@ function drawRoute(
   ctx: CanvasRenderingContext2D,
   steps: RouteStep[],
   scale: number,
-  activeStep: number,
+  activeRegistrationId: string | null,
+  playlistNumberByRegistrationId: ReadonlyMap<string, number>,
 ) {
   if (steps.length === 0) return;
 
@@ -50,8 +55,8 @@ function drawRoute(
   ctx.setLineDash([6, 3]);
 
   steps.forEach((step, i) => {
-    if (i === 0 && step.teleportPoint) {
-      ctx.moveTo(toCanvas(step.teleportPoint.posX, scale), toCanvas(step.teleportPoint.posY, scale));
+    if (i === 0 && step.startPoint && step.teleportPoint) {
+      ctx.moveTo(toCanvas(step.startPoint.posX, scale), toCanvas(step.startPoint.posY, scale));
       ctx.lineTo(toCanvas(step.point.posX, scale), toCanvas(step.point.posY, scale));
       return;
     }
@@ -85,7 +90,7 @@ function drawRoute(
     const i = steps.indexOf(step);
     const x = toCanvas(step.point.posX, scale);
     const y = toCanvas(step.point.posY, scale);
-    const isActive = i === activeStep;
+    const isActive = step.registrationId !== undefined && step.registrationId === activeRegistrationId;
     const isCompleted = step.isCompleted;
 
     // 外側のグロー（アクティブ時）
@@ -114,7 +119,10 @@ function drawRoute(
     ctx.font = `bold ${isActive ? 13 : 11}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(String(i + 1), x, y);
+    const number = step.registrationId
+      ? playlistNumberByRegistrationId.get(step.registrationId) ?? i + 1
+      : i + 1;
+    ctx.fillText(String(number), x, y);
   });
 }
 
@@ -171,18 +179,40 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  const grade = useAppStore(s => s.grade);
   const mapData = useAppStore(s => s.mapData);
+  const catalog = useAppStore(s => s.catalog);
+  const registrations = useAppStore(s => s.registrations);
+  const playlistOrder = useAppStore(s => s.playlistOrder);
   const route = useAppStore(s => s.route);
-  const activeStep = useAppStore(s => s.activeStep);
+  const currentTarget = useAppStore(s => s.currentTarget);
+  const unresolvedReferences = useAppStore(s => s.unresolvedReferences);
+  const playlistNumberByRegistrationId = useMemo(
+    () => new Map(playlistOrder.map((registrationId, index) => [registrationId, index + 1] as const)),
+    [playlistOrder],
+  );
+
+  const targetRegistration = registrations.find((registration) => registration.registrationId === currentTarget);
+  const targetCandidate = targetRegistration && catalog?.candidates.find((candidate) => pointRefKey(candidate.pointRef) === pointRefKey(targetRegistration.pointRef));
+  const unresolvedTarget = !interactive && currentTarget
+    ? unresolvedReferences.find((reference) => reference.source === "currentTarget" && reference.registrationId === currentTarget)
+    : undefined;
+  const defaultMapId = MAP_MASTER_IDS_BY_GRADE[DEFAULT_GRADE]?.[0];
+  const defaultMap = mapData?.mapData.find((item) => item.mapId === defaultMapId) ?? mapData?.mapData[0];
 
   // メインキャンバス用: アクティブステップのマップを表示
-  const targetMapNo = interactive
-    ? (mapNo ?? 1)
-    : (route[activeStep]?.mapNo ?? mapData?.mapData[0]?.mapNo ?? 1);
+  const targetMapNo = unresolvedTarget
+    ? undefined
+    : interactive
+      ? (mapNo ?? 1)
+      : (targetCandidate?.map.mapNo ?? route[0]?.mapNo ?? defaultMap?.mapNo ?? 1);
+  const targetMapId = interactive
+    ? undefined
+    : (targetCandidate?.map.mapId ?? route.find((step) => step.mapNo === targetMapNo)?.mapId);
 
-  const currentMapItem = mapData?.mapData.find(m => m.mapNo === targetMapNo);
-  const currentMapMaster = resolveMapMasterRecord(grade, targetMapNo);
+  const currentMapItem = targetMapNo === undefined
+    ? undefined
+    : mapData?.mapData.find((item) => targetMapId ? item.mapId === targetMapId : item.mapNo === targetMapNo);
+  const currentMapMaster = targetMapNo === undefined ? null : resolveMapMasterRecord(currentMapItem?.mapId, targetMapNo);
 
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -198,10 +228,10 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
       drawAllPoints(ctx, currentMapItem.point, scale);
     } else {
       // メインキャンバス: このマップに関係するrouteのみ描画
-      const relevantSteps = route.filter(s => s.mapNo === targetMapNo);
-      drawRoute(ctx, relevantSteps, scale, activeStep);
+      const relevantSteps = route.filter((step) => targetMapId ? step.mapId === targetMapId : step.mapNo === targetMapNo);
+      drawRoute(ctx, relevantSteps, scale, currentTarget, playlistNumberByRegistrationId);
     }
-  }, [mapData, route, activeStep, interactive, currentMapItem, targetMapNo]);
+  }, [mapData, route, currentTarget, interactive, currentMapItem, targetMapId, targetMapNo, playlistNumberByRegistrationId]);
 
   // マップ画像を読み込んで描画
   useEffect(() => {
@@ -228,7 +258,7 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
     };
   }, [targetMapNo, mapData, redraw, currentMapMaster]);
 
-  // route/activeStep変更時に再描画
+  // route/currentTarget変更時に再描画
   useEffect(() => {
     redraw();
   }, [redraw]);
@@ -263,14 +293,24 @@ export function MapCanvas({ interactive = false, mapNo, onPointClick }: MapCanva
 
   return (
     <div className="relative w-full aspect-square">
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_SIZE}
-        height={CANVAS_SIZE}
-        onClick={handleCanvasClick}
-        className={`block w-full h-full rounded-lg border border-slate-700 bg-slate-900 shadow-xl shadow-black/50 ${interactive ? 'cursor-crosshair' : ''}`}
-      />
-      {currentMapMaster && <AetheryteOverlay map={currentMapMaster} />}
+      {unresolvedTarget ? (
+        <div className="flex aspect-square flex-col items-center justify-center gap-3 rounded-lg border border-amber-800/70 bg-slate-900 p-6 text-center text-sm text-amber-200">
+          <p className="font-semibold">現在対象を表示できません</p>
+          <p className="text-slate-300">{unresolvedTarget.memberName ?? "対象"}: マスターデータを解決できません。</p>
+          <p className="break-all text-xs text-slate-500">{unresolvedTarget.reason} / {unresolvedTarget.pointRef.mapId} / {unresolvedTarget.pointRef.pointId}</p>
+        </div>
+      ) : (
+        <>
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_SIZE}
+            height={CANVAS_SIZE}
+            onClick={handleCanvasClick}
+            className={`block h-full w-full rounded-lg border border-slate-700 bg-slate-900 shadow-xl shadow-black/50 ${interactive ? 'cursor-crosshair' : ''}`}
+          />
+          {currentMapMaster && <AetheryteOverlay map={currentMapMaster} />}
+        </>
+      )}
     </div>
   );
 }

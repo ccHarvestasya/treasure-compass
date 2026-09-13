@@ -1,5 +1,4 @@
 import { ContactDialog } from "@/components/ContactDialog/ContactDialog";
-import { GradeSelector } from "@/components/GradeSelector/GradeSelector";
 import { LoadingScreen } from "@/components/LoadingScreen/LoadingScreen";
 import { MapCanvas } from "@/components/MapCanvas/MapCanvas";
 import { PositionModal } from "@/components/PositionModal/PositionModal";
@@ -15,18 +14,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { GRADE_LABELS } from "@/constants";
 import { useMapData } from "@/hooks/useMapData";
 import { useAppStore } from "@/store/useAppStore";
-import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
+import appPackage from "../package.json";
 
 function AppContent() {
   useMapData();
   const isLoading = useAppStore((state) => state.isLoading);
   const mapDataError = useAppStore((state) => state.mapDataError);
-  const grade = useAppStore((state) => state.grade);
   const clearAllData = useAppStore((state) => state.clearAllData);
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
 
@@ -58,36 +55,32 @@ function AppContent() {
               FFXIV トレジャーハント
             </span>
           </div>
-          <GradeSelector />
           <div className="ml-auto flex items-center gap-2 shrink-0">
-            <span className="text-slate-500 text-xs hidden md:block">
-              {GRADE_LABELS[grade]}
-            </span>
             <ContactDialog />
             <SupportDialog />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsClearConfirmOpen(true)}
-              className="text-slate-400 hover:text-red-400 hover:bg-red-950/30 h-8 px-2"
-            >
-              <Trash2 className="size-3.5 mr-1" />
-              <span className="text-xs">クリア</span>
-            </Button>
           </div>
         </div>
       </header>
 
       <main className="flex-1 flex flex-col lg:flex-row max-w-screen-xl mx-auto w-full p-4 gap-4">
-        <aside className="w-full lg:w-[420px] xl:w-[460px] shrink-0 flex flex-col bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
-          <SideBar />
+        <aside className="order-2 w-full shrink-0 flex flex-col bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden lg:order-1 lg:w-[420px] xl:w-[460px]">
+          <SideBar onClearRequest={() => setIsClearConfirmOpen(true)} />
         </aside>
-        <section className="flex-1 flex flex-col gap-3 min-w-0">
+        <section className="order-1 flex min-w-0 flex-1 flex-col gap-3 lg:order-2">
           <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-3 flex-1 flex flex-col">
             <MapCanvas />
           </div>
         </section>
       </main>
+
+      <footer className="border-t border-slate-800 px-4 py-3 text-center text-xs text-slate-500">
+        <span className="hidden sm:inline">
+          Treasure Compass v{appPackage.version} · © 2026 Quarry Mill Applied Magitek Technologies
+        </span>
+        <span className="sm:hidden">
+          Treasure Compass v{appPackage.version} · © 2026 QMAMT
+        </span>
+      </footer>
 
       <PositionModal />
 
@@ -111,7 +104,10 @@ function AppContent() {
             </Button>
             <Button
               onClick={() => {
-                clearAllData();
+                if (!clearAllData()) {
+                  toast.error("保存に失敗したため、データをクリアできませんでした");
+                  return;
+                }
                 setIsClearConfirmOpen(false);
                 toast.success("データをクリアしました");
               }}

@@ -54,7 +54,7 @@ export function AetheryteOverlay({ map }: AetheryteOverlayProps) {
       {layout?.labels.map((label) => (
         <span
           key={label.id}
-          className="pointer-events-none absolute flex items-center justify-center rounded border border-sky-300/70 bg-slate-950/85 px-2 text-[10px] leading-none text-sky-50 shadow-md shadow-slate-950/60"
+          className="pointer-events-none absolute flex items-center justify-center rounded border border-sky-300/70 bg-slate-950 px-2 text-[10px] leading-none text-sky-50 shadow-md shadow-slate-950/60"
           style={{
             left: label.rect.left,
             top: label.rect.top,

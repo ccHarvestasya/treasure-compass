@@ -1,87 +1,127 @@
-import { useAppStore } from '@/store/useAppStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { FULL_PARTY, DEFAULT_MEMBER_NAME } from '@/constants';
-import { X, MapPin } from 'lucide-react';
+import { useMemo, useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MapCanvas } from "@/components/MapCanvas/MapCanvas";
+import { useAppStore } from "@/store/useAppStore";
+import { cn } from "@/lib/utils";
+import type { TreasureCandidate, TreasureCatalog, TreasureRegistration, TreasureVersion } from "@/types";
 
-export function ManualEntryTab() {
-  const members = useAppStore(s => s.members);
-  const draftMemberNames = useAppStore(s => s.draftMemberNames);
-  const setMember = useAppStore(s => s.setMember);
-  const setDraftMemberName = useAppStore(s => s.setDraftMemberName);
-  const removeMember = useAppStore(s => s.removeMember);
-  const openModal = useAppStore(s => s.openModal);
+const VERSIONS: TreasureVersion[] = ["3.x", "4.x", "5.x", "6.x", "7.x"];
 
-  const handleNameChange = (memberNo: number, name: string) => {
-    const current = members[memberNo];
-    if (current) {
-      setMember(memberNo, { ...current, memberName: name });
-      return;
-    }
+interface ManualEntryTabProps {
+  readonly open: boolean;
+  readonly registrationId: string | null | undefined;
+  readonly onOpenChange: (open: boolean) => void;
+}
 
-    setDraftMemberName(memberNo, name);
+interface ManualEntryDialogProps {
+  readonly open: boolean;
+  readonly existing: TreasureRegistration | undefined;
+  readonly catalog: TreasureCatalog | null;
+  readonly registerManual: (memberName: string, candidate: TreasureCandidate) => boolean;
+  readonly onOpenChange: (open: boolean) => void;
+}
+
+function initialMapNo(catalog: TreasureCatalog | null, existing: TreasureRegistration | undefined): number {
+  const existingMap = existing && catalog?.candidates.find((candidate) =>
+    candidate.pointRef.gradeSetId === existing.pointRef.gradeSetId && candidate.pointRef.pointId === existing.pointRef.pointId,
+  )?.map;
+  return existingMap?.mapNo ?? catalog?.mapData.mapData[0]?.mapNo ?? 1;
+}
+
+function ManualEntryDialog({ open, existing, catalog, registerManual, onOpenChange }: ManualEntryDialogProps) {
+  const [name, setName] = useState(() => existing?.memberName ?? "");
+  const [version, setVersion] = useState<TreasureVersion>(() => existing?.version ?? "7.x");
+  const [mapNo, setMapNo] = useState(() => initialMapNo(catalog, existing));
+
+  const candidates = useMemo(() => catalog?.candidates.filter((candidate) => candidate.version === version) ?? [], [catalog, version]);
+  const maps = useMemo(() => {
+    const mapNos = new Set(candidates.map((candidate) => candidate.map.mapNo));
+    return catalog?.mapData.mapData.filter((map) => mapNos.has(map.mapNo)) ?? [];
+  }, [catalog, candidates]);
+  const selectedMap = maps.find((map) => map.mapNo === mapNo) ?? maps[0];
+  const selectedCandidates = candidates.filter((candidate) => candidate.map.mapNo === selectedMap?.mapNo);
+
+  const selectCandidate = (candidate: TreasureCandidate) => {
+    if (!registerManual(name, candidate)) return;
+    onOpenChange(false);
   };
 
   return (
-    <div className="flex flex-col gap-2 p-4">
-      <p className="text-xs text-slate-400 mb-1">
-        各スロットに名前を入力し、<MapPin className="inline size-3" /> で座標を設定してください。
-      </p>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-slate-500 text-xs border-b border-slate-700">
-              <th className="text-left py-1 px-1 w-6">#</th>
-              <th className="text-left py-1 px-1">名前</th>
-              <th className="text-left py-1 px-1">座標</th>
-              <th className="w-8" />
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: FULL_PARTY }, (_, i) => {
-              const m = members[i];
-              return (
-                <tr key={i} className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
-                  <td className="py-1.5 px-1 text-slate-500">{i + 1}</td>
-                  <td className="py-1.5 px-1">
-                    <Input
-                      value={m?.memberName ?? draftMemberNames[i] ?? ''}
-                      onChange={e => handleNameChange(i, e.target.value)}
-                      placeholder={DEFAULT_MEMBER_NAME}
-                      className="h-7 text-xs bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-600 w-full"
-                    />
-                  </td>
-                  <td className="py-1.5 px-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openModal(i)}
-                      className={`h-7 text-xs px-2 border-slate-600 transition-colors ${
-                        m?.mapPoint
-                          ? 'text-sky-300 border-sky-700 bg-sky-950/50'
-                          : 'text-slate-400 hover:bg-slate-700'
-                      }`}
-                    >
-                      <MapPin className="size-3 mr-1" />
-                      {m?.mapPoint ? `${m.mapNameShort} ${m.mapPoint.pointName}` : '未設定'}
-                    </Button>
-                  </td>
-                  <td className="py-1.5 px-1">
-                    {m && (
-                      <button
-                        onClick={() => removeMember(i)}
-                        className="text-slate-500 hover:text-red-400 transition-colors p-1 rounded"
-                      >
-                        <X className="size-3.5" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[92vh] w-full max-w-6xl overflow-hidden border-slate-700 bg-slate-900 p-0 text-slate-100 md:max-w-none md:w-[min(calc(92vh_-_1.25rem),calc(100vw_-_2rem))]">
+        <DialogHeader className="px-4 pt-4">
+          <DialogTitle className="text-sm text-sky-300">{existing ? "宝箱を変更" : "宝箱を登録"}</DialogTitle>
+          <DialogDescription className="text-xs text-slate-400">名前を入力してから、バージョン・マップ・地点を選択してください。</DialogDescription>
+        </DialogHeader>
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-4">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="manual-entry-member-name" className="text-xs font-semibold text-slate-300">メンバー名</label>
+            <Input id="manual-entry-member-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="メンバー名（必須）" className="border-slate-700 bg-slate-950 text-slate-100" autoFocus />
+            <p className="text-xs text-slate-500">名前を入力後、地図上の地点（座標）を選択して登録します。</p>
+          </div>
+          <div className="flex flex-col gap-1.5" aria-label="バージョン">
+            <span className="text-xs font-semibold text-slate-300">バージョン</span>
+            <div className="flex flex-wrap gap-1.5">
+              {VERSIONS.map((item) => (
+                <Button key={item} size="sm" variant="outline" aria-pressed={version === item} onClick={() => setVersion(item)} className={cn("border-slate-600 text-xs", version === item && "border-sky-300 bg-sky-700 text-white ring-1 ring-sky-300")}>
+                  {item}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5" aria-label="マップ">
+            <span className="text-xs font-semibold text-slate-300">マップ</span>
+            <div className="flex flex-wrap gap-1.5">
+              {maps.map((map) => (
+                <Button key={map.mapId ?? map.mapNo} size="sm" variant="outline" aria-pressed={selectedMap?.mapNo === map.mapNo} onClick={() => setMapNo(map.mapNo)} className={cn("border-slate-600 text-xs text-slate-200", selectedMap?.mapNo === map.mapNo && "border-sky-300 bg-sky-800 text-white ring-1 ring-sky-300")}>
+                  {map.mapNameShort}
+                </Button>
+              ))}
+            </div>
+          </div>
+          {selectedMap && (
+            <div className="grid min-h-0 gap-3 md:grid-cols-[minmax(0,1fr)_16rem]">
+              <div className="min-w-0 md:flex md:justify-center">
+                <div className="w-full md:max-w-[min(100%,calc(92vh_-_20rem))]">
+                  <MapCanvas interactive mapNo={selectedMap.mapNo} onPointClick={(point) => {
+                    const candidate = selectedCandidates.find((entry) => entry.pointRef.pointId === point.stableId);
+                    if (candidate) selectCandidate(candidate);
+                  }} />
+                </div>
+              </div>
+              <div className="flex max-h-[calc(92vh_-_20rem)] flex-col gap-1 overflow-y-auto">
+                <span className="mb-1 text-xs text-slate-400">地点一覧</span>
+                {selectedCandidates.map((candidate) => (
+                  <Button key={candidate.pointRef.pointId} variant="outline" size="sm" onClick={() => selectCandidate(candidate)} className="justify-start border-slate-600 text-xs text-slate-200 hover:border-sky-500 hover:bg-sky-950">
+                    <span className="mr-2 font-bold text-sky-300">{candidate.point.pointName}</span>
+                    <span className="font-mono text-[10px] text-slate-500">({(candidate.point.posX / 10).toFixed(1)}, {(candidate.point.posY / 10).toFixed(1)})</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function ManualEntryTab({ open, registrationId, onOpenChange }: ManualEntryTabProps) {
+  const catalog = useAppStore((state) => state.catalog);
+  const registrations = useAppStore((state) => state.registrations);
+  const registerManual = useAppStore((state) => state.registerManual);
+  const existing = registrationId ? registrations.find((registration) => registration.registrationId === registrationId) : undefined;
+
+  return (
+    <ManualEntryDialog
+      key={`${open ? "open" : "closed"}:${registrationId ?? "new"}`}
+      open={open}
+      existing={existing}
+      catalog={catalog}
+      registerManual={registerManual}
+      onOpenChange={onOpenChange}
+    />
   );
 }
