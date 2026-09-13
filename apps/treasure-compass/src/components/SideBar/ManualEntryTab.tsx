@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapCanvas } from "@/components/MapCanvas/MapCanvas";
 import { useAppStore } from "@/store/useAppStore";
+import { FULL_PARTY } from "@/constants";
 import { cn } from "@/lib/utils";
 import type { TreasureCandidate, TreasureCatalog, TreasureRegistration, TreasureVersion } from "@/types";
 
@@ -19,6 +20,7 @@ interface ManualEntryDialogProps {
   readonly open: boolean;
   readonly existing: TreasureRegistration | undefined;
   readonly catalog: TreasureCatalog | null;
+  readonly registrationLimitReached: boolean;
   readonly registerManual: (memberName: string, candidate: TreasureCandidate) => boolean;
   readonly onOpenChange: (open: boolean) => void;
 }
@@ -30,7 +32,7 @@ function initialMapNo(catalog: TreasureCatalog | null, existing: TreasureRegistr
   return existingMap?.mapNo ?? catalog?.mapData.mapData[0]?.mapNo ?? 1;
 }
 
-function ManualEntryDialog({ open, existing, catalog, registerManual, onOpenChange }: ManualEntryDialogProps) {
+function ManualEntryDialog({ open, existing, catalog, registrationLimitReached, registerManual, onOpenChange }: ManualEntryDialogProps) {
   const [name, setName] = useState(() => existing?.memberName ?? "");
   const [version, setVersion] = useState<TreasureVersion>(() => existing?.version ?? "7.x");
   const [mapNo, setMapNo] = useState(() => initialMapNo(catalog, existing));
@@ -50,12 +52,23 @@ function ManualEntryDialog({ open, existing, catalog, registerManual, onOpenChan
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] w-full max-w-6xl overflow-hidden border-slate-700 bg-slate-900 p-0 text-slate-100 md:max-w-none md:w-[min(calc(92vh_-_1.25rem),calc(100vw_-_2rem))]">
-        <DialogHeader className="px-4 pt-4">
-          <DialogTitle className="text-sm text-sky-300">{existing ? "宝箱を変更" : "宝箱を登録"}</DialogTitle>
-          <DialogDescription className="text-xs text-slate-400">名前を入力してから、バージョン・マップ・地点を選択してください。</DialogDescription>
-        </DialogHeader>
-        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-4">
+      {registrationLimitReached && !existing ? (
+        <DialogContent className="max-w-sm border-red-900/70 bg-slate-900 text-slate-100">
+          <DialogHeader>
+            <DialogTitle className="text-sm text-red-300">手動登録できません</DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">巡回リストの登録上限に達しています。</DialogDescription>
+          </DialogHeader>
+          <p role="alert" className="rounded-md border border-amber-800/70 bg-amber-950/30 p-3 text-sm text-amber-200">
+            宝箱は最大{FULL_PARTY}人まで登録できます。既存の登録を削除してから追加してください。
+          </p>
+        </DialogContent>
+      ) : (
+        <DialogContent className="max-h-[92vh] w-full max-w-6xl overflow-hidden border-slate-700 bg-slate-900 p-0 text-slate-100 md:max-w-none md:w-[min(calc(92vh_-_1.25rem),calc(100vw_-_2rem))]">
+          <DialogHeader className="px-4 pt-4">
+            <DialogTitle className="text-sm text-sky-300">{existing ? "宝箱を変更" : "宝箱を登録"}</DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">名前を入力してから、バージョン・マップ・地点を選択してください。</DialogDescription>
+          </DialogHeader>
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-4">
           <div className="flex flex-col gap-1">
             <label htmlFor="manual-entry-member-name" className="text-xs font-semibold text-slate-300">メンバー名</label>
             <Input id="manual-entry-member-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="メンバー名（必須）" className="border-slate-700 bg-slate-950 text-slate-100" autoFocus />
@@ -102,8 +115,9 @@ function ManualEntryDialog({ open, existing, catalog, registerManual, onOpenChan
               </div>
             </div>
           )}
-        </div>
-      </DialogContent>
+          </div>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }
@@ -120,6 +134,7 @@ export function ManualEntryTab({ open, registrationId, onOpenChange }: ManualEnt
       open={open}
       existing={existing}
       catalog={catalog}
+      registrationLimitReached={registrationId === null && registrations.length >= FULL_PARTY}
       registerManual={registerManual}
       onOpenChange={onOpenChange}
     />
