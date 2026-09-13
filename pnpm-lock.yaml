@@ -27,6 +27,43 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(@types/node@25.9.6)(msw@2.14.6(@types/node@25.9.6)(typescript@7.0.2))(vite@8.3.0(@types/node@25.9.6)(jiti@2.7.0))
 
+  apps/mob-authoring:
+    dependencies:
+      '@treasure-compass/map-core':
+        specifier: workspace:*
+        version: link:../../packages/map-core
+      '@treasure-compass/master-data':
+        specifier: workspace:*
+        version: link:../../packages/master-data
+      '@treasure-compass/mob-domain':
+        specifier: workspace:*
+        version: link:../../packages/mob-domain
+      react:
+        specifier: ^19.3.0
+        version: 19.3.0
+      react-dom:
+        specifier: ^19.3.0
+        version: 19.3.0(react@19.3.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.6
+        version: 25.9.6
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.3.0
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.3.0(@types/node@25.9.6)(jiti@2.7.0))
+      typescript:
+        specifier: ~7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.3.0
+        version: 8.3.0(@types/node@25.9.6)(jiti@2.7.0)
+
   apps/mob-compass:
     dependencies:
       '@treasure-compass/map-core':

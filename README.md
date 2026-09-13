@@ -57,13 +57,21 @@ pnpm run dev:mob
 
 Mob Compass は開発途中の別アプリであり、Treasure Compass と同等の公開機能を提供するものではありません。
 
+Mob master の出現範囲を作成する開発用 Authoring Tool は、次で起動できます。
+
+```bash
+pnpm run dev:mob-authoring
+```
+
+Authoring Tool は `apps/mob-authoring` に配置された別 entry です。map master の地図上で矩形範囲を指定し、authoring data を localStorage に保存できます。検証済みの runtime master は画面から `mob-master.v1.json` として export できます。共通 source catalog に未登録の出典を含むデータは authoring data として保存できますが、runtime export は停止します。
+
 ビルド:
 
 ```bash
 pnpm run build
 ```
 
-`pnpm run build` は Treasure Compass と Mob Compass をそれぞれ build します。個別に build する場合は `pnpm run build:treasure` または `pnpm run build:mob` を使用します。
+`pnpm run build` は Treasure Compass、Mob Compass、Mob master Authoring Tool をそれぞれ build します。個別に build する場合は `pnpm run build:treasure`、`pnpm run build:mob` または `pnpm run build:mob-authoring` を使用します。
 
 検証:
 
@@ -77,7 +85,8 @@ pnpm run test
 ```
 apps/
 ├── treasure-compass/    # Treasure Compass の Vite アプリと unit test
-└── mob-compass/         # 開発途中の Mob Compass アプリ
+├── mob-compass/         # 開発途中の Mob Compass アプリ
+└── mob-authoring/       # Mob master 作成用の開発専用 Authoring Tool
 packages/
 ├── treasure-domain/     # Treasure Compass 固有のルール
 ├── mob-domain/          # Mob Compass 固有のルール

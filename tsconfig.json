@@ -8,6 +8,8 @@
     { "path": "./apps/treasure-compass/tsconfig.app.json" },
     { "path": "./apps/treasure-compass/tsconfig.node.json" },
     { "path": "./apps/mob-compass/tsconfig.app.json" },
-    { "path": "./apps/mob-compass/tsconfig.node.json" }
+    { "path": "./apps/mob-compass/tsconfig.node.json" },
+    { "path": "./apps/mob-authoring/tsconfig.app.json" },
+    { "path": "./apps/mob-authoring/tsconfig.node.json" }
   ]
 }
