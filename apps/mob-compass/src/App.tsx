@@ -121,6 +121,12 @@ export function App() {
           <div className="section-heading"><h2 id="progress-title">登録済み</h2><button type="button" onClick={() => setClearRequested(true)} disabled={session.targets.length === 0}>全消去</button></div>
           {session.targets.length === 0 ? <p className="empty">登録済みの対象はありません。</p> : <ul className="target-list">{session.targets.map((target) => <li key={target.targetId}><div><strong>{target.mobName}</strong><span>{RANK_LABELS[target.rank]} / {targetStatus(target)}</span></div><div className="row-actions">{target.category === "elite" && target.rank === "b" && <><button type="button" onClick={() => run(() => controller.bNext())}>B Next</button><button type="button" onClick={() => run(() => controller.bCancelNext())}>Next取消</button><button type="button" onClick={() => run(() => controller.research(target.targetId))}>再探索</button></>}{target.completed ? <button type="button" onClick={() => run(() => controller.cancel(target.targetId))}>取消</button> : <button type="button" onClick={() => run(() => controller.complete(target.targetId))}>完了</button>}<button type="button" onClick={() => run(() => controller.remove(target.targetId))}>削除</button></div></li>)}</ul>}
         </section>
+
+        <footer className="legal-footer" aria-label="権利表記">
+          <span>© SQUARE ENIX CO., LTD. All Rights Reserved.</span>
+          <span>FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.</span>
+          <span>Treasure Compass is an unofficial fan-made tool and is not affiliated with or endorsed by Square Enix.</span>
+        </footer>
       </section>
 
       {partySelectionMob && <div className="dialog-backdrop" role="presentation"><section className="dialog" role="dialog" aria-modal="true" aria-labelledby="candidate-dialog-title"><h2 id="candidate-dialog-title">{partySelectionMob.name} の地点</h2><p>登録する候補地点を一つ選択してください。</p><ul>{partySelectionMob.candidates.map((candidate) => <li key={candidate.id}><button type="button" onClick={() => { if (controller.register(partySelectionMob.id, candidate.id)) { setFeedback("地点を登録しました"); setPartySelectionMobId(null); } else setFeedback(controller.persistenceError ?? "地点を保存できませんでした。ダイアログを開いたままにします。"); }}>{candidate.mapId} ({candidate.x}, {candidate.y})</button></li>)}</ul><button type="button" onClick={() => setPartySelectionMobId(null)}>閉じる</button></section></div>}

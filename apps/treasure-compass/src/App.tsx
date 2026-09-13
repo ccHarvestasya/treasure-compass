@@ -73,13 +73,20 @@ function AppContent() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-800 px-4 py-3 text-center text-xs text-slate-500">
-        <span className="hidden sm:inline">
-          Treasure Compass v{appPackage.version} · © 2026 Quarry Mill Applied Magitek Technologies
-        </span>
-        <span className="sm:hidden">
-          Treasure Compass v{appPackage.version} · © 2026 QMAMT
-        </span>
+      <footer className="border-t border-slate-800 px-4 py-3 text-center text-xs leading-relaxed text-slate-500">
+        <div>
+          <span className="hidden sm:inline">
+            Treasure Compass v{appPackage.version} · © 2026 Quarry Mill Applied Magitek Technologies
+          </span>
+          <span className="sm:hidden">
+            Treasure Compass v{appPackage.version} · © 2026 QMAMT
+          </span>
+        </div>
+        <div className="mt-2 leading-normal">
+          <div>© SQUARE ENIX CO., LTD. All Rights Reserved.</div>
+          <div>FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.</div>
+          <div>Treasure Compass is an unofficial fan-made tool and is not affiliated with or endorsed by Square Enix.</div>
+        </div>
       </footer>
 
       <PositionModal />
