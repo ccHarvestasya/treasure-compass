@@ -1,12 +1,12 @@
 # Treasure Compass / Mob Compass 基本設計
 
-| 項目           | 内容                                                                                                                                                                                                            |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status         | Design Author Revision 008（実操作による UX 調整に追随: 登録時の現在対象自動確立、独立再生操作の非必須化、registration workflow ownership の明確化。IR-011〜IR-013追跡。UPSTREAM REQUIREMENTS UPDATE REQUIRED） |
-| 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                               |
-| 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                              |
-| 上流の承認状態 | Revision 008 は UPSTREAM REQUIREMENTS UPDATE REQUIRED のため Specification Review 前。[Specification Review 013](../reviews/specification/specification-review-013.md) の `READY` は Revision 007 に対する履歴  |
-| 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                           |
+| 項目           | 内容                                                                                                                                                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Status         | Design Author Revision 008（実操作による UX 調整に追随: 登録時の現在対象自動確立、独立再生操作の非必須化、registration workflow ownership の明確化。IR-011〜IR-013追跡。Specification Revision 008 / Specification Review 014 READY に追随）     |
+| 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                                                                |
+| 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                                                               |
+| 上流の承認状態 | Revision 008 は [Specification Review 014](../reviews/specification/specification-review-014.md) が `READY` と判定済み。[Specification Review 013](../reviews/specification/specification-review-013.md) の `READY` は Revision 007 に対する履歴 |
+| 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                                                            |
 
 ## 1. 目的、対象、対象外
 
@@ -54,7 +54,7 @@
 
 ### 2.1 根拠と工程境界
 
-直接の規範的根拠は [Specification](../specification/specification.md) Revision 008 である。この Revision は実操作による UX 判断へ追随した正式更新であり、独立した Specification Review の前である。[Specification Review 013](../reviews/specification/specification-review-013.md) と [Design Review 008](../reviews/design/design-review-008.md) の `READY` は Revision 007 に対する履歴として維持する。Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
+直接の規範的根拠は [Specification](../specification/specification.md) Revision 008 である。この Revision は実操作による UX 判断へ追随した正式更新であり、[Specification Review 014](../reviews/specification/specification-review-014.md) が `READY` と判定している。[Specification Review 013](../reviews/specification/specification-review-013.md) と [Design Review 008](../reviews/design/design-review-008.md) の `READY` は Revision 007 に対する履歴として維持する。Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
 
 現行 JSON には実装から参照されない項目と設定から到達できないデータがある。そのため、既存形式をそのまま共通マスターへ昇格させず、参照実績、上流上の必要性、出典・利用条件を個別に確認してから移行する。
 
@@ -745,9 +745,9 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 参照資料:
 
 - [Specification](../specification/specification.md)
-- [Specification Review 013](../reviews/specification/specification-review-013.md)
+- [Specification Review 014](../reviews/specification/specification-review-014.md)
 - [Requirements](../requirements/requirements.md)
-- [Requirements Review 011](../reviews/requirements/requirements-review-011.md)
+- [Requirements Review 012](../reviews/requirements/requirements-review-012.md)
 - [Concept](../concept/concept.md)
 - [Concept Review 005](../reviews/concept/concept-review-005.md)
 - [Design Review 005](../reviews/design/design-review-005.md)
