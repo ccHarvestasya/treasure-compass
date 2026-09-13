@@ -41,6 +41,7 @@ function normalizeMemberName(value: string): string {
     .trim()
     .replace(FFXIV_PRIVATE_USE_AREA_PREFIX, "")
     .replace(new RegExp(`^[${MARKERS}]+`), "")
+    .trim()
     .normalize("NFC");
 }
 

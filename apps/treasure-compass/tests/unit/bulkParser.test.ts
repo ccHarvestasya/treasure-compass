@@ -69,10 +69,26 @@ describe("analyzeBulkInput", () => {
     })]);
   });
 
-  it("normalizes private-use icons and supported leading markers on the active parser path", () => {
-    const rows = analyzeBulkInput("(\uE091★☆●▲◆♥♠♣◇♦♡○□△▽Nicola Verde) Crystal Land (10.0, 20.0)", catalog);
+  it.each([
+    ["(★Alice) Crystal Land (10.0, 20.0)", "Alice"],
+    ["(★ Alice) Crystal Land (10.0, 20.0)", "Alice"],
+    ["(●▲ Alice) Crystal Land (10.0, 20.0)", "Alice"],
+    ["(\uE091★ Alice) Crystal Land (10.0, 20.0)", "Alice"],
+    ["(\uE091★☆●▲◆♥♠♣◇♦♡○□△▽Nicola Verde) Crystal Land (10.0, 20.0)", "Nicola Verde"],
+    ["(Alice) Crystal Land (10.0, 20.0)", "Alice"],
+    ["(xAlice) Crystal Land (10.0, 20.0)", "xAlice"],
+  ])("normalizes supported leading decoration and post-decoration whitespace: %s", (line, expectedName) => {
+    const rows = analyzeBulkInput(line, catalog);
 
-    expect(rows[0]?.parsed?.memberName).toBe("Nicola Verde");
+    expect(rows[0]?.parsed?.memberName).toBe(expectedName);
     expect(rows[0]?.status).toBe("resolved");
+  });
+
+  it("rejects a name that is empty after decoration and whitespace normalization", () => {
+    const rows = analyzeBulkInput("(\uE091★   ) Crystal Land (10.0, 20.0)", catalog);
+
+    expect(rows[0]?.parsed?.memberName).toBe("");
+    expect(rows[0]?.status).toBe("unresolved");
+    expect(rows[0]?.reason).toBe("名前がありません");
   });
 });
