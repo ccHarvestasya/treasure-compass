@@ -5,16 +5,6 @@ export const CANVAS_SIZE = 658;
 export const FULL_PARTY = TREASURE_MEMBER_SLOTS;
 export const COORD_SEARCH_RADIUS_1 = 1.0;
 export const COORD_SEARCH_RADIUS_2 = 2.0;
-export const FFXIV_COORD_SCALE = 10;
-
-/** 旧 UI caller 用の解析待ち時間。登録の可否は parser/store が判定する。 */
-export const BULK_INPUT_DELAY_MS = 1500;
-
-/**
- * 匿名登録を作らないための無効値。登録処理は空文字を必ず拒否する。
- * 新しい UI ではこの値を表示名として補完しない。
- */
-export const DEFAULT_MEMBER_NAME = "";
 
 export const STORAGE_KEY_GRADE = "treasure-compass:grade";
 export const STORAGE_KEY_MEMBERS = "treasure-compass:members";
@@ -61,19 +51,7 @@ export const VERSION_BY_GRADE: Readonly<Record<number, TreasureVersion>> = {
   18: "7.x",
 };
 
-export const GRADES: Grade[] = GRADE_CONFIG.map((c) => c.grade);
 export const DEFAULT_GRADE: Grade = GRADE_CONFIG[GRADE_CONFIG.length - 1].grade;
-
-export function getGradeConfig(grade: Grade): GradeConfig {
-  const cfg = GRADE_CONFIG.find((c) => c.grade === grade);
-  if (!cfg) throw new Error(`Unknown grade: ${grade}`);
-  return cfg;
-}
-
-// 後方互換のため既存のRecord形式アクセサを維持
-export const GRADE_LABELS: Record<number, string> = Object.fromEntries(
-  GRADE_CONFIG.map((c) => [c.grade, c.label]),
-);
 
 /**
  * 現行のlegacy入力（grade/mapNo）を、共通map masterの安定IDへ対応付ける。

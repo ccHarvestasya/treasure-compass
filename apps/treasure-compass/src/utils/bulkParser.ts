@@ -2,7 +2,7 @@ import {
   COORD_SEARCH_RADIUS_1,
   COORD_SEARCH_RADIUS_2,
 } from "@/constants";
-import type { MapDataItem, Point, TreasureCandidate, TreasureCatalog } from "@/types";
+import type { MapDataItem, TreasureCandidate, TreasureCatalog } from "@/types";
 
 export interface ParsedMember {
   lineNumber: number;
@@ -48,32 +48,6 @@ function coordinateExpressionCount(value: string): number {
   return value.match(COORDINATE_EXPRESSION)?.length ?? 0;
 }
 
-function distanceToCoordinate(point: Point, x: number, y: number): number {
-  return Math.hypot(point.posX / 10 - x, point.posY / 10 - y);
-}
-
-function candidateDistance(candidate: TreasureCandidate, x: number, y: number): number {
-  return distanceToCoordinate(candidate.point, x, y);
-}
-
-export function parseBulkInput(text: string): ParsedMember[] {
-  return text
-    .split(/\r?\n/)
-    .map((raw, index) => ({ raw, lineNumber: index + 1 }))
-    .filter(({ raw }) => raw.trim().length > 0)
-    .flatMap(({ raw, lineNumber }) => {
-      if (coordinateExpressionCount(raw) !== 1) return [];
-      const match = CHAT_LINE.exec(raw);
-      if (!match) return [];
-      const memberName = normalizeMemberName(match[2] ?? "");
-      const mapName = normalizeName(match[3] ?? "");
-      const coordX = Number(match[4]);
-      const coordY = Number(match[5]);
-      if (!memberName || !mapName || !Number.isFinite(coordX) || !Number.isFinite(coordY)) return [];
-      return [{ lineNumber, memberName, mapName, coordX, coordY }];
-    });
-}
-
 export function findMapCandidatesByName(
   mapName: string,
   allMapData: MapDataItem[],
@@ -93,29 +67,8 @@ export function findMapCandidatesByName(
   return [...new Map(partial.map((map) => [map.mapId ?? String(map.mapNo), map])).values()];
 }
 
-export function findMapByName(mapName: string, allMapData: MapDataItem[]): MapDataItem | null {
-  const candidates = findMapCandidatesByName(mapName, allMapData);
-  return candidates.length === 1 ? candidates[0] ?? null : null;
-}
-
-function pointsNear(
-  x: number,
-  y: number,
-  points: Point[],
-  radius: number,
-): Point[] {
-  return points
-    .filter((point) => point.division === "P" && distanceToCoordinate(point, x, y) <= radius)
-    .sort((left, right) => {
-      const distance = distanceToCoordinate(left, x, y) - distanceToCoordinate(right, x, y);
-      return distance || (left.stableId ?? "").localeCompare(right.stableId ?? "");
-    });
-}
-
-export function findPointByCoord(coordX: number, coordY: number, mapData: MapDataItem): Point | null {
-  const first = pointsNear(coordX, coordY, mapData.point, COORD_SEARCH_RADIUS_1);
-  if (first.length > 0) return first[0] ?? null;
-  return pointsNear(coordX, coordY, mapData.point, COORD_SEARCH_RADIUS_2)[0] ?? null;
+function candidateDistance(candidate: TreasureCandidate, x: number, y: number): number {
+  return Math.hypot(candidate.point.posX / 10 - x, candidate.point.posY / 10 - y);
 }
 
 function candidatesNear(catalog: TreasureCatalog, map: MapDataItem, x: number, y: number, radius: number): TreasureCandidate[] {

@@ -1,11 +1,10 @@
-import { DEFAULT_GRADE, FULL_PARTY, VERSION_BY_GRADE } from "@/constants";
+import { FULL_PARTY } from "@/constants";
 import {
   readPersistedTreasure,
   sessionFromPersisted,
   writePersistedTreasure,
 } from "@/persistence/storage";
 import type {
-  Grade,
   MapData,
   Point,
   RouteStep,
@@ -17,7 +16,6 @@ import type {
   TreasureSession,
   TreasureSessionState,
   TreasureUnresolvedReference,
-  UserItem,
 } from "@/types";
 import type { MasterIdentity } from "@/persistence/storage";
 import { normalizeTreasureMemberName, nextUncompletedRegistration } from "@treasure-compass/treasure-domain";
@@ -177,75 +175,6 @@ function withAutomaticTarget(session: TreasureSessionState): TreasureSessionStat
   return target === null ? session : { ...session, currentTarget: target };
 }
 
-function emptyMembers(): (UserItem | null)[] {
-  return Array<UserItem | null>(FULL_PARTY).fill(null);
-}
-
-function candidateForPoint(catalog: TreasureCatalog | null, point: Point, item?: UserItem): TreasureCandidate | null {
-  const byStableId = point.stableId && catalog?.candidates.find((candidate) => candidate.pointRef.pointId === point.stableId);
-  if (byStableId) return byStableId;
-  const byLegacyPoint = catalog?.candidates.find((candidate) =>
-    candidate.map.mapNo === item?.mapNo && candidate.point.pointNo === point.pointNo,
-  );
-  if (byLegacyPoint) return byLegacyPoint;
-  if (item?.pointRef && item.version) {
-    return {
-      pointRef: item.pointRef,
-      grade: item.mapPoint.grade ?? DEFAULT_GRADE,
-      version: item.version,
-      point,
-      map: catalog?.mapData.mapData.find((map) => map.mapNo === item.mapNo) ?? {
-        mapNo: item.mapNo,
-        mapName: item.mapName,
-        mapNameShort: item.mapNameShort,
-        region: "legacy",
-        point: [],
-      },
-    };
-  }
-  const map = catalog?.mapData.mapData.find((candidate) => candidate.mapNo === item?.mapNo) ?? (item
-    ? {
-        mapNo: item.mapNo,
-        mapName: item.mapName,
-        mapNameShort: item.mapNameShort,
-        region: "legacy",
-        point: [],
-      }
-    : null);
-  if (!map) return null;
-  return {
-    pointRef: {
-      gradeSetId: `legacy-grade-${item?.mapNo ?? map.mapNo}`,
-      mapId: map.mapId ?? String(map.mapNo),
-      pointId: point.stableId ?? `legacy-point-${point.pointNo}`,
-    },
-    grade: item?.mapPoint.grade ?? DEFAULT_GRADE,
-    version: item?.version ?? VERSION_BY_GRADE[item?.mapPoint.grade ?? DEFAULT_GRADE] ?? "7.x",
-    point,
-    map,
-  };
-}
-
-function materializeMembers(session: TreasureSessionState, catalog: TreasureCatalog | null): (UserItem | null)[] {
-  const members: (UserItem | null)[] = session.registrations.map((registration, memberNo): UserItem | null => {
-    const candidate = catalog?.candidates.find((entry) => pointRefEqual(entry.pointRef, registration.pointRef));
-    if (!candidate) return null;
-    return {
-      memberNo,
-      memberName: registration.memberName,
-      mapNo: candidate.map.mapNo,
-      mapName: candidate.map.mapName,
-      mapNameShort: candidate.map.mapNameShort,
-      mapPoint: candidate.point,
-      registrationId: registration.registrationId,
-      pointRef: registration.pointRef,
-      version: registration.version,
-      completed: registration.completed,
-    };
-  });
-  return members.concat(emptyMembers()).slice(0, FULL_PARTY);
-}
-
 function buildRouteProjection(
   session: TreasureSessionState,
   catalog: TreasureCatalog | null,
@@ -360,32 +289,6 @@ function routeInputs(session: TreasureSessionState, catalog: TreasureCatalog | n
   });
 }
 
-function catalogFromMapData(data: MapData): TreasureCatalog {
-  const candidates = data.mapData.flatMap((map) => map.point
-    .filter((point) => point.division === "P")
-    .map((point) => ({
-      pointRef: {
-        gradeSetId: point.gradeSetId ?? "legacy-grade",
-        mapId: map.mapId ?? String(map.mapNo),
-        pointId: point.stableId ?? `legacy-point-${point.pointNo}`,
-      },
-      grade: point.grade ?? DEFAULT_GRADE,
-      version: point.version ?? VERSION_BY_GRADE[point.grade ?? DEFAULT_GRADE] ?? "7.x",
-      point,
-      map,
-    })));
-  return {
-    mapData: data,
-    candidates,
-    masterIdentity: {
-      mapSchemaVersion: 1,
-      mapDataRevision: "runtime-map-data",
-      appSchemaVersion: 1,
-      appDataRevision: "runtime-treasure-data",
-    },
-  };
-}
-
 function calculateSession(
   session: TreasureSessionState,
   catalog: TreasureCatalog | null,
@@ -409,13 +312,9 @@ function calculateSession(
 }
 
 interface AppState {
-  grade: Grade;
-  setGrade: (grade: Grade) => void;
-  setGradeWithReset: (grade: Grade) => void;
   catalog: TreasureCatalog | null;
   mapData: MapData | null;
   setCatalog: (catalog: TreasureCatalog | null) => void;
-  setMapData: (data: MapData | null) => void;
   mapDataError: string | null;
   setMapDataError: (message: string | null) => void;
   isLoading: boolean;
@@ -431,27 +330,15 @@ interface AppState {
   masterIdentity: MasterIdentity | null;
   undoFrames: UndoFrame[];
   undoPhase: "next" | "back" | null;
-  members: (UserItem | null)[];
   route: RouteStep[];
   routeTieCandidates: RouteTieCandidate[];
   routeError: string | null;
-  isManualSort: boolean;
-  currentMapPoints: Record<string, Point>;
-  activeStep: number;
   draftMemberNames: string[];
   bulkText: string;
   modalMemberNo: number | null;
   modalRegistrationId: string | null;
-  setMember: (memberNo: number, item: UserItem) => void;
-  replaceMembers: (items: UserItem[]) => void;
-  removeMember: (memberNo: number) => void;
-  clearMembers: () => void;
   clearAllData: () => boolean;
-  setRoute: (steps: RouteStep[]) => void;
   setManualSort: (value: boolean) => boolean;
-  setActiveStep: (value: number) => void;
-  completeStep: (index: number) => void;
-  uncompleteStep: (index: number) => void;
   setDraftMemberName: (memberNo: number, name: string) => void;
   clearDraftMemberName: (memberNo: number) => void;
   setBulkText: (text: string) => void;
@@ -498,17 +385,13 @@ const useAppStore = create<AppState>((set, get) => {
       registrations: [...session.registrations],
       playlistOrder: [...session.playlistOrder],
       orderMode: session.orderMode,
-      isManualSort: session.orderMode === "manual",
       listSelection: session.listSelection,
       currentTarget: session.currentTarget,
       mapCurrentLocations: session.mapCurrentLocations,
-      members: materializeMembers(session, state.catalog),
       route: routeProjection.route,
       routeTieCandidates: routeProjection.tieCandidates,
-      currentMapPoints: mapCurrentPoints(session, state.catalog),
       unresolvedReferences: unresolvedReferences(session, state.catalog, persistedMasterIdentity),
       masterIdentity: persistedMasterIdentity,
-      activeStep: session.currentTarget === null ? -1 : session.playlistOrder.indexOf(session.currentTarget),
       routeError: options.routeError ?? null,
       ...(options.clearUndo === false
         ? { undoFrames: options.undoFrames ?? state.undoFrames, undoPhase: options.undoFrames?.length ? "next" as const : state.undoPhase }
@@ -524,12 +407,6 @@ const useAppStore = create<AppState>((set, get) => {
   });
 
   const initialState: AppState & { undoFrames: UndoFrame[] } = {
-    grade: DEFAULT_GRADE,
-    setGrade: (grade) => set({ grade }),
-    setGradeWithReset: (grade) => {
-      set({ grade });
-      get().clearAllData();
-    },
     catalog: null,
     mapData: null,
     setCatalog: (catalog) => {
@@ -542,50 +419,16 @@ const useAppStore = create<AppState>((set, get) => {
         registrations: [...calculated.session.registrations],
         playlistOrder: [...calculated.session.playlistOrder],
         orderMode: calculated.session.orderMode,
-        isManualSort: calculated.session.orderMode === "manual",
         listSelection: calculated.session.listSelection,
         currentTarget: calculated.session.currentTarget,
         mapCurrentLocations: calculated.session.mapCurrentLocations,
-        members: materializeMembers(calculated.session, catalog),
         route: buildRoute(calculated.session, catalog),
         routeTieCandidates: buildRouteProjection(calculated.session, catalog).tieCandidates,
-        currentMapPoints: mapCurrentPoints(calculated.session, catalog),
-        activeStep: calculated.session.currentTarget === null ? -1 : calculated.session.playlistOrder.indexOf(calculated.session.currentTarget),
         unresolvedReferences: unresolvedReferences(calculated.session, catalog, persistedMasterIdentity),
         masterIdentity: persistedMasterIdentity,
         routeError: calculated.routeError,
         isLoading: false,
       });
-    },
-    setMapData: (data) => {
-      const state = get();
-      const catalog = data ? catalogFromMapData(data) : null;
-      const calculated = calculateSession(state.session, catalog);
-      set({
-        catalog,
-        mapData: data,
-        unresolvedReferences: unresolvedReferences(calculated.session, catalog, persistedMasterIdentity),
-        masterIdentity: persistedMasterIdentity,
-        routeError: calculated.routeError,
-        ...(data ? {} : { members: emptyMembers(), route: [], routeTieCandidates: [], currentMapPoints: {} }),
-        ...(data ? { mapDataError: null } : {}),
-      });
-      if (data) {
-        set({
-          session: { ...calculated.session, sessionRevision: state.session.sessionRevision },
-          registrations: [...calculated.session.registrations],
-          playlistOrder: [...calculated.session.playlistOrder],
-          orderMode: calculated.session.orderMode,
-          isManualSort: calculated.session.orderMode === "manual",
-          listSelection: calculated.session.listSelection,
-          currentTarget: calculated.session.currentTarget,
-          mapCurrentLocations: calculated.session.mapCurrentLocations,
-          members: materializeMembers(calculated.session, catalog),
-          route: buildRoute(calculated.session, catalog),
-          routeTieCandidates: buildRouteProjection(calculated.session, catalog).tieCandidates,
-          currentMapPoints: mapCurrentPoints(calculated.session, catalog),
-        });
-      }
     },
     mapDataError: restored.restoreFailure ? "保存データを復元できませんでした。初期状態で開始します。" : null,
     setMapDataError: (message) => set({ mapDataError: message }),
@@ -595,7 +438,6 @@ const useAppStore = create<AppState>((set, get) => {
     registrations: [...currentSession.registrations],
     playlistOrder: [...currentSession.playlistOrder],
     orderMode: currentSession.orderMode,
-    isManualSort: currentSession.orderMode === "manual",
     listSelection: currentSession.listSelection,
     currentTarget: currentSession.currentTarget,
     mapCurrentLocations: currentSession.mapCurrentLocations,
@@ -603,75 +445,13 @@ const useAppStore = create<AppState>((set, get) => {
     masterIdentity: persistedMasterIdentity,
     undoFrames: [],
     undoPhase: null,
-    members: emptyMembers(),
     route: [],
     routeTieCandidates: [],
     routeError: null,
-    currentMapPoints: {},
-    activeStep: currentSession.currentTarget === null ? -1 : currentSession.playlistOrder.indexOf(currentSession.currentTarget),
     draftMemberNames: Array(FULL_PARTY).fill(""),
     bulkText: "",
     modalMemberNo: null,
     modalRegistrationId: null,
-    setMember: (memberNo, item) => {
-      const state = get();
-      const candidate = candidateForPoint(state.catalog, item.mapPoint, item);
-      if (!candidate) return;
-      const name = normalizeTreasureMemberName(item.memberName);
-      if (!name) return;
-      const existing = state.session.registrations[memberNo];
-      let next: TreasureSessionState;
-      if (existing) {
-        const same = pointRefEqual(existing.pointRef, candidate.pointRef);
-        const registrations = state.session.registrations.map((registration, index) =>
-          index === memberNo
-            ? { ...registration, memberName: registration.memberName, version: candidate.version, pointRef: { ...candidate.pointRef }, completed: same ? registration.completed : false }
-            : registration,
-        );
-        next = { ...state.session, registrations };
-      } else {
-        const allocation = allocateRegistrationId(state.session.registrations, nextRegistrationNumber);
-        next = {
-          ...state.session,
-          registrations: [...state.session.registrations, createRegistration(allocation.registrationId, name, stateForCandidate(candidate), false, state.session.registrations.length)],
-          playlistOrder: [...state.session.playlistOrder, allocation.registrationId],
-        };
-        const calculated = calculateSession(next, state.catalog);
-        if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) return;
-        nextRegistrationNumber = allocation.nextNumber;
-        set({ draftMemberNames: state.draftMemberNames.map((draft, index) => index === memberNo ? "" : draft) });
-        invalidateUndo();
-        return;
-      }
-      const calculated = calculateSession(next, state.catalog);
-      if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) return;
-      set({ draftMemberNames: state.draftMemberNames.map((draft, index) => index === memberNo ? "" : draft) });
-      invalidateUndo();
-    },
-    replaceMembers: (items) => {
-      const state = get();
-      const registrations: TreasureRegistration[] = [];
-      let nextNumber = nextRegistrationNumber;
-      for (const [index, item] of items.slice(0, FULL_PARTY).entries()) {
-        const candidate = candidateForPoint(state.catalog, item.mapPoint, item);
-        const name = normalizeTreasureMemberName(item.memberName);
-        if (!candidate || !name) continue;
-        const allocation = allocateRegistrationId([...state.session.registrations, ...registrations], nextNumber);
-        registrations.push(createRegistration(allocation.registrationId, name, candidate, false, index));
-        nextNumber = allocation.nextNumber;
-      }
-      const next = withDerivedRoute({ ...emptySessionState, registrations, playlistOrder: registrations.map((registration) => registration.registrationId) });
-      const calculated = calculateSession(next, state.catalog);
-      if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) return;
-      nextRegistrationNumber = nextNumber;
-      invalidateUndo();
-    },
-    removeMember: (memberNo) => {
-      const state = get();
-      const registration = state.session.registrations[memberNo];
-      if (registration) get().removeRegistration(registration.registrationId);
-    },
-    clearMembers: () => { get().clearAllData(); },
     clearAllData: () => {
       const state = get();
       const calculated = calculateSession(emptySessionState, state.catalog);
@@ -679,13 +459,6 @@ const useAppStore = create<AppState>((set, get) => {
       set({ draftMemberNames: Array(FULL_PARTY).fill(""), bulkText: "", modalMemberNo: null, modalRegistrationId: null });
       invalidateUndo();
       return true;
-    },
-    setRoute: (steps) => {
-      const state = get();
-      const ids = steps.flatMap((step) => step.registrationId ? [step.registrationId] : []);
-      const remaining = state.session.playlistOrder.filter((id) => !ids.includes(id));
-      const next = withDerivedRoute({ ...state.session, playlistOrder: [...ids, ...remaining], orderMode: "manual" });
-      if (publish(next)) invalidateUndo();
     },
     setManualSort: (value) => {
       if (value) {
@@ -695,19 +468,6 @@ const useAppStore = create<AppState>((set, get) => {
         return published;
       }
       return get().recalcRoute();
-    },
-    setActiveStep: (value) => {
-      const state = get();
-      if (!Number.isInteger(value) || value < 0 || value >= state.route.length) return;
-      get().selectListItem(state.route[value]?.registrationId ?? null);
-    },
-    completeStep: (index) => {
-      const id = get().route[index]?.registrationId;
-      if (id) get().completeRegistration(id);
-    },
-    uncompleteStep: (index) => {
-      const id = get().route[index]?.registrationId;
-      if (id) get().cancelRegistration(id);
     },
     setDraftMemberName: (memberNo, name) => set({ draftMemberNames: get().draftMemberNames.map((draft, index) => index === memberNo ? name : draft) }),
     clearDraftMemberName: (memberNo) => set({ draftMemberNames: get().draftMemberNames.map((draft, index) => index === memberNo ? "" : draft) }),

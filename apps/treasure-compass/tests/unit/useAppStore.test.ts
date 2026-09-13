@@ -97,16 +97,30 @@ const mapData: MapData = {
   }],
 };
 
+const catalog: TreasureCatalog = {
+  mapData,
+  candidates: mapData.mapData.flatMap((map) => map.point
+    .filter((point) => point.division === "P")
+    .map((point) => ({
+      pointRef: { gradeSetId: "grade-7", mapId: map.mapId ?? String(map.mapNo), pointId: `point-${point.pointNo}` },
+      grade: 17,
+      version: "7.x",
+      point,
+      map,
+    }))),
+  masterIdentity: { mapSchemaVersion: 1, mapDataRevision: "map", appSchemaVersion: 1, appDataRevision: "treasure" },
+};
+
 beforeEach(() => {
   storage = new LocalStorageMock();
   vi.stubGlobal("localStorage", storage);
   const state = useAppStore.getState();
   state.clearAllData();
-  state.setMapData(null);
+  state.setCatalog(null);
   state.setMapDataError(null);
   state.setBulkText("");
   state.closeModal();
-  state.setMapData(mapData);
+  state.setCatalog(catalog);
 });
 
 function candidate(pointNo: number): TreasureCandidate {

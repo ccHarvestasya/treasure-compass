@@ -89,7 +89,6 @@ describe("unresolved Treasure references", () => {
 
     expect(state.unresolvedReferences).toEqual([]);
     expect(state.currentTarget).toBe("restored-1");
-    expect(state.currentMapPoints["map-test"]?.pointName).toBe("Current point-known");
     expect(state.route[0]?.point.pointName).toBe("Current point-known");
   });
 
@@ -122,6 +121,5 @@ describe("unresolved Treasure references", () => {
     expect(state.unresolvedReferences).toEqual([
       expect.objectContaining({ source: "mapCurrentLocation", reason: "master-identity-mismatch", pointRef: missingRef }),
     ]);
-    expect(state.currentMapPoints).toEqual({});
   });
 });

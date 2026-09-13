@@ -118,10 +118,3 @@ export interface TreasureUnresolvedReference {
 export interface TreasureSession extends TreasureSessionState {
   readonly sessionRevision: number;
 }
-
-export interface ShortestPathResult {
-  steps: RouteStep[];
-  totalDistance: number;
-}
-
-export type LoadStatus = "idle" | "loading" | "success" | "error";
