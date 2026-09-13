@@ -1,11 +1,11 @@
 # Treasure Compass / Mob Compass 外部仕様
 
-| 項目       | 内容                                                                                                                                                                          |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status     | Specification Author Revision 008（実操作による UX 調整: 登録時の現在対象自動確立、独立再生操作の非必須化。IR-011〜IR-013 の上流追随。UPSTREAM REQUIREMENTS UPDATE REQUIRED） |
-| 対象       | Treasure Compass / Mob Compass v1                                                                                                                                             |
-| 上流基準   | [Requirements](../requirements/requirements.md)、[Requirements Review 011](../reviews/requirements/requirements-review-011.md)                                                |
-| 文書の責務 | 承認済み Requirements を、利用者・実装者・検証者が同じ結果を判定できる外部契約へ具体化する                                                                                    |
+| 項目       | 内容                                                                                                                                                                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status     | Specification Author Revision 008（実操作による UX 調整: 登録時の現在対象自動確立、独立再生操作の非必須化。IR-011〜IR-013 の上流追随。Requirements Author Revision 012 / Requirements Review 012 READY に追随） |
+| 対象       | Treasure Compass / Mob Compass v1                                                                                                                                                                               |
+| 上流基準   | [Requirements](../requirements/requirements.md)、[Requirements Review 012](../reviews/requirements/requirements-review-012.md)                                                                                  |
+| 文書の責務 | 承認済み Requirements を、利用者・実装者・検証者が同じ結果を判定できる外部契約へ具体化する                                                                                                                      |
 
 ## 1. 適用範囲と規範
 
@@ -520,7 +520,7 @@ Treasure の「全消去」は Treasure の登録、順序、進捗および現�
 ## 15. 参照資料と未確認範囲
 
 - 正式根拠: [Requirements](../requirements/requirements.md)
-- 承認根拠: [Requirements Review 011](../reviews/requirements/requirements-review-011.md)
+- 承認根拠: [Requirements Review 012](../reviews/requirements/requirements-review-012.md)
 - 上流: [Concept](../concept/concept.md)、[Concept Review 005](../reviews/concept/concept-review-005.md)
 - 既存 Treasure の利用者向け契約: [README](../../README.md)
 - 継続的な補助記録: [Project Memory](../../MEMORY.md)。正式文書の代替には用いない。
