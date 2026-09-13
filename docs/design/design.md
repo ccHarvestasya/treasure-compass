@@ -2,10 +2,10 @@
 
 | 項目           | 内容                                                                                                                                                                                                                                         |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status         | Design Author Revision 009（Specification Author Revision 009 の製品判断: 狭幅での一括入力省略、チャット名の前置装飾除外、エーテライト町名ラベル geometry 更新へ追随。正式 Design Review 待ち）                                              |
+| Status         | Design Author Revision 009（Specification Revision 009 / Specification Review 015 READY、Requirements Revision 013 / Requirements Review 013 READY、SR-029 resolved。Design Review 010 READY） |
 | 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                                                            |
 | 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                                                           |
-| 上流の承認状態 | Revision 009 は Requirements Revision 013 の Requirements Review および Specification Review 待ち。Revision 008 / [Specification Review 014](../reviews/specification/specification-review-014.md) の `READY` は直前の承認済み基準として維持 |
+| 上流の承認状態 | Specification Revision 009 は [Specification Review 015](../reviews/specification/specification-review-015.md) が `READY`。Requirements Revision 013 は [Requirements Review 013](../reviews/requirements/requirements-review-013.md) が `READY`。Specification Review 015 の SR-029 は解消済み |
 | 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                                                        |
 
 ## 1. 目的、対象、対象外
@@ -54,7 +54,7 @@
 
 ### 2.1 根拠と工程境界
 
-直接の規範的根拠は [Specification](../specification/specification.md) Revision 009 である。この Revision は Requirements Revision 013 の製品判断へ追随した更新であり、正式 Specification Review 待ちである。Specification Revision 008 と [Specification Review 014](../reviews/specification/specification-review-014.md) の `READY` は直前の承認済み基準として維持する。Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
+直接の規範的根拠は [Specification](../specification/specification.md) Revision 009 であり、[Specification Review 015](../reviews/specification/specification-review-015.md) が `READY` と判定している。Requirements Revision 013 は [Requirements Review 013](../reviews/requirements/requirements-review-013.md) が `READY` と判定しており、Specification Review 015 の SR-029 は解消済みである。Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
 
 現行 JSON には実装から参照されない項目と設定から到達できないデータがある。そのため、既存形式をそのまま共通マスターへ昇格させず、参照実績、上流上の必要性、出典・利用条件を個別に確認してから移行する。
 
@@ -745,9 +745,9 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 参照資料:
 
 - [Specification](../specification/specification.md)
-- [Specification Review 014](../reviews/specification/specification-review-014.md)
+- [Specification Review 015](../reviews/specification/specification-review-015.md)
 - [Requirements](../requirements/requirements.md)
-- [Requirements Review 012](../reviews/requirements/requirements-review-012.md)
+- [Requirements Review 013](../reviews/requirements/requirements-review-013.md)
 - [Concept](../concept/concept.md)
 - [Concept Review 005](../reviews/concept/concept-review-005.md)
 - [Design Review 005](../reviews/design/design-review-005.md)
