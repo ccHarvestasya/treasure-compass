@@ -2,7 +2,7 @@
 
 | 項目       | 内容                                                                                                                                                                                                         |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Status     | Specification Author Revision 009（Requirements Author Revision 013 の製品判断: 狭幅での一括入力省略、チャット名の前置装飾除外、エーテライト町名ラベル geometry 更新を反映。Requirements Review 013 READY に追随。正式 Specification Review 待ち） |
+| Status     | Specification Author Revision 009（Requirements Author Revision 013 の製品判断: 狭幅での一括入力省略、チャット名の前置装飾除外、エーテライト町名ラベル geometry 更新を反映。Requirements Review 013 READY、Specification Review 015 READY） |
 | 対象       | Treasure Compass / Mob Compass v1                                                                                                                                                                            |
 | 上流基準   | [Requirements](../requirements/requirements.md) Revision 013、[Requirements Review 013](../reviews/requirements/requirements-review-013.md)（READY）                                                        |
 | 文書の責務 | 承認済み Requirements を、利用者・実装者・検証者が同じ結果を判定できる外部契約へ具体化する                                                                                                                   |
