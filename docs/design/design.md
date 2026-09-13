@@ -1,12 +1,12 @@
 # Treasure Compass / Mob Compass 基本設計
 
-| 項目           | 内容                                                                                                                                                                                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Status         | Design Author Revision 008（実操作による UX 調整に追随: 登録時の現在対象自動確立、独立再生操作の非必須化、registration workflow ownership の明確化。IR-011〜IR-013追跡。Specification Revision 008 / Specification Review 014 READY に追随）     |
-| 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                                                                |
-| 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                                                               |
-| 上流の承認状態 | Revision 008 は [Specification Review 014](../reviews/specification/specification-review-014.md) が `READY` と判定済み。[Specification Review 013](../reviews/specification/specification-review-013.md) の `READY` は Revision 007 に対する履歴 |
-| 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                                                            |
+| 項目           | 内容                                                                                                                                                                                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status         | Design Author Revision 009（Specification Author Revision 009 の製品判断: 狭幅での一括入力省略、チャット名の前置装飾除外、エーテライト町名ラベル geometry 更新へ追随。正式 Design Review 待ち）                                              |
+| 対象           | Treasure Compass / Mob Compass v1                                                                                                                                                                                                            |
+| 直接の上流     | [Specification](../specification/specification.md)                                                                                                                                                                                           |
+| 上流の承認状態 | Revision 009 は Requirements Revision 013 の Requirements Review および Specification Review 待ち。Revision 008 / [Specification Review 014](../reviews/specification/specification-review-014.md) の `READY` は直前の承認済み基準として維持 |
+| 文書の責務     | 承認済み Specification の外部契約を変えず、モノレポ構成、内部責務、状態・データ所有、依存方向、失敗・復旧境界を定める                                                                                                                        |
 
 ## 1. 目的、対象、対象外
 
@@ -18,7 +18,7 @@
 
 - Treasure と Mob は、利用者が異なるアドレスから直接開く別アプリである。具体的な URL 文字列と配備先は決めない。
 - Treasure、Mob ソロ、Mob パーティは独立した session root と永続化境界を持つ。
-- Treasure は登録済み対象と巡回リストを同じ主表示 projection で扱い、一括入力・手動入力は主表示から開く登録入口とする。登録入口の開閉は presentation state であり、準備／実行または再生／一時停止の domain state ではない。
+- Treasure は登録済み対象と巡回リストを同じ主表示 projection で扱い、手動入力は全対象レイアウト、一括入力は広い画面から開く登録入口とする。狭い画面では一括入力入口を省略でき、手動登録で基本操作を完了できる。登録入口の開閉は presentation state であり、準備／実行または再生／一時停止の domain state ではない。
 - Treasure の `listSelection` と `currentTarget` は独立した参照として aggregate が所有し、再生・次へ・戻る・個別完了／取消の遷移はこの二つを暗黙に同期させない。
 - Treasure の registration identity、playlist order、完了、map 別 current location、未完了 route は一つの v3 session snapshot へ投影できる。連続した「次へ」の取消情報は保存せず、interaction lifecycle 内だけで所有する。
 - Treasure の各登録は内部の legacy grade／master reference と利用者向け version projection を分離し、表示投影だけが G8→3.x、G10→4.x、G12→5.x、G14→6.x、G17→7.x、G18→7.x を適用する。
@@ -40,7 +40,7 @@
 - 共通地図基盤、経路計算、マスターデータ読込、保存・復元の責務境界。
 - 地図・エーテライト、Treasure、Mob の静的マスター形式、検証済み projection と参照関係。
 - 現行 Treasure データと保存状態からの移行境界。
-- 320 CSS px 以上を含むレスポンシブ UI の構造。
+- 320 CSS px 以上で、そのレイアウトに提供される主要操作を利用できるレスポンシブ UI の構造。Treasure の手動登録は全対象レイアウト、一括入力は広い画面で提供し、responsive breakpoint は presentation concern とする。
 
 ### 1.3 対象外
 
@@ -54,7 +54,7 @@
 
 ### 2.1 根拠と工程境界
 
-直接の規範的根拠は [Specification](../specification/specification.md) Revision 008 である。この Revision は実操作による UX 判断へ追随した正式更新であり、[Specification Review 014](../reviews/specification/specification-review-014.md) が `READY` と判定している。[Specification Review 013](../reviews/specification/specification-review-013.md) と [Design Review 008](../reviews/design/design-review-008.md) の `READY` は Revision 007 に対する履歴として維持する。Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
+直接の規範的根拠は [Specification](../specification/specification.md) Revision 009 である。この Revision は Requirements Revision 013 の製品判断へ追随した更新であり、正式 Specification Review 待ちである。Specification Revision 008 と [Specification Review 014](../reviews/specification/specification-review-014.md) の `READY` は直前の承認済み基準として維持する。Requirements と Concept は意図と責任境界の確認に用いる。現行実装、テスト、JSON および画像は、互換性と移行可能性を調べる補助資料であり、新しい仕様を決める根拠にはしない。
 
 現行 JSON には実装から参照されない項目と設定から到達できないデータがある。そのため、既存形式をそのまま共通マスターへ昇格させず、参照実績、上流上の必要性、出典・利用条件を個別に確認してから移行する。
 
@@ -464,7 +464,7 @@ route planner と domain operation は current published state を直接 mutate 
 
 一つの利用者操作が一つの root を変更する場合、その root の完全 snapshot を一つの logical record として serialize し、一回の localStorage write で置換する。Treasure の手動登録、一括提案適用、list selection、再生、次へ、戻る、個別完了／取消、地点更新、削除、並べ替え、経路自動計算および全消去はこの境界を共有する。複数 root を一操作で変更する機能は設けない。Mob mode 切替は preference record だけを変更する。
 
-一括入力の parse、候補解決および利用者の曖昧行選択は session 外の proposal lifecycle で行う。coordinator は解決済み行だけを含む提案を現在の Treasure aggregate と統合し、registration workflow の conflict・capacity 判定を含む candidate を一回だけ保存する。保存失敗時は aggregate を変更せず、入力画面側の未解決行・診断・再試行可能な draft だけを保持する。
+一括入力の parse、チャット由来のプレイヤー名の前置装飾 normalization、候補解決および利用者の曖昧行選択は session 外の proposal lifecycle で行う。input pipeline は対応する marker と FFXIV chat 由来の先頭 private-use-area glyph を契約どおり扱い、通常の名前文字を推測削除せず、trim / Unicode NFC 後の identity を提案へ渡す。coordinator は解決済み行だけを含む提案を現在の Treasure aggregate と統合し、registration workflow の conflict・capacity 判定を含む candidate を一回だけ保存する。保存失敗時は aggregate を変更せず、入力画面側の未解決行・診断・再試行可能な draft だけを保持する。
 
 非同期の route calculation は、開始時の session revision と master identity を result に付与する。coordinator は両方が現在値と一致する result だけを working state へ適用し、古い result を破棄する。route の failure は保存へ進めず、warning 付き success は route と warning を同じ working result として保存・公開する。
 
@@ -609,7 +609,7 @@ Application は result の session revision と master identity が現在値に�
 
 1. master adapter は app 固有 master や grade set から独立した共通 map projection を coordinator へ提供する。
 2. coordinator は表示対象 map の projection と、地点選択用なら選択対象 marker の projection を Map UI へ渡す。案内 overlay には全ての有効 aetheryte を渡し、登録対象や完了状態で絞らない。
-3. Map UI の Aetheryte overlay は、現在の viewport へ X/Y を投影し、全件のアイコンを固定アンカーへ置く。町名ラベルは Specification の矩形、4 CSS px、8方向、重なり、最大数、安定 ID・候補順の制約を満たす配置結果だけを描画し、採用できないラベルを省略する。通常表示と地点選択表示は同じ projection 入力に対して同じ結果を返す。
+3. Map UI の Aetheryte overlay は、現在の viewport へ X/Y を投影し、全件のアイコンを固定アンカーへ置く。町名ラベルは Specification の幅 `8n + 24` CSS px、高さ 24 CSS px、22 CSS px の配置 offset / gap、8方向、重なり、最大数、安定 ID・候補順の制約を満たす配置結果だけを描画し、採用できないラベルを省略する。通常表示と地点選択表示は同じ projection 入力に対して同じ結果を返す。
 4. overlay の描画、再描画、pan/zoom およびラベル省略は、application command、session mutation、persistence write を発生させない。案内 icon/label の pointer event は Map UI 内で消費し、地点選択 coordinator へ転送しない。
 5. master revision または表示対象 map が変わった場合だけ新しい共通 projection から再構築し、viewport の変更時は表示 projection だけを再計算する。Master adapter の検証失敗は §12 の failure boundary へ渡し、Map UI は未検証値や座標・名称の推測 fallback を作らない。
 
@@ -639,15 +639,15 @@ B Next は current candidate を explored にし、その map の current locati
 
 両 app は共通 Map UI と共通 interaction contract を使い、marker 選択、pan/zoom、route 表示、現在地点、完了表示、並べ替え、完了・取消、全消去確認の結果を揃える。見た目の theme を完全共有する必要はないが、同じ意味の control label、状態色、feedback、確認 dialog を shared design token と interaction pattern で提供する。
 
-共通 Map UI は、地点登録用 marker と案内 overlay を別の表示・イベント境界として扱う。案内 overlay は全有効エーテライトのアイコンを実座標へ固定し、町名ラベルだけを表示領域と他ラベルとの関係で省略できる。ラベル配置は Map UI 内の純粋な表示 projection とし、4 CSS px、8方向、矩形、正の面積の重なり、最大8件、安定 ID と候補順の全制約を満たす。overlay の視覚資産と新ラベルデザインは地図背景と別の表示責務にする。
+共通 Map UI は、地点登録用 marker と案内 overlay を別の表示・イベント境界として扱う。案内 overlay は全有効エーテライトのアイコンを実座標へ固定し、町名ラベルだけを表示領域と他ラベルとの関係で省略できる。ラベル配置は Map UI 内の純粋な表示 projection とし、幅 `8n + 24` CSS px、高さ 24 CSS px、22 CSS px の配置 offset / gap、8方向、矩形、正の面積の重なり、最大8件、安定 ID と候補順の全制約を満たす。overlay の視覚資産と新ラベルデザインは地図背景と別の表示責務にする。
 
-Treasure は登録済み集合、プレイリスト、現在対象、地図・案内および進行を一つの主表示に置き、手動入力と一括入力はそこから開く同格の入口とする。Presentation は登録、list selection、next/back、complete/cancel、reorder および必要な current target 表示を提供する。独立した再生 control は Treasure 主操作として必須にしない。成功後は同じ主表示へ戻し、入口を domain mode や保存 state として表現しない。Mob は上部にソロ／パーティ switch、その下に登録／巡回経路 tab を持つ。mode と tab を一つの selector に混在させない。登録後は登録 tab に留まる。
+Treasure は登録済み集合、プレイリスト、現在対象、地図・案内および進行を一つの主表示に置き、手動入力は全対象レイアウト、一括入力は広い画面から開く入口とする。狭いレイアウトでは一括入力入口を省略できるが、手動登録は維持する。Presentation は登録、list selection、next/back、complete/cancel、reorder および必要な current target 表示を提供する。独立した再生 control は Treasure 主操作として必須にしない。成功後は同じ主表示へ戻し、入口を domain mode や保存 state として表現しない。Mob は上部にソロ／パーティ switch、その下に登録／巡回経路 tab を持つ。mode と tab を一つの selector に混在させない。登録後は登録 tab に留まる。
 
 ### 11.2 画面領域
 
 広い画面では、操作・進捗領域と地図領域の二領域を基本とする。狭い画面では縦積みまたは明示的な panel/map 切替を使い、横方向 page scroll を主要操作にしない。Map 選択 dialog は viewport 内に収まる bounded dialog、狭い画面では full-viewport surface とする。
 
-幅 320 CSS px 以上で、主要 button、検索、filter、mode/tab、候補 marker、完了・取消、B Next、並べ替え、全消去をタップで操作できるようにする。並べ替えは drag だけに依存せず、移動 button 等の同等操作を提供する。画面向きの変更で domain state や編集中の UI-local 入力を初期化しない。
+幅 320 CSS px 以上で、そのレイアウトに提供される主要 button、検索、filter、mode/tab、候補 marker、完了・取消、B Next、並べ替え、全消去をタップで操作できるようにする。Treasure の手動登録は全対象レイアウトで提供し、一括入力は広い画面で提供する。狭いレイアウトで一括入力入口を省略しても、手動登録から基本的な登録・巡回・進行を完了できるようにする。並べ替えは drag だけに依存せず、移動 button 等の同等操作を提供する。画面向きの変更で domain state、persistence state や編集中の UI-local 入力を初期化しない。breakpoint は Presentation concern として扱う。
 
 ## 12. 失敗境界と安全性
 
@@ -697,16 +697,16 @@ Implementation は、まずモノレポの二 entry と共有 package 境界を�
 - 各 JSON の unknown field、重複 ID、空・未知 source 参照、未知 entity 参照、範囲外・非有限 X/Y、aetheryte なし、rank/category 不整合。
 - 各 map の T/R 混在、検証済み T のみの aetheryte projection、R・無効・重複 record の除外と diagnostic、他の有効 record の継続利用。
 - configured 5 dataset の変換件数、legacy lookup、座標・動的 overlay marker の一致、背景画像からの埋め込み案内除去、`g11` と未使用 field の除外 report。
-- 通常の地図表示と地点選択表示の共通 map projection、全有効エーテライトの継続表示、アイコン固定、町名ラベルの8方向配置・重なり回避・最大8件・省略、案内表示の非操作性と session 非変更。
+- 通常の地図表示と地点選択表示の共通 map projection、全有効エーテライトの継続表示、アイコン固定、幅 `8n + 24` CSS px・高さ 24 CSS px・22 CSS px offset / gap の町名ラベル、8方向配置・重なり回避・最大8件・省略、案内表示の非操作性と session 非変更。
 - アイコン視覚資産の出典・利用条件確認、新ラベルデザインの地図画像由来でないこと、未確認 asset が採用されないこと。
 - 初期日本語表示、安定 ID から言語別表示名を解決する境界、未提供言語を翻訳・推測しないこと、Mob 多言語名称照合を提供しないこと。
-- Treasure の手動・一括入力、8 枠、置換、grade 変更、v2 の route／`isCompleted`／`isManualSort`／`currentMapPoints` の v3 への保持、v1／統合 v1／separate keys でのみ存在しない意味を既定化する移行、legacy resurrection 防止。
+- Treasure の全対象レイアウトでの手動入力、広い画面での一括入力、狭い画面での一括入口省略、チャット名の前置装飾 normalization、8 枠、置換、grade 変更、v2 の route／`isCompleted`／`isManualSort`／`currentMapPoints` の v3 への保持、v1／統合 v1／separate keys でのみ存在しない意味を既定化する移行、legacy resurrection 防止。
 - Mob の正式名・alias 検索、filter、mode eligibility、全候補登録、一般一地点、B 全候補、パーティ即時登録・置換。
 - マップ間遷移最小、複数 aetheryte、二次元最短、同率 stable order。Treasure の v1 route master は料金・ロード時間を field、validation、data preparation の対象にしない。
 - 手動順序の末尾追加・位置維持・候補単位並べ替え、自動計算成功時だけの切替。
 - 完了・取消、Treasure の next→next→back→back と back 後の next 分岐、no-op next の chain 維持、B Next・一段取消・unfound・再探索、対象削除、map 別 current location。
 - 各 root の独立保存・復元・全消去、破損保存、write failure、stale calculation。
-- 320 CSS px 以上の縦横 viewport、touch marker、非 drag の並べ替え、dialog、orientation change。
+- 320 CSS px 以上の縦横 viewport、広い画面の一括入口、狭い画面の手動登録、touch marker、非 drag の並べ替え、dialog、orientation change。
 
 静的データの正確性、Mob の実データ、出典、画像利用条件は Implementation 開始前の data preparation gate で確認する。Treasureの料金・ロード時間はv1の評価対象外であり、masterへ追加しない。
 
