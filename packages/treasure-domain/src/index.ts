@@ -41,6 +41,99 @@ export interface TreasureSessionState {
   readonly incompleteRoute: readonly TreasureRouteReference[];
 }
 
+export function treasurePointRefKey(ref: TreasurePointRef): string {
+  return `${ref.gradeSetId}:${ref.mapId}:${ref.pointId}`;
+}
+
+export function treasurePointRefsEqual(
+  left: TreasurePointRef,
+  right: TreasurePointRef,
+): boolean {
+  return left.gradeSetId === right.gradeSetId &&
+    left.mapId === right.mapId &&
+    left.pointId === right.pointId;
+}
+
+export function cloneTreasureSession(
+  session: TreasureSessionState,
+): TreasureSessionState {
+  return {
+    registrations: session.registrations.map((registration) => ({
+      ...registration,
+      pointRef: { ...registration.pointRef },
+    })),
+    playlistOrder: [...session.playlistOrder],
+    orderMode: session.orderMode,
+    listSelection: session.listSelection,
+    currentTarget: session.currentTarget,
+    mapCurrentLocations: session.mapCurrentLocations.map((location) => ({
+      ...location,
+      pointRef: { ...location.pointRef },
+    })),
+    incompleteRoute: session.incompleteRoute.map((route) => ({
+      ...route,
+      pointRef: { ...route.pointRef },
+    })),
+  };
+}
+
+export function deriveTreasureSession(
+  session: TreasureSessionState,
+): TreasureSessionState {
+  const registrations = session.registrations.map((registration, index) => ({
+    ...registration,
+    playlistPosition:
+      session.playlistOrder.indexOf(registration.registrationId) >= 0
+        ? session.playlistOrder.indexOf(registration.registrationId)
+        : index,
+  }));
+  const byId = new Map(
+    registrations.map((registration) => [registration.registrationId, registration]),
+  );
+  return {
+    ...session,
+    registrations,
+    incompleteRoute: session.playlistOrder.flatMap((registrationId) => {
+      const registration = byId.get(registrationId);
+      return registration && !registration.completed
+        ? [{ registrationId, pointRef: { ...registration.pointRef } }]
+        : [];
+    }),
+  };
+}
+
+export function replaceTreasureMapCurrentLocation(
+  session: TreasureSessionState,
+  pointRef: TreasurePointRef,
+): TreasureSessionState {
+  return {
+    ...session,
+    mapCurrentLocations: [
+      ...session.mapCurrentLocations.filter((location) => location.mapId !== pointRef.mapId),
+      { mapId: pointRef.mapId, pointRef: { ...pointRef } },
+    ],
+  };
+}
+
+export function fillTreasureAutoOrder(
+  oldOrder: readonly string[],
+  registrations: readonly TreasureRegistration[],
+  calculatedOrder: readonly string[],
+): string[] {
+  const byId = new Map(
+    registrations.map((registration) => [registration.registrationId, registration]),
+  );
+  const calculated = [...calculatedOrder];
+  return oldOrder
+    .map((id) => {
+      const registration = byId.get(id);
+      if (!registration || registration.completed) return id;
+      const next = calculated.shift();
+      return next ?? id;
+    })
+    .concat(calculated);
+}
+
 export function normalizeTreasureMemberName(value: string): string {
   return value.trim().normalize("NFC");
 }

@@ -10,11 +10,23 @@ import type {
   TreasurePointRef,
   TreasureSession,
   TreasureSessionState,
-  TreasureVersion,
 } from "@/types";
+import {
+  hasExactKeys,
+  hasOnlyKeys,
+  isFiniteNumber,
+  isInteger,
+  isMasterIdentity,
+  isNonEmptyString,
+  isRecord,
+  validatePersistedTreasureRoot,
+} from "@/persistence/storageValidation";
+import { treasurePointRefsEqual } from "@treasure-compass/treasure-domain";
 import pointMappings from "@treasure-compass/master-data/migration/legacy-treasure-point.v1.json";
 import mapMasterJson from "@treasure-compass/master-data/data/map-master.v1.json";
 import treasureMasterJson from "@treasure-compass/master-data/data/treasure-master.v1.json";
+
+export { validatePersistedTreasureRoot } from "@/persistence/storageValidation";
 
 export const STORAGE_KEY_TREASURE_SESSION =
   "treasure-compass:treasure-session:v3";
@@ -67,199 +79,10 @@ function getStorage(): Storage | null {
   return typeof localStorage === "undefined" ? null : localStorage;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function hasOnlyKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
-  const allowed = new Set(keys);
-  return Object.keys(value).every((key) => allowed.has(key));
-}
-
-function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
-  return hasOnlyKeys(value, keys) && Object.keys(value).length === keys.length;
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().normalize("NFC").length > 0;
-}
-
 function normalizedName(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const normalized = value.trim().normalize("NFC");
   return normalized.length > 0 ? normalized : null;
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
-function isInteger(value: unknown): value is number {
-  return typeof value === "number" && Number.isInteger(value);
-}
-
-function isVersion(value: unknown): value is TreasureVersion {
-  return value === "3.x" || value === "4.x" || value === "5.x" || value === "6.x" || value === "7.x";
-}
-
-function isPointRef(value: unknown): value is TreasurePointRef {
-  return (
-    isRecord(value) &&
-    hasOnlyKeys(value, ["gradeSetId", "mapId", "pointId"]) &&
-    isNonEmptyString(value.gradeSetId) &&
-    isNonEmptyString(value.mapId) &&
-    isNonEmptyString(value.pointId)
-  );
-}
-
-function isMasterIdentity(value: unknown): value is MasterIdentity {
-  return (
-    isRecord(value) &&
-    hasOnlyKeys(value, [
-      "mapSchemaVersion",
-      "mapDataRevision",
-      "appSchemaVersion",
-      "appDataRevision",
-    ]) &&
-    isInteger(value.mapSchemaVersion) &&
-    value.mapSchemaVersion >= 1 &&
-    isNonEmptyString(value.mapDataRevision) &&
-    isInteger(value.appSchemaVersion) &&
-    value.appSchemaVersion >= 1 &&
-    isNonEmptyString(value.appDataRevision)
-  );
-}
-
-function refsEqual(left: TreasurePointRef, right: TreasurePointRef): boolean {
-  return (
-    left.gradeSetId === right.gradeSetId &&
-    left.mapId === right.mapId &&
-    left.pointId === right.pointId
-  );
-}
-
-function validateV3State(value: unknown): value is TreasureSessionState {
-  if (
-    !isRecord(value) ||
-    !hasOnlyKeys(value, [
-      "registrations",
-      "playlistOrder",
-      "orderMode",
-      "listSelection",
-      "currentTarget",
-      "mapCurrentLocations",
-      "incompleteRoute",
-    ]) ||
-    !Array.isArray(value.registrations) ||
-    value.registrations.length > 8 ||
-    !Array.isArray(value.playlistOrder) ||
-    !value.playlistOrder.every(isNonEmptyString) ||
-    new Set(value.playlistOrder).size !== value.playlistOrder.length ||
-    (value.orderMode !== "auto" && value.orderMode !== "manual") ||
-    !(value.listSelection === null || isNonEmptyString(value.listSelection)) ||
-    !(value.currentTarget === null || isNonEmptyString(value.currentTarget)) ||
-    !Array.isArray(value.mapCurrentLocations) ||
-    !Array.isArray(value.incompleteRoute)
-  ) {
-    return false;
-  }
-
-  const playlistOrder = value.playlistOrder as string[];
-  const registrations = value.registrations;
-  const ids = new Set<string>();
-  const names = new Set<string>();
-  for (const item of registrations) {
-    if (
-      !isRecord(item) ||
-      !hasOnlyKeys(item, [
-        "registrationId",
-        "memberName",
-        "version",
-        "pointRef",
-        "completed",
-        "playlistPosition",
-      ]) ||
-      !isNonEmptyString(item.registrationId) ||
-      ids.has(item.registrationId) ||
-      !isNonEmptyString(item.memberName) ||
-      item.memberName !== item.memberName.trim().normalize("NFC") ||
-      names.has(item.memberName) ||
-      !isVersion(item.version) ||
-      !isPointRef(item.pointRef) ||
-      typeof item.completed !== "boolean" ||
-      !isInteger(item.playlistPosition) ||
-      item.playlistPosition < 0 ||
-      item.playlistPosition >= registrations.length
-    ) {
-      return false;
-    }
-    ids.add(item.registrationId);
-    names.add(item.memberName);
-  }
-  if (
-    playlistOrder.length !== registrations.length ||
-    playlistOrder.some((id) => !ids.has(id)) ||
-    registrations.some((registration) =>
-      playlistOrder[registration.playlistPosition] !== registration.registrationId,
-    ) ||
-    (value.listSelection !== null && !ids.has(value.listSelection)) ||
-    (value.currentTarget !== null && !ids.has(value.currentTarget))
-  ) {
-    return false;
-  }
-
-  const locations = value.mapCurrentLocations;
-  const locationMaps = new Set<string>();
-  for (const item of locations) {
-    if (
-      !isRecord(item) ||
-      !hasOnlyKeys(item, ["mapId", "pointRef"]) ||
-      !isNonEmptyString(item.mapId) ||
-      locationMaps.has(item.mapId) ||
-      !isPointRef(item.pointRef) ||
-      item.pointRef.mapId !== item.mapId
-    ) {
-      return false;
-    }
-    locationMaps.add(item.mapId);
-  }
-
-  const incompleteIds: string[] = [];
-  for (const item of value.incompleteRoute) {
-    if (
-      !isRecord(item) ||
-      !hasOnlyKeys(item, ["registrationId", "pointRef"]) ||
-      !isNonEmptyString(item.registrationId) ||
-      incompleteIds.includes(item.registrationId) ||
-      !isPointRef(item.pointRef)
-    ) {
-      return false;
-    }
-    const registration = registrations.find(
-      (candidate) => candidate.registrationId === item.registrationId,
-    );
-    if (!registration || registration.completed || !refsEqual(registration.pointRef, item.pointRef)) {
-      return false;
-    }
-    incompleteIds.push(item.registrationId);
-  }
-  const expectedIncomplete = playlistOrder.filter(
-    (id) => !registrations.find((registration) => registration.registrationId === id)?.completed,
-  );
-  return expectedIncomplete.length === incompleteIds.length &&
-    expectedIncomplete.every((id, index) => incompleteIds[index] === id);
-}
-
-export function validatePersistedTreasureRoot(value: unknown): value is PersistedTreasureRoot {
-  return (
-    isRecord(value) &&
-    hasOnlyKeys(value, ["schemaVersion", "sessionRevision", "masterIdentity", "state"]) &&
-    value.schemaVersion === 3 &&
-    isInteger(value.sessionRevision) &&
-    value.sessionRevision >= 1 &&
-    isMasterIdentity(value.masterIdentity) &&
-    validateV3State(value.state)
-  );
 }
 
 interface LegacyPoint {
@@ -410,7 +233,7 @@ function migrateLegacyState(state: LegacyState, complete: boolean): PersistedTre
   for (const step of sortedRoute) {
     const member = byMemberNo.get(step.memberNo);
     const pointRef = refForLegacyPoint(state.grade, step.mapNo, step.point.pointNo);
-    if (!member || !pointRef || !refsEqual(member.pointRef, pointRef) || routeRegistrations.includes(String(step.memberNo))) {
+    if (!member || !pointRef || !treasurePointRefsEqual(member.pointRef, pointRef) || routeRegistrations.includes(String(step.memberNo))) {
       return null;
     }
     routeRegistrations.push(String(step.memberNo));

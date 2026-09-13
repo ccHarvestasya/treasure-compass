@@ -9,19 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { generateMultiLineMacro, generateOneLineMacro } from "@/utils/macro";
-import type { TreasureCandidate, TreasurePointRef } from "@/types";
 import { toast } from "sonner";
+import { treasurePointRefKey } from "@treasure-compass/treasure-domain";
 
 interface RouteProgressTabProps {
   readonly onEdit?: (registrationId: string) => void;
-}
-
-function candidateKey(candidate: TreasureCandidate): string {
-  return pointRefKey(candidate.pointRef);
-}
-
-function pointRefKey(ref: TreasurePointRef): string {
-  return `${ref.gradeSetId}:${ref.mapId}:${ref.pointId}`;
 }
 
 type SortableResult = ReturnType<typeof useSortable>;
@@ -72,7 +64,7 @@ export function RouteProgressTab({ onEdit }: RouteProgressTabProps) {
     [registrations],
   );
   const candidateByRef = useMemo(
-    () => new Map((catalog?.candidates ?? []).map((candidate) => [candidateKey(candidate), candidate])),
+        () => new Map((catalog?.candidates ?? []).map((candidate) => [treasurePointRefKey(candidate.pointRef), candidate])),
     [catalog],
   );
   const orderedRegistrations = playlistOrder.flatMap((id) => {
@@ -173,7 +165,7 @@ export function RouteProgressTab({ onEdit }: RouteProgressTabProps) {
         <SortableContext items={orderedRegistrations.map((registration) => registration.registrationId)} strategy={verticalListSortingStrategy}>
           <div ref={listRef} className="flex max-h-[28rem] flex-col gap-1.5 overflow-y-auto pr-1">
             {orderedRegistrations.map((registration, index) => {
-          const candidate = candidateByRef.get(pointRefKey(registration.pointRef));
+          const candidate = candidateByRef.get(treasurePointRefKey(registration.pointRef));
           const unresolved = unresolvedReferences.find((reference) => reference.registrationId === registration.registrationId && reference.source === "registration");
           const isSelected = listSelection === registration.registrationId;
           const isTarget = currentTarget === registration.registrationId;

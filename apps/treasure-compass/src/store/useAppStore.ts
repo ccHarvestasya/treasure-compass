@@ -6,20 +6,26 @@ import {
 } from "@/persistence/storage";
 import type {
   MapData,
-  Point,
   RouteStep,
   RouteTieCandidate,
   TreasureCandidate,
   TreasureCatalog,
-  TreasurePointRef,
   TreasureRegistration,
   TreasureSession,
   TreasureSessionState,
   TreasureUnresolvedReference,
 } from "@/types";
 import type { MasterIdentity } from "@/persistence/storage";
-import { normalizeTreasureMemberName, nextUncompletedRegistration } from "@treasure-compass/treasure-domain";
-import { calcShortestRoute } from "@/utils/distance";
+import {
+  cloneTreasureSession,
+  deriveTreasureSession,
+  normalizeTreasureMemberName,
+  nextUncompletedRegistration,
+  replaceTreasureMapCurrentLocation,
+  treasurePointRefsEqual,
+} from "@treasure-compass/treasure-domain";
+import { calculateTreasureSession, projectTreasureRoute } from "@/store/routeProjection";
+import { buildUnresolvedReferences } from "@/store/unresolvedReferences";
 import { create } from "zustand";
 
 const restored = readPersistedTreasure();
@@ -56,68 +62,6 @@ export interface BulkApplyResult {
   readonly rejected: BulkRegistrationRejection[];
 }
 
-function cloneSession(session: TreasureSessionState): TreasureSessionState {
-  return {
-    registrations: session.registrations.map((registration) => ({ ...registration, pointRef: { ...registration.pointRef } })),
-    playlistOrder: [...session.playlistOrder],
-    orderMode: session.orderMode,
-    listSelection: session.listSelection,
-    currentTarget: session.currentTarget,
-    mapCurrentLocations: session.mapCurrentLocations.map((location) => ({ ...location, pointRef: { ...location.pointRef } })),
-    incompleteRoute: session.incompleteRoute.map((route) => ({ ...route, pointRef: { ...route.pointRef } })),
-  };
-}
-
-function pointRefEqual(left: TreasurePointRef, right: TreasurePointRef): boolean {
-  return left.gradeSetId === right.gradeSetId && left.mapId === right.mapId && left.pointId === right.pointId;
-}
-
-function masterIdentityEqual(left: MasterIdentity, right: TreasureCatalog["masterIdentity"]): boolean {
-  return left.mapSchemaVersion === right.mapSchemaVersion &&
-    left.mapDataRevision === right.mapDataRevision &&
-    left.appSchemaVersion === right.appSchemaVersion &&
-    left.appDataRevision === right.appDataRevision;
-}
-
-function candidateForRef(catalog: TreasureCatalog | null, pointRef: TreasurePointRef): TreasureCandidate | null {
-  return catalog?.candidates.find((candidate) => pointRefEqual(candidate.pointRef, pointRef)) ?? null;
-}
-
-function unresolvedReferences(
-  session: TreasureSessionState,
-  catalog: TreasureCatalog | null,
-  persistedMasterIdentity: MasterIdentity | null,
-): TreasureUnresolvedReference[] {
-  const reason = (pointRef: TreasurePointRef): TreasureUnresolvedReference["reason"] | null => {
-    if (!catalog) return "master-not-loaded";
-    if (candidateForRef(catalog, pointRef)) return null;
-    return persistedMasterIdentity && !masterIdentityEqual(persistedMasterIdentity, catalog.masterIdentity)
-      ? "master-identity-mismatch"
-      : "point-ref-not-found";
-  };
-  const unresolved: TreasureUnresolvedReference[] = [];
-  for (const registration of session.registrations) {
-    const unresolvedReason = reason(registration.pointRef);
-    if (unresolvedReason) {
-      unresolved.push({ registrationId: registration.registrationId, memberName: registration.memberName, pointRef: { ...registration.pointRef }, reason: unresolvedReason, source: "registration" });
-    }
-  }
-  if (session.currentTarget) {
-    const registration = session.registrations.find((entry) => entry.registrationId === session.currentTarget);
-    const unresolvedReason = registration ? reason(registration.pointRef) : null;
-    if (registration && unresolvedReason) {
-      unresolved.push({ registrationId: registration.registrationId, memberName: registration.memberName, pointRef: { ...registration.pointRef }, reason: unresolvedReason, source: "currentTarget" });
-    }
-  }
-  for (const location of session.mapCurrentLocations) {
-    const unresolvedReason = reason(location.pointRef);
-    if (unresolvedReason) {
-      unresolved.push({ registrationId: null, pointRef: { ...location.pointRef }, reason: unresolvedReason, source: "mapCurrentLocation" });
-    }
-  }
-  return unresolved;
-}
-
 function allocateRegistrationId(
   registrations: readonly TreasureRegistration[],
   startNumber: number,
@@ -149,166 +93,10 @@ function createRegistration(
   };
 }
 
-function withDerivedRoute(session: TreasureSessionState): TreasureSessionState {
-  const registrations = session.registrations.map((registration, index) => ({
-    ...registration,
-    playlistPosition: session.playlistOrder.indexOf(registration.registrationId) >= 0
-      ? session.playlistOrder.indexOf(registration.registrationId)
-      : index,
-  }));
-  const byId = new Map(registrations.map((registration) => [registration.registrationId, registration]));
-  return {
-    ...session,
-    registrations,
-    incompleteRoute: session.playlistOrder.flatMap((registrationId) => {
-      const registration = byId.get(registrationId);
-      return registration && !registration.completed
-        ? [{ registrationId, pointRef: { ...registration.pointRef } }]
-        : [];
-    }),
-  };
-}
-
 function withAutomaticTarget(session: TreasureSessionState): TreasureSessionState {
   if (session.currentTarget !== null) return session;
   const target = nextUncompletedRegistration(session, null);
   return target === null ? session : { ...session, currentTarget: target };
-}
-
-function buildRouteProjection(
-  session: TreasureSessionState,
-  catalog: TreasureCatalog | null,
-): { route: RouteStep[]; tieCandidates: RouteTieCandidate[] } {
-  if (!catalog) return { route: [], tieCandidates: [] };
-  const byId = new Map(catalog.candidates.map((candidate) => [
-    `${candidate.pointRef.gradeSetId}:${candidate.pointRef.mapId}:${candidate.pointRef.pointId}`,
-    candidate,
-  ]));
-  if (session.orderMode === "auto") {
-    const inputs = routeInputs(session, catalog);
-    if (inputs.length === 0) return { route: [], tieCandidates: [] };
-    const result = calcShortestRoute(inputs, catalog.mapData.mapData, mapCurrentPoints(session, catalog));
-    if (result.failure) return { route: [], tieCandidates: [] };
-    const toRoute = (orderedSteps: typeof result.orderedSteps): RouteStep[] => orderedSteps.map((step, index) => ({
-      orderNo: index + 1,
-      registrationId: step.registrationId,
-      memberNo: step.memberNo,
-      mapId: step.mapId,
-      mapNo: step.mapNo,
-      mapName: step.mapName,
-      mapNameShort: step.mapNameShort,
-      memberName: step.memberName,
-      point: step.point,
-      startPoint: step.startPoint,
-      teleportPoint: step.teleportPoint,
-      isCompleted: false,
-    }));
-    return {
-      route: toRoute(result.orderedSteps),
-      tieCandidates: (result.tieCandidates ?? []).map((candidate) => ({
-        route: toRoute(candidate.orderedSteps),
-        totalDistance: candidate.totalDistance,
-      })),
-    };
-  }
-  const route = session.incompleteRoute.flatMap((reference) => {
-    const registration = session.registrations.find((entry) => entry.registrationId === reference.registrationId);
-    const candidate = byId.get(`${reference.pointRef.gradeSetId}:${reference.pointRef.mapId}:${reference.pointRef.pointId}`);
-    if (!registration || !candidate) return [];
-    return [{
-      orderNo: 0,
-      registrationId: registration.registrationId,
-      memberNo: session.registrations.indexOf(registration),
-      mapId: candidate.map.mapId,
-      mapNo: candidate.map.mapNo,
-      mapName: candidate.map.mapName,
-      mapNameShort: candidate.map.mapNameShort,
-      memberName: registration.memberName,
-      point: candidate.point,
-      isCompleted: registration.completed,
-    } satisfies RouteStep];
-  }).map((step, index) => ({ ...step, orderNo: index + 1 }));
-  return { route, tieCandidates: [] };
-}
-
-function buildRoute(session: TreasureSessionState, catalog: TreasureCatalog | null): RouteStep[] {
-  return buildRouteProjection(session, catalog).route;
-}
-
-function mapCurrentPoints(session: TreasureSessionState, catalog: TreasureCatalog | null): Record<string, Point> {
-  if (!catalog) return {};
-  const result: Record<string, Point> = {};
-  for (const location of session.mapCurrentLocations) {
-    const candidate = catalog.candidates.find((entry) => pointRefEqual(entry.pointRef, location.pointRef));
-    if (candidate) result[location.mapId] = candidate.point;
-  }
-  return result;
-}
-
-function replaceMapCurrentLocation(session: TreasureSessionState, pointRef: TreasurePointRef): TreasureSessionState {
-  return {
-    ...session,
-    mapCurrentLocations: [
-      ...session.mapCurrentLocations.filter((location) => location.mapId !== pointRef.mapId),
-      { mapId: pointRef.mapId, pointRef: { ...pointRef } },
-    ],
-  };
-}
-
-function fillAutoOrder(
-  oldOrder: readonly string[],
-  registrations: readonly TreasureRegistration[],
-  calculatedOrder: readonly string[],
-): string[] {
-  const byId = new Map(registrations.map((registration) => [registration.registrationId, registration]));
-  const calculated = [...calculatedOrder];
-  return oldOrder.map((id) => {
-    const registration = byId.get(id);
-    if (!registration || registration.completed) return id;
-    const next = calculated.shift();
-    return next ?? id;
-  }).concat(calculated);
-}
-
-function routeInputs(session: TreasureSessionState, catalog: TreasureCatalog | null) {
-  if (!catalog) return [];
-  return session.registrations.flatMap((registration) => {
-    if (registration.completed) return [];
-    const candidate = catalog.candidates.find((entry) => pointRefEqual(entry.pointRef, registration.pointRef));
-    if (!candidate) return [];
-    return [{
-      registrationId: registration.registrationId,
-      memberNo: session.registrations.indexOf(registration),
-      memberName: registration.memberName,
-      mapId: candidate.map.mapId,
-      mapNo: candidate.map.mapNo,
-      mapName: candidate.map.mapName,
-      mapNameShort: candidate.map.mapNameShort,
-      mapPoint: candidate.point,
-    }];
-  });
-}
-
-function calculateSession(
-  session: TreasureSessionState,
-  catalog: TreasureCatalog | null,
-): { session: TreasureSessionState; routeError: string | null } {
-  const prepared = withDerivedRoute(session);
-  if (prepared.orderMode === "manual" || !catalog) {
-    return { session: prepared, routeError: null };
-  }
-  const inputs = routeInputs(prepared, catalog);
-  if (inputs.length === 0) return { session: prepared, routeError: null };
-  const result = calcShortestRoute(inputs, catalog.mapData.mapData, mapCurrentPoints(prepared, catalog));
-  if (result.failure) {
-    return {
-      session: prepared,
-      routeError: `有効なエーテライトがないマップ: ${result.failure.mapNos.join(", ")}`,
-    };
-  }
-  const calculatedOrder = result.orderedSteps.flatMap((step) => step.registrationId ? [step.registrationId] : []);
-  const playlistOrder = fillAutoOrder(prepared.playlistOrder, prepared.registrations, calculatedOrder);
-  return { session: withDerivedRoute({ ...prepared, playlistOrder }), routeError: null };
 }
 
 interface AppState {
@@ -363,8 +151,8 @@ let nextRegistrationNumber = 1;
 
 const useAppStore = create<AppState>((set, get) => {
   const { sessionRevision: restoredRevision, ...restoredState } = initialSession;
-  let currentSession = withDerivedRoute(restoredState);
-  const initialCalculated = calculateSession(currentSession, null);
+  let currentSession = deriveTreasureSession(restoredState);
+  const initialCalculated = calculateTreasureSession(currentSession, null);
   currentSession = initialCalculated.session;
   let persistedMasterIdentity: MasterIdentity | null = restored.snapshot?.masterIdentity ?? null;
 
@@ -379,7 +167,7 @@ const useAppStore = create<AppState>((set, get) => {
     if (!writePersistedTreasure(persistedSession, rootIdentity, nextRevision)) return false;
     if (rootIdentity) persistedMasterIdentity = rootIdentity;
     const session: TreasureSession = { ...persistedSession, sessionRevision: nextRevision };
-    const routeProjection = buildRouteProjection(session, state.catalog);
+    const routeProjection = projectTreasureRoute(session, state.catalog);
     set({
       session,
       registrations: [...session.registrations],
@@ -390,7 +178,7 @@ const useAppStore = create<AppState>((set, get) => {
       mapCurrentLocations: session.mapCurrentLocations,
       route: routeProjection.route,
       routeTieCandidates: routeProjection.tieCandidates,
-      unresolvedReferences: unresolvedReferences(session, state.catalog, persistedMasterIdentity),
+      unresolvedReferences: buildUnresolvedReferences(session, state.catalog, persistedMasterIdentity),
       masterIdentity: persistedMasterIdentity,
       routeError: options.routeError ?? null,
       ...(options.clearUndo === false
@@ -411,7 +199,7 @@ const useAppStore = create<AppState>((set, get) => {
     mapData: null,
     setCatalog: (catalog) => {
       const state = get();
-      const calculated = calculateSession(state.session, catalog);
+      const calculated = calculateTreasureSession(state.session, catalog);
       set({
         catalog,
         mapData: catalog?.mapData ?? null,
@@ -422,9 +210,9 @@ const useAppStore = create<AppState>((set, get) => {
         listSelection: calculated.session.listSelection,
         currentTarget: calculated.session.currentTarget,
         mapCurrentLocations: calculated.session.mapCurrentLocations,
-        route: buildRoute(calculated.session, catalog),
-        routeTieCandidates: buildRouteProjection(calculated.session, catalog).tieCandidates,
-        unresolvedReferences: unresolvedReferences(calculated.session, catalog, persistedMasterIdentity),
+      route: projectTreasureRoute(calculated.session, catalog).route,
+      routeTieCandidates: projectTreasureRoute(calculated.session, catalog).tieCandidates,
+      unresolvedReferences: buildUnresolvedReferences(calculated.session, catalog, persistedMasterIdentity),
         masterIdentity: persistedMasterIdentity,
         routeError: calculated.routeError,
         isLoading: false,
@@ -441,7 +229,7 @@ const useAppStore = create<AppState>((set, get) => {
     listSelection: currentSession.listSelection,
     currentTarget: currentSession.currentTarget,
     mapCurrentLocations: currentSession.mapCurrentLocations,
-    unresolvedReferences: unresolvedReferences(currentSession, null, persistedMasterIdentity),
+    unresolvedReferences: buildUnresolvedReferences(currentSession, null, persistedMasterIdentity),
     masterIdentity: persistedMasterIdentity,
     undoFrames: [],
     undoPhase: null,
@@ -454,7 +242,7 @@ const useAppStore = create<AppState>((set, get) => {
     modalRegistrationId: null,
     clearAllData: () => {
       const state = get();
-      const calculated = calculateSession(emptySessionState, state.catalog);
+      const calculated = calculateTreasureSession(emptySessionState, state.catalog);
       if (!publish(calculated.session, { routeError: calculated.routeError })) return false;
       set({ draftMemberNames: Array(FULL_PARTY).fill(""), bulkText: "", modalMemberNo: null, modalRegistrationId: null });
       invalidateUndo();
@@ -463,7 +251,7 @@ const useAppStore = create<AppState>((set, get) => {
     setManualSort: (value) => {
       if (value) {
         const state = get();
-        const published = publish(withDerivedRoute({ ...state.session, orderMode: "manual" }));
+        const published = publish(deriveTreasureSession({ ...state.session, orderMode: "manual" }));
         if (published) invalidateUndo();
         return published;
       }
@@ -485,7 +273,7 @@ const useAppStore = create<AppState>((set, get) => {
       const candidate = stateForCandidate(inputCandidate);
       let next: TreasureSessionState;
       if (existing) {
-        const same = pointRefEqual(existing.pointRef, candidate.pointRef);
+        const same = treasurePointRefsEqual(existing.pointRef, candidate.pointRef);
         next = {
           ...state.session,
           registrations: state.session.registrations.map((registration) => registration.registrationId === existing.registrationId
@@ -502,7 +290,7 @@ const useAppStore = create<AppState>((set, get) => {
           playlistOrder: [...state.session.playlistOrder, registrationId],
         };
       }
-      const calculated = calculateSession(next, state.catalog);
+      const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) return false;
       if (!existing) nextRegistrationNumber = allocateRegistrationId(state.session.registrations, nextRegistrationNumber).nextNumber;
       invalidateUndo();
@@ -521,7 +309,7 @@ const useAppStore = create<AppState>((set, get) => {
           continue;
         }
         const previous = byName.get(name);
-        if (previous && !pointRefEqual(previous.candidate.pointRef, candidate.pointRef)) {
+        if (previous && !treasurePointRefsEqual(previous.candidate.pointRef, candidate.pointRef)) {
           conflicting.set(name, [...previous.lineNumbers, ...entry.lineNumbers]);
           continue;
         }
@@ -546,7 +334,7 @@ const useAppStore = create<AppState>((set, get) => {
         const candidate = entry.candidate;
         const existing = registrations.find((registration) => registration.memberName === memberName);
         if (existing) {
-          const same = pointRefEqual(existing.pointRef, candidate.pointRef);
+          const same = treasurePointRefsEqual(existing.pointRef, candidate.pointRef);
           registrations = registrations.map((registration) => registration.registrationId === existing.registrationId
             ? { ...registration, version: candidate.version, pointRef: { ...candidate.pointRef }, completed: same ? registration.completed : false }
             : registration);
@@ -568,7 +356,7 @@ const useAppStore = create<AppState>((set, get) => {
       }
       if (applied === 0) return { applied: 0, appliedLineNumbers: [], rejected };
 
-      const calculated = calculateSession({ ...state.session, registrations, playlistOrder }, state.catalog);
+      const calculated = calculateTreasureSession({ ...state.session, registrations, playlistOrder }, state.catalog);
       if (calculated.routeError || !publish(withAutomaticTarget(calculated.session), { routeError: calculated.routeError })) {
         const failedEntries = proposal.flatMap((entry) => {
           const memberName = normalizeTreasureMemberName(entry.memberName);
@@ -621,14 +409,14 @@ const useAppStore = create<AppState>((set, get) => {
       const current = currentId ? state.session.registrations.find((registration) => registration.registrationId === currentId) : undefined;
       if (!current || current.completed) return false;
       if (state.unresolvedReferences.some((reference) => reference.registrationId === current.registrationId && (reference.source === "registration" || reference.source === "currentTarget"))) return false;
-      const before = cloneSession(state.session);
-      let nextSession = replaceMapCurrentLocation({
+      const before = cloneTreasureSession(state.session);
+      let nextSession = replaceTreasureMapCurrentLocation({
         ...state.session,
         registrations: state.session.registrations.map((registration) => registration.registrationId === current.registrationId ? { ...registration, completed: true } : registration),
       }, current.pointRef);
       const nextId = nextUncompletedRegistration(nextSession, current.registrationId);
       nextSession = { ...nextSession, currentTarget: nextId };
-      const calculated = calculateSession(nextSession, state.catalog);
+      const calculated = calculateTreasureSession(nextSession, state.catalog);
       if (calculated.routeError) return false;
       const nextFrames = state.undoFrames.length > 0 && state.undoPhase !== "back"
         ? [{ session: before }, ...state.undoFrames]
@@ -640,7 +428,7 @@ const useAppStore = create<AppState>((set, get) => {
       const state = get();
       const frame = state.undoFrames[0];
       if (!frame) return false;
-      if (!publish({ ...cloneSession(frame.session), listSelection: state.session.listSelection }, { clearUndo: false, undoFrames: state.undoFrames.slice(1) })) return false;
+      if (!publish({ ...cloneTreasureSession(frame.session), listSelection: state.session.listSelection }, { clearUndo: false, undoFrames: state.undoFrames.slice(1) })) return false;
       set({ undoPhase: "back" });
       return true;
     },
@@ -649,11 +437,11 @@ const useAppStore = create<AppState>((set, get) => {
       const registration = state.session.registrations.find((entry) => entry.registrationId === registrationId);
       if (!registration || registration.completed) return false;
       if (state.unresolvedReferences.some((reference) => reference.registrationId === registrationId && reference.source === "registration")) return false;
-      const next = replaceMapCurrentLocation({
+      const next = replaceTreasureMapCurrentLocation({
         ...state.session,
         registrations: state.session.registrations.map((entry) => entry.registrationId === registrationId ? { ...entry, completed: true } : entry),
       }, registration.pointRef);
-      const calculated = calculateSession(next, state.catalog);
+      const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(calculated.session, { routeError: calculated.routeError })) return false;
       invalidateUndo();
       return true;
@@ -664,7 +452,7 @@ const useAppStore = create<AppState>((set, get) => {
       if (!registration || !registration.completed) return false;
       if (state.unresolvedReferences.some((reference) => reference.registrationId === registrationId && reference.source === "registration")) return false;
       const next = { ...state.session, registrations: state.session.registrations.map((entry) => entry.registrationId === registrationId ? { ...entry, completed: false } : entry) };
-      const calculated = calculateSession(next, state.catalog);
+      const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(calculated.session, { routeError: calculated.routeError })) return false;
       invalidateUndo();
       return true;
@@ -672,14 +460,14 @@ const useAppStore = create<AppState>((set, get) => {
     removeRegistration: (registrationId) => {
       const state = get();
       if (!state.session.registrations.some((registration) => registration.registrationId === registrationId)) return false;
-      const next = withDerivedRoute({
+      const next = deriveTreasureSession({
         ...state.session,
         registrations: state.session.registrations.filter((registration) => registration.registrationId !== registrationId),
         playlistOrder: state.session.playlistOrder.filter((id) => id !== registrationId),
         listSelection: state.session.listSelection === registrationId ? null : state.session.listSelection,
         currentTarget: state.session.currentTarget === registrationId ? null : state.session.currentTarget,
       });
-      const calculated = calculateSession(next, state.catalog);
+      const calculated = calculateTreasureSession(next, state.catalog);
       if (calculated.routeError || !publish(calculated.session, { routeError: calculated.routeError })) return false;
       invalidateUndo();
       return true;
@@ -691,7 +479,7 @@ const useAppStore = create<AppState>((set, get) => {
       if (index < 0 || target < 0 || target >= state.session.playlistOrder.length) return false;
       const playlistOrder = [...state.session.playlistOrder];
       [playlistOrder[index], playlistOrder[target]] = [playlistOrder[target]!, playlistOrder[index]!];
-      if (!publish(withDerivedRoute({ ...state.session, playlistOrder, orderMode: "manual" }))) return false;
+      if (!publish(deriveTreasureSession({ ...state.session, playlistOrder, orderMode: "manual" }))) return false;
       invalidateUndo();
       return true;
     },
@@ -705,13 +493,13 @@ const useAppStore = create<AppState>((set, get) => {
       const [moved] = playlistOrder.splice(index, 1);
       if (!moved) return false;
       playlistOrder.splice(target, 0, moved);
-      if (!publish(withDerivedRoute({ ...state.session, playlistOrder, orderMode: "manual" }))) return false;
+      if (!publish(deriveTreasureSession({ ...state.session, playlistOrder, orderMode: "manual" }))) return false;
       invalidateUndo();
       return true;
     },
     recalcRoute: () => {
       const state = get();
-      const next = calculateSession({ ...state.session, orderMode: "auto" }, state.catalog);
+      const next = calculateTreasureSession({ ...state.session, orderMode: "auto" }, state.catalog);
       if (next.routeError || !publish(next.session, { routeError: next.routeError })) return false;
       invalidateUndo();
       return true;
